@@ -4,21 +4,25 @@ import { siteConfig } from "@/config/site";
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-[92vh] overflow-hidden bg-ink text-white">
-      <Image
-        src="/assets/hero-road-to-istanbul.jpg"
-        alt="Sedmo Nebo biciklistička avantura"
-        fill
-        priority
-        className="object-cover"
-        sizes="100vw"
+    <section className="relative min-h-[96vh] overflow-hidden bg-ink text-white">
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 scale-105 bg-cover bg-center bg-no-repeat md:bg-fixed"
+        style={{
+          backgroundImage: "url('/assets/hero-road-to-istanbul.jpg')"
+        }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-ink/82" />
       <div className="absolute inset-x-0 top-0 z-10">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
           <a href="#" className="flex items-center gap-3">
             <span className="relative h-12 w-12 overflow-hidden rounded-full bg-paper/90 p-1 shadow-pin">
-              <Image src="/assets/sedmo-nebo-logo.png" alt="Sedmo Nebo logo" fill className="object-contain p-1" />
+              <Image
+                src="/assets/sedmo-nebo-logo.png"
+                alt="Sedmo Nebo logo"
+                fill
+                className="object-contain p-1"
+              />
             </span>
             <span className="hidden text-sm font-black uppercase tracking-[0.24em] sm:block">
               Sedmo Nebo
@@ -33,7 +37,7 @@ export function HeroSection() {
         </nav>
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-7xl items-end px-5 pb-16 pt-28 md:pb-24">
+      <div className="relative z-10 mx-auto flex min-h-[96vh] max-w-7xl items-end px-5 pb-28 pt-28 md:pb-32">
         <div className="max-w-4xl">
           <div className="mb-5 inline-flex rotate-[-1.5deg] rounded-full bg-paper px-4 py-2 text-sm font-black text-clay shadow-pin">
             Start: {siteConfig.startDate} · Dubrovnik → Istanbul
@@ -55,7 +59,7 @@ export function HeroSection() {
             </a>
             <a
               href="#humanitarno"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-white/92 px-6 py-4 font-black text-ink shadow-pin transition hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-clay px-6 py-4 font-black text-paper shadow-pin transition hover:-translate-y-0.5 hover:bg-terracotta"
             >
               <HeartHandshake size={20} />
               Podrži kampanju
@@ -70,6 +74,7 @@ export function HeroSection() {
           </div>
         </div>
       </div>
+      <div className="torn-map-edge absolute inset-x-0 bottom-0 z-20 h-24" aria-hidden="true" />
     </section>
   );
 }

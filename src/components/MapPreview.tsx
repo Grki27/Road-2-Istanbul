@@ -1,92 +1,233 @@
-import { Compass, LocateFixed, MapPinned, Navigation } from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+"use client";
 
-const mapLegendItems: Array<{
-  title: string;
-  text: string;
-  Icon: LucideIcon;
-}> = [
+import { useEffect, useRef } from "react";
+import { LocateFixed, Route } from "lucide-react";
+import type L from "leaflet";
+
+const currentLocation = {
+  lat: 42.6507,
+  lng: 18.0944,
+  title: "Marin i Marko",
+  text: "Preview live lokacije. Kad dođe admin panel, ovo se mijenja zadnjim GPS updateom."
+};
+
+const demoPins = [
   {
-    title: "Crveni pinovi",
-    text: "Pojavit će se tek kad admin doda dnevni recap.",
-    Icon: MapPinned
+    lat: 41.9981,
+    lng: 21.4254,
+    emoji: "🌍",
+    title: "Skopje checkpoint",
+    text: "Primjer event pina za granice, hranu, kvarove i dobre priče s ceste."
   },
   {
-    title: "Trenutna lokacija",
-    text: "Zaseban brzi update s mobitela.",
-    Icon: LocateFixed
-  },
-  {
-    title: "Event pinovi",
-    text: "Hrana, kvarovi, granice, psi, zalasci i ostali trenuci.",
-    Icon: Navigation
+    lat: 41.0082,
+    lng: 28.9784,
+    emoji: "🏁",
+    title: "Istanbul cilj",
+    text: "Kraj planirane rute i veliki razlog za baklavu."
   }
 ];
 
-export function MapPreview({ routePoints }: { routePoints: string }) {
+function parseGpx(gpx: string) {
+  const doc = new DOMParser().parseFromString(gpx, "application/xml");
+  return Array.from(doc.querySelectorAll("trkpt"))
+    .map((point) => {
+      const lat = Number(point.getAttribute("lat"));
+      const lng = Number(point.getAttribute("lon"));
+
+      return Number.isFinite(lat) && Number.isFinite(lng) ? ([lat, lng] as [number, number]) : null;
+    })
+    .filter((point): point is [number, number] => Boolean(point));
+}
+
+function getClosestRouteIndex(route: [number, number][], location: { lat: number; lng: number }) {
+  return route.reduce(
+    (closest, point, index) => {
+      const latDistance = point[0] - location.lat;
+      const lngDistance = point[1] - location.lng;
+      const distance = latDistance * latDistance + lngDistance * lngDistance;
+
+      return distance < closest.distance ? { distance, index } : closest;
+    },
+    { distance: Number.POSITIVE_INFINITY, index: 0 }
+  ).index;
+}
+
+export function MapPreview() {
+  const mapElementRef = useRef<HTMLDivElement | null>(null);
+  const mapRef = useRef<L.Map | null>(null);
+  const routeBoundsRef = useRef<L.LatLngBounds | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    let cleanup: (() => void) | undefined;
+
+    async function bootMap() {
+      const leaflet = await import("leaflet");
+
+      if (!alive || !mapElementRef.current || mapRef.current) {
+        return;
+      }
+
+      const map = leaflet
+        .map(mapElementRef.current, {
+          zoomControl: false,
+          scrollWheelZoom: true,
+          minZoom: 5
+        })
+        .setView([41.7, 22.7], 6);
+
+      mapRef.current = map;
+
+      leaflet.control.zoom({ position: "bottomright" }).addTo(map);
+
+      leaflet
+        .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+        })
+        .addTo(map);
+
+      try {
+        const response = await fetch("/assets/ruta.gpx");
+        const gpx = await response.text();
+        const route = parseGpx(gpx);
+
+        if (route.length) {
+          const currentRouteIndex = getClosestRouteIndex(route, currentLocation);
+          const completedRoute = route.slice(0, currentRouteIndex + 1);
+          const remainingRoute = route.slice(currentRouteIndex);
+
+          const routeGlow = leaflet.polyline(route, {
+            color: "#fff8ea",
+            weight: 12,
+            opacity: 0.42,
+            lineCap: "round",
+            lineJoin: "round"
+          });
+
+          routeGlow.addTo(map);
+
+          if (completedRoute.length > 1) {
+            leaflet
+              .polyline(completedRoute, {
+                color: "#5c3b25",
+                dashArray: "2 12",
+                weight: 5,
+                opacity: 0.42,
+                lineCap: "round",
+                lineJoin: "round"
+              })
+              .addTo(map);
+          }
+
+          leaflet
+            .polyline(remainingRoute.length > 1 ? remainingRoute : route, {
+              color: "#d9824b",
+              weight: 6,
+              opacity: 0.96,
+              lineCap: "round",
+              lineJoin: "round"
+            })
+            .addTo(map);
+
+          routeBoundsRef.current = routeGlow.getBounds();
+          map.fitBounds(routeBoundsRef.current, { padding: [34, 34] });
+        }
+      } catch {
+        // Public fallback is simply the interactive base map; real error states come with data wiring.
+      }
+
+      const teamIcon = leaflet.divIcon({
+        className: "team-location-marker",
+        html: `
+          <div class="team-location-pulse">
+            <img src="/assets/team-current-location.jpg" alt="Marin i Marko" />
+          </div>
+        `,
+        iconSize: [70, 70],
+        iconAnchor: [35, 35],
+        popupAnchor: [0, -35]
+      });
+
+      leaflet
+        .marker([currentLocation.lat, currentLocation.lng], { icon: teamIcon })
+        .addTo(map)
+        .bindPopup(`<strong>${currentLocation.title}</strong><br>${currentLocation.text}`);
+
+      demoPins.forEach((pin) => {
+        const icon = leaflet.divIcon({
+          className: "emoji-map-marker",
+          html: `<span>${pin.emoji}</span>`,
+          iconSize: [46, 46],
+          iconAnchor: [23, 23],
+          popupAnchor: [0, -25]
+        });
+
+        leaflet
+          .marker([pin.lat, pin.lng], { icon })
+          .addTo(map)
+          .bindPopup(`<strong>${pin.title}</strong><br>${pin.text}`);
+      });
+
+      cleanup = () => {
+        map.remove();
+        mapRef.current = null;
+        routeBoundsRef.current = null;
+      };
+    }
+
+    bootMap();
+
+    return () => {
+      alive = false;
+      cleanup?.();
+    };
+  }, []);
+
+  function fitRoute() {
+    if (mapRef.current && routeBoundsRef.current) {
+      mapRef.current.fitBounds(routeBoundsRef.current, { padding: [34, 34] });
+    }
+  }
+
+  function goToCurrentLocation() {
+    mapRef.current?.setView([currentLocation.lat, currentLocation.lng], 11, {
+      animate: true
+    });
+  }
+
   return (
     <section id="karta" className="px-5 py-20">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-7 flex flex-col justify-between gap-4 md:flex-row md:items-end">
-          <div>
-            <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Live karta</p>
-            <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">Ruta je spremna. Pinovi čekaju cestu.</h2>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            <button className="rounded-full bg-ink px-4 py-3 text-sm font-black text-paper shadow-pin">
-              Prikaži cijelu rutu
-            </button>
-            <button className="rounded-full bg-paper px-4 py-3 text-sm font-black text-ink shadow-pin">
-              Zadnja lokacija
-            </button>
-          </div>
+        <div className="mb-7 max-w-4xl">
+          <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Live karta</p>
+          <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">
+            Putujte s nama kroz interaktivnu kartu
+          </h2>
         </div>
 
         <div className="overflow-hidden rounded-[2rem] border-[10px] border-paper bg-sea shadow-paper">
-          <div className="relative min-h-[520px] bg-[radial-gradient(circle_at_20%_20%,rgba(255,248,234,.20),transparent_18rem),linear-gradient(135deg,#315f67,#224248)]">
-            <div className="absolute left-5 top-5 z-10 rounded-2xl bg-paper/95 p-4 shadow-pin">
-              <div className="flex items-center gap-3">
-                <span className="grid h-10 w-10 place-items-center rounded-full bg-clay text-white">
-                  <Compass size={21} />
-                </span>
-                <div>
-                  <p className="text-xs font-black uppercase tracking-[0.2em] text-clay">Dubrovnik → Istanbul</p>
-                  <p className="font-bold text-ink">GPX ruta učitana iz `Ruta.gpx`</p>
-                </div>
-              </div>
-            </div>
-            <svg viewBox="0 0 1000 480" className="absolute inset-0 h-full w-full p-4" aria-hidden="true">
-              <defs>
-                <filter id="routeShadow">
-                  <feDropShadow dx="0" dy="6" stdDeviation="5" floodOpacity="0.28" />
-                </filter>
-              </defs>
-              <path d="M110 70 C230 130 190 240 350 270 S590 175 680 260 790 380 910 330" fill="none" stroke="rgba(255,248,234,.16)" strokeWidth="34" strokeLinecap="round" />
-              {routePoints ? (
-                <polyline
-                  points={routePoints}
-                  fill="none"
-                  stroke="#f4b35e"
-                  strokeWidth="8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  filter="url(#routeShadow)"
-                  className="route-dash"
-                />
-              ) : (
-                <path d="M80 380 C190 260 280 290 380 210 S620 90 750 170 820 330 930 210" fill="none" stroke="#f4b35e" strokeWidth="8" strokeLinecap="round" strokeLinejoin="round" className="route-dash" />
-              )}
-              <circle cx="72" cy="387" r="16" fill="#d9824b" stroke="#fff8ea" strokeWidth="6" />
-              <circle cx="923" cy="216" r="16" fill="#d9824b" stroke="#fff8ea" strokeWidth="6" />
-            </svg>
-            <div className="absolute bottom-5 left-5 right-5 grid gap-3 md:grid-cols-3">
-              {mapLegendItems.map(({ title, text, Icon }) => (
-                <div key={title} className="rounded-2xl bg-paper/94 p-4 shadow-pin">
-                  <Icon className="mb-3 text-clay" size={24} />
-                  <p className="font-black">{title}</p>
-                  <p className="mt-1 text-sm leading-6 text-coffee/78">{text}</p>
-                </div>
-              ))}
+          <div className="relative h-[72vh] min-h-[560px]">
+            <div ref={mapElementRef} className="absolute inset-0 z-0" />
+            <div className="absolute right-4 top-4 z-[450] flex flex-col gap-2 sm:flex-row">
+              <button
+                onClick={fitRoute}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-black text-paper shadow-pin ring-2 ring-paper/80 transition hover:-translate-y-0.5"
+                type="button"
+              >
+                <Route size={18} />
+                Prikaži cijelu rutu
+              </button>
+              <button
+                onClick={goToCurrentLocation}
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-sunset px-5 py-3 text-sm font-black text-ink shadow-pin ring-2 ring-paper/80 transition hover:-translate-y-0.5"
+                type="button"
+              >
+                <LocateFixed size={18} />
+                Zadnja lokacija
+              </button>
             </div>
           </div>
         </div>

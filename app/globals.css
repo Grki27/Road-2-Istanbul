@@ -64,3 +64,225 @@ a {
     stroke-dashoffset: -320;
   }
 }
+
+.torn-map-edge {
+  background: linear-gradient(to bottom, transparent 0 42%, #f6e1ba 43%, #f6e1ba 100%);
+  filter: drop-shadow(0 -14px 18px rgba(47, 36, 27, 0.2));
+  overflow: hidden;
+}
+
+.torn-map-edge::before,
+.torn-map-edge::after {
+  background:
+    radial-gradient(circle at 16% 42%, rgba(92, 59, 37, 0.12) 0 2px, transparent 3px),
+    radial-gradient(circle at 72% 28%, rgba(217, 130, 75, 0.14) 0 5px, transparent 6px),
+    linear-gradient(104deg, rgba(255, 255, 255, 0.38), transparent 24%),
+    linear-gradient(135deg, #f4dfbc, #d8a873 58%, #f6e1ba);
+  bottom: -18px;
+  box-shadow:
+    inset 0 0 0 1px rgba(92, 59, 37, 0.11),
+    inset 0 12px 24px rgba(255, 248, 234, 0.34),
+    0 -12px 28px rgba(47, 36, 27, 0.25);
+  content: "";
+  height: 132px;
+  position: absolute;
+  width: 53%;
+}
+
+.torn-map-edge::before {
+  clip-path: polygon(
+    0 32%,
+    7% 26%,
+    14% 34%,
+    22% 25%,
+    31% 32%,
+    42% 26%,
+    52% 35%,
+    63% 27%,
+    73% 31%,
+    84% 24%,
+    91% 37%,
+    88% 49%,
+    93% 58%,
+    89% 72%,
+    96% 86%,
+    92% 100%,
+    0 100%
+  );
+  left: -2%;
+  transform: rotate(-1deg);
+}
+
+.torn-map-edge::after {
+  background:
+    radial-gradient(circle at 80% 36%, rgba(92, 59, 37, 0.13) 0 2px, transparent 3px),
+    radial-gradient(circle at 30% 68%, rgba(217, 130, 75, 0.14) 0 5px, transparent 6px),
+    linear-gradient(252deg, rgba(255, 255, 255, 0.32), transparent 25%),
+    linear-gradient(135deg, #e6bd83, #f4dfbc 62%, #d8a873);
+  clip-path: polygon(
+    8% 34%,
+    16% 25%,
+    27% 32%,
+    37% 24%,
+    48% 34%,
+    58% 27%,
+    69% 31%,
+    80% 25%,
+    91% 33%,
+    100% 28%,
+    100% 100%,
+    10% 100%,
+    14% 86%,
+    7% 72%,
+    11% 58%,
+    6% 47%
+  );
+  right: -2%;
+  transform: rotate(1deg);
+}
+
+.torn-map-edge span {
+  display: none;
+}
+
+.stats-torn-card {
+  position: relative;
+}
+
+.stats-torn-card::before {
+  background:
+    radial-gradient(circle at 7% 58%, rgba(92, 59, 37, 0.11) 0 3px, transparent 4px),
+    radial-gradient(circle at 66% 34%, rgba(217, 130, 75, 0.12) 0 7px, transparent 8px),
+    linear-gradient(110deg, rgba(255, 255, 255, 0.42), transparent 30%),
+    linear-gradient(135deg, rgba(255, 248, 234, 0.98), rgba(244, 223, 188, 0.98));
+  clip-path: polygon(
+    0 35%,
+    4% 27%,
+    10% 38%,
+    16% 24%,
+    24% 34%,
+    31% 26%,
+    39% 36%,
+    46% 28%,
+    50% 44%,
+    54% 28%,
+    62% 37%,
+    70% 25%,
+    78% 34%,
+    86% 27%,
+    94% 36%,
+    100% 29%,
+    100% 100%,
+    0 100%
+  );
+  content: "";
+  height: 58px;
+  left: -1px;
+  pointer-events: none;
+  position: absolute;
+  right: -1px;
+  top: -26px;
+  z-index: 0;
+}
+
+.stats-torn-card::after {
+  background:
+    linear-gradient(118deg, transparent 0 38%, rgba(92, 59, 37, 0.18) 39%, transparent 43%),
+    linear-gradient(102deg, transparent 0 44%, rgba(255, 248, 234, 0.85) 45% 58%, transparent 59%);
+  clip-path: polygon(45% 0, 54% 0, 49% 35%, 56% 50%, 48% 68%, 53% 100%, 43% 100%, 48% 70%, 41% 52%, 47% 35%);
+  content: "";
+  height: 78px;
+  left: 50%;
+  opacity: 0.8;
+  pointer-events: none;
+  position: absolute;
+  top: -38px;
+  transform: translateX(-50%) rotate(2deg);
+  width: 170px;
+  z-index: 1;
+}
+
+.stats-torn-card > * {
+  position: relative;
+  z-index: 2;
+}
+
+.leaflet-container {
+  font-family: var(--font-sans);
+  background: #d8c49b;
+}
+
+.leaflet-control-attribution {
+  border-radius: 999px 0 0 0;
+  font-size: 10px;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 18px;
+  background: #fff8ea;
+  color: #2f241b;
+  box-shadow: 0 16px 34px rgba(77, 45, 25, 0.24);
+}
+
+.leaflet-popup-tip {
+  background: #fff8ea;
+}
+
+.team-location-marker {
+  background: transparent;
+  border: 0;
+}
+
+.team-location-pulse {
+  position: relative;
+  display: grid;
+  height: 70px;
+  width: 70px;
+  place-items: center;
+}
+
+.team-location-pulse::before {
+  animation: live-pulse 2.3s ease-out infinite;
+  background: rgba(217, 130, 75, 0.32);
+  border-radius: 999px;
+  content: "";
+  inset: -10px;
+  position: absolute;
+}
+
+.team-location-pulse img {
+  border: 5px solid #fff8ea;
+  border-radius: 999px;
+  box-shadow: 0 12px 28px rgba(47, 36, 27, 0.34);
+  height: 58px;
+  object-fit: cover;
+  position: relative;
+  width: 58px;
+}
+
+.emoji-map-marker {
+  align-items: center;
+  background: #fff8ea;
+  border: 4px solid #d9824b;
+  border-radius: 999px;
+  box-shadow: 0 10px 22px rgba(47, 36, 27, 0.28);
+  display: flex;
+  font-size: 22px;
+  justify-content: center;
+}
+
+.emoji-map-marker span {
+  transform: translateY(-1px);
+}
+
+@keyframes live-pulse {
+  0% {
+    opacity: 0.78;
+    transform: scale(0.62);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.45);
+  }
+}

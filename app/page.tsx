@@ -9,12 +9,10 @@ import { RidersSection } from "@/components/RidersSection";
 import { PartnersSection } from "@/components/PartnersSection";
 import { Footer } from "@/components/Footer";
 import { dailyRecaps, previewRecaps, wallNotes } from "@/data/mockData";
-import { getRouteSvgPoints } from "@/lib/gpx";
 import { getTripStats } from "@/lib/stats";
 
 export default async function Home() {
   const stats = getTripStats(dailyRecaps);
-  const routePoints = await getRouteSvgPoints();
   const latestRecap = dailyRecaps.at(-1);
 
   return (
@@ -22,13 +20,13 @@ export default async function Home() {
       <HeroSection />
       <StatsStrip
         stats={[
-          { label: "Odvoženo", value: `${stats.totalDistanceKm} km`, note: "kreće 25.8.2026." },
-          { label: "Do Istanbula", value: `${stats.kilometersToIstanbul} km`, note: "planirana ruta" },
-          { label: "Dana na putu", value: `${stats.daysOnRoad}`, note: "objavljeni recapovi" },
-          { label: "Trenutna država", value: stats.currentCountry, note: "admin update" }
+          { label: "Odvoženo", value: `${stats.totalDistanceKm} km` },
+          { label: "Do Istanbula", value: `${stats.kilometersToIstanbul} km` },
+          { label: "Dana na putu", value: `${stats.daysOnRoad}` },
+          { label: "Trenutna država", value: stats.currentCountry }
         ]}
       />
-      <MapPreview routePoints={routePoints} />
+      <MapPreview />
       <LatestUpdate recap={latestRecap} />
       <Timeline recaps={dailyRecaps} preview={previewRecaps} />
       <WallOfSupport notes={wallNotes} />
