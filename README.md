@@ -4,8 +4,8 @@ Interactive Croatian travel diary for the Dubrovnik to Istanbul bicycle journey.
 
 ## Current Phase
 
-Phase 3 is complete. Supabase is connected, admin authentication works, and the
-public homepage now reads live journey data from the database.
+Phase 4 is implemented. Supabase powers the public journey data and the protected,
+mobile-first admin can now create and update the content used by the homepage.
 
 The public frontend still uses dummy/preview content. Final copy will replace the
 placeholder text in a later content pass.
@@ -30,6 +30,12 @@ placeholder text in a later content pass.
 - Database-backed current location, daily recap pins, and emoji event pins
 - Completed/planned GPX route split based on the latest location
 - Interactive map controls for the full route, latest location, and latest recap
+- Protected mobile admin shell with quick actions and logout
+- Daily recap draft, preview, publish, archive, restore, and delete workflow
+- Local recap autosave for weak or missing internet connections
+- Compressed multi-image uploads with retry and ordering
+- Quick GPS updates and editable emoji event pins
+- Live trip statistics and donation settings editor
 
 ## Run Locally
 
@@ -78,7 +84,7 @@ More setup notes are in `docs/supabase-setup.md`.
 - [x] Phase 1: Project setup, visual system, public layout, and preview data
 - [x] Phase 2: Supabase schema, auth, storage, and verified admin login
 - [x] Phase 3: Connect the public homepage and map to live Supabase data
-- [ ] Phase 4: Build mobile-first admin tools for recaps, GPS, map events, uploads, moderation, and settings
+- [x] Phase 4: Build mobile-first admin tools for recaps, GPS, map events, uploads, and settings
 - [ ] Phase 5: Comments, emoji reactions, and Wall of Support
 - [ ] Phase 6: Final polish, content replacement, accessibility, SEO, and deployment notes
 
@@ -96,13 +102,16 @@ and event are shown so the design can be reviewed. As soon as any real journey
 record exists, the complete preview set disappears and only database records are
 shown.
 
+## Phase 4 Setup
+
+Apply the additional GPS migration in Supabase SQL Editor:
+
+```text
+supabase/migrations/002_admin_location_rpc.sql
+```
+
+Admin routes are documented in `docs/phase-4-admin.md`.
+
 ## Next Step
 
-Phase 4 is the mobile-first admin build:
-
-- quick GPS location update
-- create, edit, preview, publish, and delete daily recaps
-- compressed multi-image upload
-- create and manage emoji event pins
-- edit trip statistics and donation settings
-- local autosave and bad-connection error handling
+Phase 5 adds public comments, emoji reactions, Wall of Support, and admin moderation.

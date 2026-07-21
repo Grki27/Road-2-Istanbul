@@ -2,41 +2,104 @@
 > sedmo-nebo-road-to-istanbul@0.1.0 dev
 > next dev --hostname 127.0.0.1 --port 3000
 
-   ▲ Next.js 15.3.4
+   ▲ Next.js 15.5.20
    - Local:        http://127.0.0.1:3000
    - Network:      http://127.0.0.1:3000
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 140419.3s
+ ✓ Ready in 18.2s
  ○ Compiling / ...
- ✓ Compiled / in 65s (884 modules)
- GET / 200 in 2195ms
- ○ Compiling /admin ...
- ✓ Compiled /admin in 7.5s (919 modules)
- GET /admin 307 in 8446ms
+ ✓ Compiled / in 45.6s (755 modules)
+ GET / 200 in 53532ms
  ○ Compiling /admin/login ...
- ✓ Compiled /admin/login in 9.5s (1030 modules)
- GET /admin/login 200 in 10747ms
- GET / 200 in 1671ms
- GET / 200 in 4201ms
- GET / 200 in 1029ms
- GET / 200 in 967ms
- GET / 200 in 2230ms
- ○ Compiling /_not-found ...
- ✓ Compiled /_not-found in 4.7s (921 modules)
- GET /login 404 in 5213ms
- GET /demo-apartment 404 in 429ms
- GET /seksi-nebo-apartman 404 in 253ms
- GET /seksi-nebo-apartman 404 in 121ms
- GET /seksi-nebo-apartman 404 in 166ms
- GET / 200 in 11993ms
- GET / 200 in 1952ms
+ ✓ Compiled /admin/login in 16.3s (901 modules)
+ GET /admin/login 200 in 18753ms
+ ○ Compiling /admin/recaps/new ...
+ ✓ Compiled /admin/recaps/new in 21.2s (1179 modules)
+ ✓ Compiled in 2.9s (368 modules)
+ GET /admin/recaps/new 200 in 25624ms
  ○ Compiling /admin ...
- ✓ Compiled /admin in 5.2s (560 modules)
- GET /admin 307 in 7849ms
+ ✓ Compiled /admin in 8s (1094 modules)
+ GET /admin 307 in 11265ms
  ○ Compiling /admin/login ...
- ✓ Compiled /admin/login in 4.1s (624 modules)
- GET /admin/login 200 in 5915ms
- GET /admin 200 in 1529ms
- GET / 200 in 1431ms
+ ✓ Compiled /admin/login in 4.7s (789 modules)
+ ○ Compiling / ...
+ ✓ Compiled / in 5.9s (860 modules)
+ GET /admin 307 in 5899ms
+ GET /admin/login 200 in 3566ms
+ ○ Compiling /auth/callback ...
+ ✓ Compiled /auth/callback in 7.5s (1246 modules)
+ GET /auth/callback?error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&next=%2Fadmin 307 in 8208ms
+ GET /admin 307 in 3827ms
+ GET /admin/login 200 in 1306ms
+ GET /auth/callback?code=901aea76-8c61-43eb-98ed-319a06ec3c71&next=%2Fadmin 307 in 119ms
+ GET /admin 307 in 628ms
+ GET /admin/login 200 in 546ms
+ GET /auth/callback?code=54ea9c13-23d3-4992-adcb-c3dd48771c63&next=%2Fadmin 307 in 633ms
+ GET /admin 200 in 1867ms
+ ○ Compiling /admin/recaps ...
+ ✓ Compiled /admin/recaps in 10.7s (1183 modules)
+ GET /admin/recaps 200 in 12566ms
+ GET /admin 200 in 916ms
+ ○ Compiling /admin/location ...
+ ✓ Compiled /admin/location in 3.9s (1193 modules)
+ GET /admin/location 200 in 5302ms
+ POST /admin/location 200 in 3417ms
+ ○ Compiling / ...
+ ✓ Compiled / in 6.7s (883 modules)
+ GET / 200 in 10928ms
+ GET /admin/recaps 200 in 850ms
+ ○ Compiling /admin/recaps/new ...
+ ✓ Compiled /admin/recaps/new in 8.5s (904 modules)
+ GET /admin/recaps/new 200 in 10888ms
+ POST /admin/recaps/new 200 in 3431ms
+ ○ Compiling /admin/recaps/[id]/edit ...
+ ✓ Compiled /admin/recaps/[id]/edit in 5.8s (1256 modules)
+ GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 11792ms
+ POST /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 2548ms
+ GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 878ms
+ POST /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 1038ms
+ GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 743ms
+ GET / 200 in 2714ms
+ ○ Compiling /admin ...
+ GET /admin/location 200 in 5256ms
+ ✓ Compiled /admin in 8.2s (894 modules)
+ GET /admin 200 in 12823ms
+ GET /admin/location 200 in 935ms
+ ○ Compiling /admin/map-events ...
+ ✓ Compiled /admin/map-events in 5.9s (1284 modules)
+ GET /admin/map-events 200 in 7475ms
+ ✓ Compiled in 1516ms (380 modules)
+ ○ Compiling /admin/map-events/new ...
+ ✓ Compiled /admin/map-events/new in 7.1s (1296 modules)
+ GET /admin/map-events/new 200 in 7667ms
+ POST /admin/map-events/new 200 in 2275ms
+ ○ Compiling /admin/map-events/[id]/edit ...
+ ✓ Compiled /admin/map-events/[id]/edit in 7.9s (1275 modules)
+ GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 15299ms
+ GET / 200 in 2959ms
+ POST /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 1935ms
+ GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 701ms
+ POST /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 1075ms
+ GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 548ms
+ POST /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 1116ms
+ GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 613ms
+ GET / 200 in 1617ms
+ GET /admin/location 200 in 1861ms
+ POST /admin/location 200 in 1825ms
+ GET / 200 in 4057ms
+ ○ Compiling /admin/map-events ...
+ ✓ Compiled /admin/map-events in 4.8s (891 modules)
+ GET /admin/map-events 200 in 7595ms
+ ○ Compiling /admin/recaps ...
+ ✓ Compiled /admin/recaps in 5s (893 modules)
+ GET /admin/recaps 200 in 6572ms
+ GET /admin/location 200 in 1331ms
+ GET /admin/recaps 200 in 916ms
+ GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 1374ms
+ POST /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 2792ms
+ GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 765ms
+ GET / 200 in 2936ms
+ ○ Compiling /admin/settings ...
+ ✓ Compiled /admin/settings in 11s (1275 modules)

@@ -38,7 +38,11 @@ In Supabase SQL Editor, run the contents of:
 
 ```text
 supabase/migrations/001_initial_schema.sql
+supabase/migrations/002_admin_location_rpc.sql
 ```
+
+Run migrations in numerical order. Migration `002` adds the protected atomic GPS
+update used by the Phase 4 mobile admin.
 
 Or use the Supabase CLI later:
 
