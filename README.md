@@ -4,9 +4,8 @@ Interactive Croatian travel diary for the Dubrovnik to Istanbul bicycle journey.
 
 ## Current Phase
 
-Phase 2 is complete and verified. Supabase is connected, the environment variables
-are configured, the database schema and storage policies are applied, and admin
-magic-link login works for an allowed email.
+Phase 3 is complete. Supabase is connected, admin authentication works, and the
+public homepage now reads live journey data from the database.
 
 The public frontend still uses dummy/preview content. Final copy will replace the
 placeholder text in a later content pass.
@@ -26,6 +25,11 @@ placeholder text in a later content pass.
 - Admin allow-list handling
 - Initial SQL schema, RLS policies, and storage buckets
 - Verified access to the protected admin dashboard
+- Server-side public data loader with graceful preview fallback
+- Database-backed trip settings, statistics, donation progress, recaps, and rider fatigue
+- Database-backed current location, daily recap pins, and emoji event pins
+- Completed/planned GPX route split based on the latest location
+- Interactive map controls for the full route, latest location, and latest recap
 
 ## Run Locally
 
@@ -73,19 +77,32 @@ More setup notes are in `docs/supabase-setup.md`.
 
 - [x] Phase 1: Project setup, visual system, public layout, and preview data
 - [x] Phase 2: Supabase schema, auth, storage, and verified admin login
-- [ ] Phase 3: Connect the public homepage and map to live Supabase data
+- [x] Phase 3: Connect the public homepage and map to live Supabase data
 - [ ] Phase 4: Build mobile-first admin tools for recaps, GPS, map events, uploads, moderation, and settings
 - [ ] Phase 5: Comments, emoji reactions, and Wall of Support
 - [ ] Phase 6: Final polish, content replacement, accessibility, SEO, and deployment notes
 
+## Phase 3 Data Behavior
+
+The homepage reads:
+
+- `trip_settings`
+- published `daily_recaps` and `recap_images`
+- the newest `current_locations` row
+- `map_events` and `map_event_images`
+
+While all journey tables are empty, one clearly labeled preview recap, location,
+and event are shown so the design can be reviewed. As soon as any real journey
+record exists, the complete preview set disappears and only database records are
+shown.
+
 ## Next Step
 
-Wire the existing public experience to Supabase:
+Phase 4 is the mobile-first admin build:
 
-- fetch trip settings and calculate live stats
-- fetch the latest current location
-- render published daily recap pins
-- render extra emoji event pins
-- replace public empty/preview states with database-backed states
-
-After that, build the mobile admin actions that create and update those records.
+- quick GPS location update
+- create, edit, preview, publish, and delete daily recaps
+- compressed multi-image upload
+- create and manage emoji event pins
+- edit trip statistics and donation settings
+- local autosave and bad-connection error handling

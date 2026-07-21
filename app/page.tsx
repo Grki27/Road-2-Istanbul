@@ -8,12 +8,16 @@ import { HumanitarianSection } from "@/components/HumanitarianSection";
 import { RidersSection } from "@/components/RidersSection";
 import { PartnersSection } from "@/components/PartnersSection";
 import { Footer } from "@/components/Footer";
-import { dailyRecaps, previewRecaps, wallNotes } from "@/data/mockData";
+import { wallNotes } from "@/data/mockData";
+import { getPublicSiteData } from "@/lib/public-data";
 import { getTripStats } from "@/lib/stats";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
-  const stats = getTripStats(dailyRecaps);
-  const latestRecap = dailyRecaps.at(-1);
+  const data = await getPublicSiteData();
+  const stats = getTripStats(data.isPreview ? [] : data.recaps, data.settings);
+  const latestRecap = data.recaps.at(-1);
 
   return (
     <main>
@@ -23,15 +27,24 @@ export default async function Home() {
           { label: "Odvoženo", value: `${stats.totalDistanceKm} km` },
           { label: "Do Istanbula", value: `${stats.kilometersToIstanbul} km` },
           { label: "Dana na putu", value: `${stats.daysOnRoad}` },
-          { label: "Trenutna država", value: stats.currentCountry }
+          {
+            label: "Trenutna država",
+            value: data.isPreview ? "Čekamo start" : stats.currentCountry
+          }
         ]}
       />
-      <MapPreview />
-      <LatestUpdate recap={latestRecap} />
-      <Timeline recaps={dailyRecaps} preview={previewRecaps} />
+      <MapPreview
+        currentLocation={data.currentLocation}
+        recaps={data.recaps}
+        mapEvents={data.mapEvents}
+        isPreview={data.isPreview}
+        hasDataError={data.hasDataError}
+      />
+      <LatestUpdate recap={latestRecap} isPreview={data.isPreview} />
+      <Timeline recaps={data.recaps} isPreview={data.isPreview} />
       <WallOfSupport notes={wallNotes} />
-      <HumanitarianSection />
-      <RidersSection />
+      <HumanitarianSection settings={data.settings} />
+      <RidersSection latestRecap={data.isPreview ? undefined : latestRecap} />
       <PartnersSection />
       <Footer />
     </main>

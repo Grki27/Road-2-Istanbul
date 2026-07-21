@@ -35,6 +35,72 @@ export type Database = {
         };
         Update: Partial<Database["public"]["Tables"]["daily_recaps"]["Row"]>;
       };
+      recap_images: {
+        Row: {
+          id: string;
+          recap_id: string;
+          image_url: string;
+          storage_path: string | null;
+          alt_text: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["recap_images"]["Row"]> & {
+          recap_id: string;
+          image_url: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["recap_images"]["Row"]>;
+      };
+      current_locations: {
+        Row: {
+          id: string;
+          latitude: number;
+          longitude: number;
+          note: string | null;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["current_locations"]["Row"]> & {
+          latitude: number;
+          longitude: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["current_locations"]["Row"]>;
+      };
+      map_events: {
+        Row: {
+          id: string;
+          emoji: string;
+          title: string;
+          description: string | null;
+          location_name: string | null;
+          country: string | null;
+          latitude: number;
+          longitude: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["map_events"]["Row"]> & {
+          emoji: string;
+          title: string;
+          latitude: number;
+          longitude: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["map_events"]["Row"]>;
+      };
+      map_event_images: {
+        Row: {
+          id: string;
+          map_event_id: string;
+          image_url: string;
+          storage_path: string | null;
+          sort_order: number;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["map_event_images"]["Row"]> & {
+          map_event_id: string;
+          image_url: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["map_event_images"]["Row"]>;
+      };
       trip_settings: {
         Row: {
           id: number;

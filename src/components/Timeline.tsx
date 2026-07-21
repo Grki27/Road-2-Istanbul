@@ -1,31 +1,35 @@
 import Image from "next/image";
+import { MapFocusButton } from "@/components/MapFocusButton";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
 
-export function Timeline({ recaps, preview }: { recaps: DailyRecap[]; preview: DailyRecap[] }) {
-  const items = recaps.length ? recaps : preview;
-
+export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPreview: boolean }) {
   return (
     <section id="dnevnik" className="px-5 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 max-w-3xl">
           <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Dnevnik puta</p>
           <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">Dan po dan, kad cesta počne.</h2>
-          {!recaps.length ? (
+          {isPreview ? (
             <p className="mt-4 text-lg leading-8 text-coffee/80">
-              Ovo je preview kartice. Pravi dnevni updatei pojavit će se tek kad ih admin objavi.
+              Ovo je jasno označen preview. Zamijenit će ga prvi dnevni update koji admin objavi.
             </p>
           ) : null}
         </div>
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {items.map((recap) => {
+        {recaps.length ? (
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {recaps.map((recap) => {
             const fatigue = fatigueScale[recap.fatigueRating];
             return (
-              <article key={recap.id} className="overflow-hidden rounded-[2rem] bg-paper shadow-paper">
+              <article
+                id={`recap-${recap.id}`}
+                key={recap.id}
+                className="scroll-mt-24 overflow-hidden rounded-[2rem] bg-paper shadow-paper"
+              >
                 <div className="relative h-56">
                   <Image src={recap.coverImage ?? "/assets/journey-support-1.jpg"} alt={recap.title} fill className="object-cover" />
                   <div className="absolute left-4 top-4 rounded-full bg-ink px-4 py-2 text-sm font-black text-paper">
-                    Dan {recap.dayNumber}
+                    {isPreview ? "Preview · " : ""}Dan {recap.dayNumber}
                   </div>
                 </div>
                 <div className="p-5">
@@ -39,18 +43,27 @@ export function Timeline({ recaps, preview }: { recaps: DailyRecap[]; preview: D
                     <span className="rounded-full bg-white/70 px-3 py-2">{fatigue.emoji} {fatigue.label}</span>
                   </div>
                   <div className="mt-5 flex gap-2">
-                    <button className="flex-1 rounded-full bg-ink px-4 py-3 text-sm font-black text-paper">
-                      Otvori na karti
-                    </button>
-                    <button className="flex-1 rounded-full bg-sunset px-4 py-3 text-sm font-black text-ink">
-                      Pročitaj više
-                    </button>
+                    {recap.latitude !== undefined && recap.longitude !== undefined ? (
+                      <MapFocusButton recapId={recap.id} />
+                    ) : (
+                      <span className="flex-1 rounded-full bg-coffee/10 px-4 py-3 text-center text-sm font-black text-coffee/55">
+                        Lokacija nije upisana
+                      </span>
+                    )}
                   </div>
                 </div>
               </article>
             );
-          })}
-        </div>
+            })}
+          </div>
+        ) : (
+          <div className="paper-edge rounded-[2rem] bg-paper p-8 text-center shadow-paper">
+            <h3 className="font-display text-3xl font-black">Put još nije krenuo.</h3>
+            <p className="mx-auto mt-3 max-w-2xl text-lg leading-8 text-coffee/80">
+              Kad admin objavi prvi dnevni update, ovdje će se pojaviti prava priča s ceste.
+            </p>
+          </div>
+        )}
       </div>
     </section>
   );

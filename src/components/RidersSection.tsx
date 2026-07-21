@@ -1,5 +1,7 @@
 import Image from "next/image";
 import { SectionHeader } from "@/components/SectionHeader";
+import { fatigueScale } from "@/data/mockData";
+import type { DailyRecap } from "@/types";
 
 type StatItem = {
   label: string;
@@ -78,7 +80,12 @@ function StatBars({ item }: { item: StatItem }) {
   );
 }
 
-export function RidersSection() {
+export function RidersSection({ latestRecap }: { latestRecap?: DailyRecap }) {
+  const fatigueByRider = {
+    Marin: latestRecap?.marinFatigueRating,
+    Marko: latestRecap?.markoFatigueRating
+  };
+
   return (
     <section className="px-5 py-20">
       <div className="mx-auto max-w-7xl">
@@ -90,11 +97,21 @@ export function RidersSection() {
                 <div className="relative aspect-square overflow-hidden rounded-[1.5rem] bg-sand">
                   <Image src={rider.image} alt={rider.name} fill className="object-cover" />
                   <div
-                    aria-label="Čekamo start"
+                    aria-label={
+                      fatigueByRider[rider.name as keyof typeof fatigueByRider]
+                        ? fatigueScale[fatigueByRider[rider.name as keyof typeof fatigueByRider]!].label
+                        : "Čekamo start"
+                    }
                     className="absolute right-3 top-3 grid h-12 w-12 place-items-center rounded-full bg-paper text-2xl font-black shadow-pin"
-                    title="Čekamo start"
+                    title={
+                      fatigueByRider[rider.name as keyof typeof fatigueByRider]
+                        ? fatigueScale[fatigueByRider[rider.name as keyof typeof fatigueByRider]!].label
+                        : "Čekamo start"
+                    }
                   >
-                    😐
+                    {fatigueByRider[rider.name as keyof typeof fatigueByRider]
+                      ? fatigueScale[fatigueByRider[rider.name as keyof typeof fatigueByRider]!].emoji
+                      : "😐"}
                   </div>
                 </div>
                 <div>

@@ -1,8 +1,10 @@
 import { HeartHandshake, Share2 } from "lucide-react";
-import { siteConfig } from "@/config/site";
+import type { TripSettings } from "@/types";
 
-export function HumanitarianSection() {
-  const progress = Math.min((siteConfig.donationRaised / siteConfig.donationGoal) * 100, 100);
+export function HumanitarianSection({ settings }: { settings: TripSettings }) {
+  const progress = settings.donationGoal
+    ? Math.min((settings.donationRaised / settings.donationGoal) * 100, 100)
+    : 0;
 
   return (
     <section id="humanitarno" className="px-5 py-20">
@@ -17,10 +19,22 @@ export function HumanitarianSection() {
             Ako ti je fora pratiti ovu avanturu, možeš svaki kilometar pretvoriti u konkretnu podršku djeci i mladima kojima pomoć stvarno znači.
           </p>
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <button disabled className="inline-flex items-center justify-center gap-2 rounded-full bg-paper/40 px-6 py-4 font-black text-paper/75">
-              <HeartHandshake size={20} />
-              Link stiže uskoro
-            </button>
+            {settings.donationUrl ? (
+              <a
+                href={settings.donationUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-sunset px-6 py-4 font-black text-ink transition hover:-translate-y-0.5"
+              >
+                <HeartHandshake size={20} />
+                Podrži kampanju
+              </a>
+            ) : (
+              <button disabled className="inline-flex items-center justify-center gap-2 rounded-full bg-paper/40 px-6 py-4 font-black text-paper/75">
+                <HeartHandshake size={20} />
+                Link stiže uskoro
+              </button>
+            )}
             <a
               href="https://www.instagram.com/sedmo_nebo__/"
               className="inline-flex items-center justify-center gap-2 rounded-full border border-paper/30 px-6 py-4 font-black"
@@ -33,14 +47,14 @@ export function HumanitarianSection() {
         <div className="rounded-[1.5rem] bg-paper p-6 text-ink">
           <p className="text-sm font-black uppercase tracking-[0.2em] text-clay">Cilj kampanje</p>
           <div className="mt-4 flex items-end justify-between gap-4">
-            <p className="font-display text-5xl font-black">{siteConfig.donationRaised} €</p>
-            <p className="pb-2 font-black text-coffee/70">od {siteConfig.donationGoal} €</p>
+            <p className="font-display text-5xl font-black">{settings.donationRaised} €</p>
+            <p className="pb-2 font-black text-coffee/70">od {settings.donationGoal} €</p>
           </div>
           <div className="mt-6 h-5 overflow-hidden rounded-full bg-sand">
             <div className="h-full rounded-full bg-clay" style={{ width: `${progress}%` }} />
           </div>
           <p className="mt-5 leading-7 text-coffee/80">
-            Ruta ima oko 1500 kilometara, zato je cilj 1500 €. Početna vrijednost je 0 €, a link kampanje stiže uskoro.
+            Ruta ima oko {settings.plannedTotalKm} kilometara, zato je cilj {settings.donationGoal} €. Napredak i link kampanje ažuriraju se iz admin postavki.
           </p>
         </div>
       </div>

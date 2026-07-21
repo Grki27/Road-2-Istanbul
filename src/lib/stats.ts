@@ -1,7 +1,6 @@
-import { siteConfig } from "@/config/site";
-import type { DailyRecap } from "@/types";
+import type { DailyRecap, TripSettings, TripStats } from "@/types";
 
-export function getTripStats(recaps: DailyRecap[]) {
+export function getTripStats(recaps: DailyRecap[], settings: TripSettings): TripStats {
   const totalDistanceKm = recaps.reduce((sum, recap) => sum + recap.distanceKm, 0);
   const daysOnRoad = recaps.length;
   const longestDayKm = recaps.reduce(
@@ -9,16 +8,17 @@ export function getTripStats(recaps: DailyRecap[]) {
     0
   );
   const averageKmPerDay = daysOnRoad ? Math.round(totalDistanceKm / daysOnRoad) : 0;
+  const latestRecap = recaps.at(-1);
 
   return {
     totalDistanceKm,
-    kilometersToIstanbul: Math.max(siteConfig.plannedTotalKm - totalDistanceKm, 0),
+    kilometersToIstanbul: Math.max(settings.plannedTotalKm - totalDistanceKm, 0),
     averageKmPerDay,
     longestDayKm,
     daysOnRoad,
-    restDays: 0,
-    currentCountry: daysOnRoad ? recaps[recaps.length - 1]?.country : "Čekamo start",
-    countriesVisited: daysOnRoad ? 1 : 0,
-    borderCrossings: 0
+    restDays: recaps.filter((recap) => recap.isRestDay).length,
+    currentCountry: settings.currentCountry || latestRecap?.country || "Čekamo start",
+    countriesVisited: settings.countriesVisited,
+    borderCrossings: settings.borderCrossings
   };
 }

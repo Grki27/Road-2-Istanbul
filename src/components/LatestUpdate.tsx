@@ -3,7 +3,7 @@ import { CalendarDays, Flag, Route } from "lucide-react";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
 
-export function LatestUpdate({ recap }: { recap?: DailyRecap }) {
+export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap; isPreview?: boolean }) {
   if (!recap) {
     return (
       <section id="zadnji-update" className="px-5 py-12">
@@ -27,7 +27,9 @@ export function LatestUpdate({ recap }: { recap?: DailyRecap }) {
           <Image src={recap.coverImage ?? "/assets/journey-support-1.jpg"} alt={recap.title} fill className="object-cover" />
         </div>
         <div className="p-7 md:p-10">
-          <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Primjer zadnjeg updatea</p>
+          <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">
+            {isPreview ? "Preview zadnjeg updatea" : "Zadnji update s ceste"}
+          </p>
           <h2 className="mt-3 font-display text-4xl font-black">{recap.title}</h2>
           <div className="mt-5 grid gap-3 text-sm font-bold text-coffee/80 sm:grid-cols-3">
             <span className="flex items-center gap-2"><CalendarDays size={18} />Dan {recap.dayNumber}</span>
