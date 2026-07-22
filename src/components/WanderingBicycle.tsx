@@ -1,7 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import { type PointerEvent, useEffect, useRef, useState } from "react";
+import {
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+  type TouchEvent as ReactTouchEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState
+} from "react";
 
 type Point = {
   x: number;
@@ -376,51 +384,28 @@ export function WanderingBicycle() {
     positionElement.style.pointerEvents = "auto";
   }
 
-  function handlePointerDown(event: PointerEvent<HTMLButtonElement>) {
-    if (phaseRef.current !== "moving" || !isInRegion) return;
-
-    const positionElement = positionRef.current;
-    if (!positionElement) return;
-
-    const rect = positionElement.getBoundingClientRect();
-    dragRef.current = {
-      active: true,
-      pointerId: event.pointerId,
-      pointerStart: { x: event.clientX, y: event.clientY },
-      offset: { x: event.clientX - rect.left, y: event.clientY - rect.top },
-      moved: false,
-      hiddenByMap: false,
-      lastPoint: { x: event.clientX, y: event.clientY },
-      lastTime: performance.now()
-    };
-
-    event.currentTarget.setPointerCapture(event.pointerId);
-  }
-
-  function handlePointerMove(event: PointerEvent<HTMLButtonElement>) {
+  const moveDrag = useCallback((clientX: number, clientY: number) => {
     const drag = dragRef.current;
-    if (!drag.active || drag.pointerId !== event.pointerId || phaseRef.current !== "moving") return;
-
-    event.preventDefault();
+    if (!drag.active || phaseRef.current !== "moving") return;
 
     const bounds = boundsRef.current;
     if (!bounds) return;
 
     const now = performance.now();
     const deltaMs = Math.max(now - drag.lastTime, 1);
-    const rawX = event.clientX - drag.offset.x;
-    const rawY = event.clientY - drag.offset.y;
+    const rawX = clientX - drag.offset.x;
+    const rawY = clientY - drag.offset.y;
     const nextX = clamp(rawX, 12, bounds.maxX);
     const nextY = rawY;
     const movement = Math.hypot(
-      event.clientX - drag.pointerStart.x,
-      event.clientY - drag.pointerStart.y
+      clientX - drag.pointerStart.x,
+      clientY - drag.pointerStart.y
     );
 
     if (movement >= DRAG_THRESHOLD_PX) drag.moved = true;
 
     const liveMapTop = document.getElementById("live-map-title")?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY;
-    const pointerCrossedMap = event.clientY >= liveMapTop - 8;
+    const pointerCrossedMap = clientY >= liveMapTop - 8;
 
     if (pointerCrossedMap || nextY > bounds.maxY || nextY < MIN_TOP - bounds.spriteHeight) {
       drag.hiddenByMap = true;
@@ -435,26 +420,105 @@ export function WanderingBicycle() {
     positionValueRef.current.y = clamp(nextY, MIN_TOP, bounds.maxY);
 
     const releaseVelocity = limitVector({
-      x: ((event.clientX - drag.lastPoint.x) / deltaMs) * 1000,
-      y: ((event.clientY - drag.lastPoint.y) / deltaMs) * 1000
+      x: ((clientX - drag.lastPoint.x) / deltaMs) * 1000,
+      y: ((clientY - drag.lastPoint.y) / deltaMs) * 1000
     }, MAX_SPEED);
     if (vectorLength(releaseVelocity) > 8) {
       velocityRef.current = releaseVelocity;
     }
 
-    drag.lastPoint = { x: event.clientX, y: event.clientY };
+    drag.lastPoint = { x: clientX, y: clientY };
     drag.lastTime = now;
-  }
+  }, []);
 
-  function handlePointerUp(event: PointerEvent<HTMLButtonElement>) {
+  const finishDrag = useCallback((pointerId?: number) => {
     const drag = dragRef.current;
-    if (!drag.active || drag.pointerId !== event.pointerId) return;
+    if (!drag.active || (pointerId !== undefined && drag.pointerId !== pointerId)) return;
 
     if (drag.moved || drag.hiddenByMap) {
       suppressNextClickRef.current = true;
     }
 
     drag.active = false;
+  }, []);
+
+  useEffect(() => {
+    function handleWindowMouseMove(event: MouseEvent) {
+      if (!dragRef.current.active || dragRef.current.pointerId !== -2) return;
+      event.preventDefault();
+      moveDrag(event.clientX, event.clientY);
+    }
+
+    function handleWindowMouseUp() {
+      finishDrag(-2);
+    }
+
+    function handleWindowTouchMove(event: TouchEvent) {
+      if (!dragRef.current.active || dragRef.current.pointerId !== -3) return;
+      const touch = event.touches[0];
+      if (!touch) return;
+      event.preventDefault();
+      moveDrag(touch.clientX, touch.clientY);
+    }
+
+    function handleWindowTouchEnd() {
+      finishDrag(-3);
+    }
+
+    window.addEventListener("mousemove", handleWindowMouseMove);
+    window.addEventListener("mouseup", handleWindowMouseUp);
+    window.addEventListener("touchmove", handleWindowTouchMove, { passive: false });
+    window.addEventListener("touchend", handleWindowTouchEnd);
+    window.addEventListener("touchcancel", handleWindowTouchEnd);
+
+    return () => {
+      window.removeEventListener("mousemove", handleWindowMouseMove);
+      window.removeEventListener("mouseup", handleWindowMouseUp);
+      window.removeEventListener("touchmove", handleWindowTouchMove);
+      window.removeEventListener("touchend", handleWindowTouchEnd);
+      window.removeEventListener("touchcancel", handleWindowTouchEnd);
+    };
+  }, [finishDrag, moveDrag]);
+
+  function beginDrag(clientX: number, clientY: number, pointerId: number) {
+    if (phaseRef.current !== "moving" || !isInRegion) return;
+
+    const positionElement = positionRef.current;
+    if (!positionElement) return;
+
+    const rect = positionElement.getBoundingClientRect();
+    dragRef.current = {
+      active: true,
+      pointerId,
+      pointerStart: { x: clientX, y: clientY },
+      offset: { x: clientX - rect.left, y: clientY - rect.top },
+      moved: false,
+      hiddenByMap: false,
+      lastPoint: { x: clientX, y: clientY },
+      lastTime: performance.now()
+    };
+
+    return true;
+  }
+
+  function handlePointerDown(event: ReactPointerEvent<HTMLButtonElement>) {
+    if (dragRef.current.active) return;
+    if (!beginDrag(event.clientX, event.clientY, event.pointerId)) return;
+    event.currentTarget.setPointerCapture(event.pointerId);
+  }
+
+  function handlePointerMove(event: ReactPointerEvent<HTMLButtonElement>) {
+    const drag = dragRef.current;
+    if (!drag.active || drag.pointerId !== event.pointerId || phaseRef.current !== "moving") return;
+
+    event.preventDefault();
+    moveDrag(event.clientX, event.clientY);
+  }
+
+  function handlePointerUp(event: ReactPointerEvent<HTMLButtonElement>) {
+    const drag = dragRef.current;
+    if (!drag.active || drag.pointerId !== event.pointerId) return;
+    finishDrag(event.pointerId);
     try {
       event.currentTarget.releasePointerCapture(event.pointerId);
     } catch {
@@ -462,12 +526,21 @@ export function WanderingBicycle() {
     }
   }
 
-  function handlePointerCancel(event: PointerEvent<HTMLButtonElement>) {
-    const drag = dragRef.current;
-    if (!drag.active || drag.pointerId !== event.pointerId) return;
+  function handlePointerCancel(event: ReactPointerEvent<HTMLButtonElement>) {
+    finishDrag(event.pointerId);
+  }
 
-    suppressNextClickRef.current = drag.moved || drag.hiddenByMap;
-    drag.active = false;
+  function handleMouseDown(event: ReactMouseEvent<HTMLButtonElement>) {
+    if (event.button !== 0 || dragRef.current.pointerId === -2) return;
+    if (!beginDrag(event.clientX, event.clientY, -2)) return;
+    event.preventDefault();
+  }
+
+  function handleTouchStart(event: ReactTouchEvent<HTMLButtonElement>) {
+    if (dragRef.current.pointerId === -3) return;
+    const touch = event.touches[0];
+    if (!touch) return;
+    if (!beginDrag(touch.clientX, touch.clientY, -3)) return;
   }
 
   function handleBicycleClick() {
@@ -525,10 +598,12 @@ export function WanderingBicycle() {
             }`}
             disabled={!canClick}
             onClick={handleBicycleClick}
+            onMouseDown={handleMouseDown}
             onPointerCancel={handlePointerCancel}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
+            onTouchStart={handleTouchStart}
             type="button"
           >
             {phase === "breaking" ? (
