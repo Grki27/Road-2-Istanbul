@@ -1,7 +1,7 @@
-import Image from "next/image";
 import { Flag, Star } from "lucide-react";
 import { ExpandableText } from "@/components/ExpandableText";
 import { MapFocusButton } from "@/components/MapFocusButton";
+import { PhotoGallery } from "@/components/PhotoGallery";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
@@ -23,6 +23,9 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {recaps.map((recap) => {
             const fatigue = fatigueScale[recap.fatigueRating];
+            const images = recap.images.length
+              ? recap.images
+              : [recap.coverImage ?? "/assets/journey-support-1.jpg"];
             return (
               <article
                 id={`recap-${recap.id}`}
@@ -30,7 +33,7 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
                 className="scroll-mt-24 overflow-hidden rounded-[2rem] bg-paper shadow-paper"
               >
                 <div className="relative h-56">
-                  <Image src={recap.coverImage ?? "/assets/journey-support-1.jpg"} alt={recap.title} fill className="object-cover" />
+                  <PhotoGallery images={images} title={recap.title} className="h-full" />
                   <div className="absolute left-4 top-4 rounded-full bg-ink px-4 py-2 text-sm font-black text-paper">
                     {isPreview ? "Preview · " : ""}Dan {recap.dayNumber}
                   </div>

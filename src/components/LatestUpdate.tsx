@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { BedDouble, CalendarDays, Flag, Route, Star } from "lucide-react";
 import { ExpandableText } from "@/components/ExpandableText";
+import { PhotoGallery } from "@/components/PhotoGallery";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
@@ -21,13 +21,14 @@ export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap;
   }
 
   const fatigue = fatigueScale[recap.fatigueRating];
+  const images = recap.images.length
+    ? recap.images
+    : [recap.coverImage ?? "/assets/journey-support-1.jpg"];
 
   return (
     <section id="zadnji-update" className="px-5 py-12">
       <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[2rem] bg-paper shadow-paper md:grid-cols-[0.9fr_1.1fr]">
-        <div className="relative min-h-[320px]">
-          <Image src={recap.coverImage ?? "/assets/journey-support-1.jpg"} alt={recap.title} fill className="object-cover" />
-        </div>
+        <PhotoGallery images={images} title={recap.title} className="min-h-[320px]" priority />
         <div className="p-7 md:p-10">
           <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">
             {isPreview ? "Preview zadnjeg updatea" : "Zadnji update s ceste"}
