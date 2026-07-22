@@ -463,7 +463,7 @@ export function MapPreview({
       <div className="mx-auto max-w-7xl">
         <div className="mb-7 max-w-4xl">
           <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Live karta</p>
-          <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">
+          <h2 id="live-map-title" className="mt-3 font-display text-4xl font-black md:text-6xl">
             Putujte s nama kroz interaktivnu kartu
           </h2>
           <p className="mt-4 max-w-3xl text-lg leading-8 text-coffee/80">

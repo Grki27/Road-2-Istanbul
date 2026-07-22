@@ -8,6 +8,7 @@ import { HumanitarianSection } from "@/components/HumanitarianSection";
 import { RidersSection } from "@/components/RidersSection";
 import { PartnersSection } from "@/components/PartnersSection";
 import { Footer } from "@/components/Footer";
+import { WanderingBicycle } from "@/components/WanderingBicycle";
 import { wallNotes } from "@/data/mockData";
 import { getPublicSiteData } from "@/lib/public-data";
 import { getTripStats } from "@/lib/stats";
@@ -21,6 +22,7 @@ export default async function Home() {
 
   return (
     <main>
+      <WanderingBicycle />
       <HeroSection />
       <StatsStrip
         stats={[
