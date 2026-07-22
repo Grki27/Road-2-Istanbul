@@ -175,6 +175,14 @@ export type Database = {
         };
         Returns: Database["public"]["Tables"]["current_locations"]["Row"];
       };
+      public_move_wall_note: {
+        Args: {
+          p_id: string;
+          p_x_position: number;
+          p_y_position: number;
+        };
+        Returns: Database["public"]["Tables"]["wall_notes"]["Row"];
+      };
     };
     Enums: Record<string, never>;
     CompositeTypes: Record<string, never>;

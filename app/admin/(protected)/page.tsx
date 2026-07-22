@@ -20,7 +20,7 @@ const quickActions = [
 ];
 
 function formatDate(value?: string | null) {
-  if (!value) return "Još nema updatea";
+  if (!value) return "Jos nema updatea";
   return new Intl.DateTimeFormat("hr-HR", { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
 
@@ -38,8 +38,8 @@ export default async function AdminDashboardPage() {
     <>
       <AdminPageHeader
         eyebrow="Dashboard"
-        title="Što danas šaljemo s ceste?"
-        description="Najčešće akcije su odmah ispod. Sve je složeno za palac, umorne noge i internet koji ima svoje mišljenje."
+        title="Sto danas saljemo s ceste?"
+        description="Najcesce akcije su odmah ispod. Sve je slozeno za palac, umorne noge i internet koji ima svoje misljenje."
       />
 
       <section className="grid gap-3 sm:grid-cols-3">
@@ -73,22 +73,22 @@ export default async function AdminDashboardPage() {
       </section>
 
       <section className="mt-8 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl border border-dashed border-coffee/25 bg-white/40 p-5">
+        <Link href="/admin/comments?status=pending" className="rounded-2xl border border-dashed border-coffee/25 bg-white/40 p-5 transition hover:-translate-y-1">
           <div className="flex items-start justify-between gap-4">
             <MessageCircleMore className="text-clay" />
-            <span className="rounded-full bg-sand px-3 py-1 text-xs font-black">Phase 5</span>
+            <span className="rounded-full bg-sand px-3 py-1 text-xs font-black">{pendingComments.count ?? 0} pending</span>
           </div>
-          <h2 className="mt-4 font-display text-2xl font-black">Komentari na čekanju</h2>
-          <p className="mt-2 text-sm font-bold text-coffee/65">Trenutno: {pendingComments.count ?? 0}. Moderacija dolazi u sljedećoj fazi.</p>
-        </div>
-        <div className="rounded-2xl border border-dashed border-coffee/25 bg-white/40 p-5">
+          <h2 className="mt-4 font-display text-2xl font-black">Komentari na cekanju</h2>
+          <p className="mt-2 text-sm font-bold text-coffee/65">Otvori listu komentara i rucno rijesi sve sto LLM ostavi za admina.</p>
+        </Link>
+        <Link href="/admin/wall-notes?status=pending" className="rounded-2xl border border-dashed border-coffee/25 bg-white/40 p-5 transition hover:-translate-y-1">
           <div className="flex items-start justify-between gap-4">
             <StickyNote className="text-clay" />
-            <span className="rounded-full bg-sand px-3 py-1 text-xs font-black">Phase 5</span>
+            <span className="rounded-full bg-sand px-3 py-1 text-xs font-black">{pendingNotes.count ?? 0} pending</span>
           </div>
-          <h2 className="mt-4 font-display text-2xl font-black">Zid podrške</h2>
-          <p className="mt-2 text-sm font-bold text-coffee/65">Na čekanju: {pendingNotes.count ?? 0}. Upravljanje stiže u Phase 5.</p>
-        </div>
+          <h2 className="mt-4 font-display text-2xl font-black">Zid podrske</h2>
+          <p className="mt-2 text-sm font-bold text-coffee/65">Odobri sticky notes, provjeri crteze i makni ono sto ne pase na pano.</p>
+        </Link>
       </section>
 
       <Link href="/" className="mt-8 inline-flex items-center gap-2 text-sm font-black text-clay">

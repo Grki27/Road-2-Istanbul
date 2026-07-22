@@ -25,6 +25,8 @@ export type AdminActionResult = {
 };
 
 type ImageKind = "recap" | "event";
+type ModerationKind = "comment" | "wall-note";
+type ModerationStatus = "pending" | "approved" | "rejected";
 
 const EARTH_RADIUS_METERS = 6378137;
 const LIVE_LOCATION_OFFSET_METERS = 500;
@@ -42,6 +44,17 @@ const imageInputSchema = z.object({
 const reorderSchema = z.object({
   kind: z.enum(["recap", "event"]),
   items: z.array(z.object({ id: z.string().uuid(), sortOrder: z.number().int().min(0) })).max(15)
+});
+
+const moderationStatusSchema = z.object({
+  kind: z.enum(["comment", "wall-note"]),
+  id: z.string().uuid(),
+  status: z.enum(["pending", "approved", "rejected"])
+});
+
+const moderationDeleteSchema = z.object({
+  kind: z.enum(["comment", "wall-note"]),
+  id: z.string().uuid()
 });
 
 function validationError(error: z.ZodError): AdminActionResult {
@@ -163,6 +176,8 @@ function refreshPublicAndAdmin() {
   revalidatePath("/admin");
   revalidatePath("/admin/recaps");
   revalidatePath("/admin/map-events");
+  revalidatePath("/admin/comments");
+  revalidatePath("/admin/wall-notes");
   revalidatePath("/admin/settings");
 }
 
@@ -486,4 +501,53 @@ export async function reorderImagesAction(input: unknown): Promise<AdminActionRe
   if (firstError) return { ok: false, message: `Redoslijed nije spremljen: ${firstError.message}` };
   refreshPublicAndAdmin();
   return { ok: true, message: "Redoslijed slika je spremljen." };
+}
+
+function moderationTable(kind: ModerationKind) {
+  return kind === "comment" ? "comments" as const : "wall_notes" as const;
+}
+
+export async function setModerationStatusAction(
+  kind: ModerationKind,
+  id: string,
+  status: ModerationStatus
+): Promise<AdminActionResult> {
+  const parsed = moderationStatusSchema.safeParse({ kind, id, status });
+  if (!parsed.success) return validationError(parsed.error);
+
+  const { supabase } = await requireAdminContext();
+  const table = moderationTable(parsed.data.kind);
+  const { error } = await supabase
+    .from(table)
+    .update({
+      status: parsed.data.status,
+      moderation_reason: parsed.data.status === "rejected" ? "Admin je odbio objavu." : null
+    } as never)
+    .eq("id", parsed.data.id);
+
+  if (error) return { ok: false, message: `Status nije spremljen: ${error.message}` };
+
+  refreshPublicAndAdmin();
+  return {
+    ok: true,
+    message: parsed.data.status === "approved"
+      ? "Objava je odobrena."
+      : parsed.data.status === "rejected"
+        ? "Objava je odbijena."
+        : "Objava je vracena na pending."
+  };
+}
+
+export async function deleteModerationItemAction(kind: ModerationKind, id: string): Promise<AdminActionResult> {
+  const parsed = moderationDeleteSchema.safeParse({ kind, id });
+  if (!parsed.success) return validationError(parsed.error);
+
+  const { supabase } = await requireAdminContext();
+  const table = moderationTable(parsed.data.kind);
+  const { error } = await supabase.from(table).delete().eq("id", parsed.data.id);
+
+  if (error) return { ok: false, message: `Brisanje nije uspjelo: ${error.message}` };
+
+  refreshPublicAndAdmin();
+  return { ok: true, message: "Objava je trajno obrisana." };
 }

@@ -1,6 +1,7 @@
 import { BedDouble, CalendarDays, Flag, Route, Star } from "lucide-react";
 import { ExpandableText } from "@/components/ExpandableText";
 import { PhotoGallery } from "@/components/PhotoGallery";
+import { RecapComments } from "@/components/RecapComments";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
@@ -64,9 +65,17 @@ export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap;
               <p className="mt-2 leading-7">{recap.problemOfTheDay}</p>
             </div>
           </div>
-          <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-sunset px-4 py-2 font-black">
-            <span>{fatigue.emoji}</span>
-            Razina umora: {fatigue.label}
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <div className="inline-flex items-center gap-2 rounded-full bg-sunset px-4 py-2 font-black">
+              <span>{fatigue.emoji}</span>
+              Razina umora: {fatigue.label}
+            </div>
+            <RecapComments
+              recapId={recap.id}
+              recapTitle={recap.title}
+              comments={recap.comments}
+              buttonClassName="inline-flex items-center justify-center gap-2 rounded-full bg-ink px-4 py-2 font-black text-paper shadow-pin transition hover:-translate-y-0.5"
+            />
           </div>
         </div>
       </div>

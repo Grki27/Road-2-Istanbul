@@ -9,7 +9,6 @@ import { RidersSection } from "@/components/RidersSection";
 import { PartnersSection } from "@/components/PartnersSection";
 import { Footer } from "@/components/Footer";
 import { WanderingBicycle } from "@/components/WanderingBicycle";
-import { wallNotes } from "@/data/mockData";
 import { getPublicSiteData } from "@/lib/public-data";
 import { getTripStats } from "@/lib/stats";
 
@@ -44,7 +43,7 @@ export default async function Home() {
       />
       <LatestUpdate recap={latestRecap} isPreview={data.isPreview} />
       <Timeline recaps={data.recaps} isPreview={data.isPreview} />
-      <WallOfSupport notes={wallNotes} />
+      <WallOfSupport notes={data.wallNotes} />
       <HumanitarianSection settings={data.settings} />
       <RidersSection latestRecap={data.isPreview ? undefined : latestRecap} />
       <PartnersSection />

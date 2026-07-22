@@ -21,6 +21,19 @@ export type DailyRecap = {
   specialMilestoneType?: string;
   coverImage?: string;
   images: string[];
+  comments: RecapComment[];
+  commentCount: number;
+};
+
+export type ModerationStatus = "pending" | "approved" | "rejected";
+
+export type RecapComment = {
+  id: string;
+  recapId: string;
+  authorName: string;
+  message: string;
+  status: ModerationStatus;
+  createdAt: string;
 };
 
 export type CurrentLocation = {
@@ -74,4 +87,25 @@ export type StickyNote = {
   xPosition: number;
   yPosition: number;
   rotation: number;
+  drawingData?: DrawingData;
+  status?: ModerationStatus;
+  moderationReason?: string;
+  createdAt?: string;
+  expiresAt?: string;
+};
+
+export type DrawingPoint = {
+  x: number;
+  y: number;
+};
+
+export type DrawingStroke = {
+  color: string;
+  points: DrawingPoint[];
+};
+
+export type DrawingData = {
+  width: number;
+  height: number;
+  strokes: DrawingStroke[];
 };

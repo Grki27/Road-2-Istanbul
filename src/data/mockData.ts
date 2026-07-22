@@ -29,7 +29,26 @@ export const previewRecaps: DailyRecap[] = [
     marinFatigueRating: 4,
     markoFatigueRating: 4,
     coverImage: "/assets/journey-support-1.jpg",
-    images: ["/assets/journey-support-1.jpg", "/assets/journey-support-2.jpg"]
+    images: ["/assets/journey-support-1.jpg", "/assets/journey-support-2.jpg"],
+    comments: [
+      {
+        id: "preview-comment-1",
+        recapId: "preview-1",
+        authorName: "Ana",
+        message: "Ajmo jako, ovo vec izgleda kao film.",
+        status: "approved",
+        createdAt: "2026-08-25T12:00:00.000Z"
+      },
+      {
+        id: "preview-comment-2",
+        recapId: "preview-1",
+        authorName: "Luka",
+        message: "Pratim svaki kilometar, samo nemojte zaboravit jest.",
+        status: "approved",
+        createdAt: "2026-08-25T13:15:00.000Z"
+      }
+    ],
+    commentCount: 2
   }
 ];
 

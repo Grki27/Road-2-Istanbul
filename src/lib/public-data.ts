@@ -2,13 +2,16 @@ import { siteConfig } from "@/config/site";
 import {
   previewCurrentLocation,
   previewMapEvents,
-  previewRecaps
+  previewRecaps,
+  wallNotes
 } from "@/data/mockData";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type {
   CurrentLocation,
   DailyRecap,
   MapEvent,
+  RecapComment,
+  StickyNote,
   TripSettings
 } from "@/types";
 import type { Database } from "@/types/database";
@@ -18,6 +21,8 @@ type RecapImageRow = Database["public"]["Tables"]["recap_images"]["Row"];
 type CurrentLocationRow = Database["public"]["Tables"]["current_locations"]["Row"];
 type MapEventRow = Database["public"]["Tables"]["map_events"]["Row"];
 type MapEventImageRow = Database["public"]["Tables"]["map_event_images"]["Row"];
+type CommentRow = Database["public"]["Tables"]["comments"]["Row"];
+type WallNoteRow = Database["public"]["Tables"]["wall_notes"]["Row"];
 type TripSettingsRow = Database["public"]["Tables"]["trip_settings"]["Row"];
 
 const PUBLIC_DATA_TIMEOUT_MS = 8000;
@@ -26,6 +31,7 @@ export type PublicSiteData = {
   recaps: DailyRecap[];
   currentLocation?: CurrentLocation;
   mapEvents: MapEvent[];
+  wallNotes: StickyNote[];
   settings: TripSettings;
   isPreview: boolean;
   hasDataError: boolean;
@@ -49,8 +55,20 @@ function toFatigueRating(value: number | null): 1 | 2 | 3 | 4 | 5 {
   return 3;
 }
 
-function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[]): DailyRecap[] {
+function mapComments(rows: CommentRow[]): RecapComment[] {
+  return rows.map((row) => ({
+    id: row.id,
+    recapId: row.recap_id,
+    authorName: row.author_name,
+    message: row.message,
+    status: row.status,
+    createdAt: row.created_at
+  }));
+}
+
+function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[], commentRows: CommentRow[]): DailyRecap[] {
   const imagesByRecap = new Map<string, string[]>();
+  const commentsByRecap = new Map<string, RecapComment[]>();
 
   imageRows.forEach((image) => {
     const images = imagesByRecap.get(image.recap_id) ?? [];
@@ -58,11 +76,18 @@ function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[]): DailyReca
     imagesByRecap.set(image.recap_id, images);
   });
 
+  mapComments(commentRows).forEach((comment) => {
+    const comments = commentsByRecap.get(comment.recapId) ?? [];
+    comments.push(comment);
+    commentsByRecap.set(comment.recapId, comments);
+  });
+
   let totalDistanceKm = 0;
 
   return rows.map((row) => {
     const distanceKm = Number(row.distance_km ?? 0);
     const images = imagesByRecap.get(row.id) ?? [];
+    const comments = commentsByRecap.get(row.id) ?? [];
     totalDistanceKm += distanceKm;
 
     return {
@@ -91,7 +116,9 @@ function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[]): DailyReca
       isRestDay: row.is_rest_day,
       specialMilestoneType: row.special_milestone_type ?? undefined,
       coverImage: images[0],
-      images
+      images,
+      comments,
+      commentCount: comments.length
     };
   });
 }
@@ -133,6 +160,25 @@ function mapEvents(rows: MapEventRow[], imageRows: MapEventImageRow[]): MapEvent
   }));
 }
 
+function mapWallNotes(rows: WallNoteRow[]): StickyNote[] {
+  return rows.map((row) => ({
+    id: row.id,
+    authorName: row.author_name,
+    message: row.message,
+    noteColor: row.note_color ?? "#ffe08a",
+    xPosition: Number(row.x_position ?? 8),
+    yPosition: Number(row.y_position ?? 18),
+    rotation: Number(row.rotation ?? 0),
+    drawingData: row.drawing_data && typeof row.drawing_data === "object" && !Array.isArray(row.drawing_data)
+      ? row.drawing_data as StickyNote["drawingData"]
+      : undefined,
+    status: row.status,
+    moderationReason: row.moderation_reason ?? undefined,
+    createdAt: row.created_at,
+    expiresAt: row.expires_at
+  }));
+}
+
 function mapSettings(row: TripSettingsRow | null): TripSettings {
   if (!row) {
     return defaultSettings;
@@ -154,6 +200,7 @@ function previewData(hasDataError: boolean): PublicSiteData {
     recaps: previewRecaps,
     currentLocation: previewCurrentLocation,
     mapEvents: previewMapEvents,
+    wallNotes,
     settings: defaultSettings,
     isPreview: true,
     hasDataError
@@ -183,6 +230,8 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       currentLocationResult,
       mapEventsResult,
       mapEventImagesResult,
+      commentsResult,
+      wallNotesResult,
       settingsResult
     ] = await withTimeout(Promise.all([
       supabase
@@ -200,6 +249,17 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
         .maybeSingle(),
       supabase.from("map_events").select("*").order("created_at", { ascending: true }),
       supabase.from("map_event_images").select("*").order("sort_order", { ascending: true }),
+      supabase
+        .from("comments")
+        .select("*")
+        .eq("status", "approved")
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("wall_notes")
+        .select("*")
+        .eq("status", "approved")
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: true }),
       supabase.from("trip_settings").select("*").eq("id", 1).maybeSingle()
     ]));
 
@@ -209,6 +269,8 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       currentLocationResult.error,
       mapEventsResult.error,
       mapEventImagesResult.error,
+      commentsResult.error,
+      wallNotesResult.error,
       settingsResult.error
     ].find(Boolean);
 
@@ -217,14 +279,16 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       return previewData(true);
     }
 
-    const recaps = mapRecaps(recapsResult.data ?? [], recapImagesResult.data ?? []);
+    const recaps = mapRecaps(recapsResult.data ?? [], recapImagesResult.data ?? [], commentsResult.data ?? []);
     const currentLocation = mapCurrentLocation(currentLocationResult.data);
     const mapEventsData = mapEvents(mapEventsResult.data ?? [], mapEventImagesResult.data ?? []);
+    const wallNotesData = mapWallNotes(wallNotesResult.data ?? []);
     const hasLiveJourneyData = Boolean(recaps.length || currentLocation || mapEventsData.length);
 
     if (!hasLiveJourneyData) {
       return {
         ...previewData(false),
+        wallNotes: wallNotesData.length ? wallNotesData : wallNotes,
         settings: mapSettings(settingsResult.data)
       };
     }
@@ -233,6 +297,7 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       recaps,
       currentLocation,
       mapEvents: mapEventsData,
+      wallNotes: wallNotesData,
       settings: mapSettings(settingsResult.data),
       isPreview: false,
       hasDataError: false

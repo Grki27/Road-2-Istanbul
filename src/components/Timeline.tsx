@@ -2,6 +2,7 @@ import { Flag, Star } from "lucide-react";
 import { ExpandableText } from "@/components/ExpandableText";
 import { MapFocusButton } from "@/components/MapFocusButton";
 import { PhotoGallery } from "@/components/PhotoGallery";
+import { RecapComments } from "@/components/RecapComments";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
@@ -54,7 +55,7 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
                     <span className="rounded-full bg-white/70 px-3 py-2">{fatigue.emoji} {fatigue.label}</span>
                     {recap.specialMilestoneType ? <span className="inline-flex items-center gap-2 rounded-full bg-sand px-3 py-1.5"><Star size={15} fill="currentColor" />{recap.specialMilestoneType}</span> : null}
                   </div>
-                  <div className="mt-5 flex gap-2">
+                  <div className="mt-5 flex flex-wrap gap-2">
                     {recap.latitude !== undefined && recap.longitude !== undefined ? (
                       <MapFocusButton recapId={recap.id} />
                     ) : (
@@ -62,6 +63,12 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
                         Lokacija nije upisana
                       </span>
                     )}
+                    <RecapComments
+                      recapId={recap.id}
+                      recapTitle={recap.title}
+                      comments={recap.comments}
+                      buttonClassName="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-white/80 px-4 py-3 text-sm font-black text-ink shadow-pin transition hover:-translate-y-0.5"
+                    />
                   </div>
                 </div>
               </article>

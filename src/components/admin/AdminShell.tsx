@@ -7,8 +7,10 @@ import {
   Bike,
   LogOut,
   MapPinned,
+  MessageCircleMore,
   Navigation,
-  NotebookPen
+  NotebookPen,
+  StickyNote
 } from "lucide-react";
 import { signOutAction } from "@app/admin/actions";
 
@@ -17,6 +19,8 @@ const navigation = [
   { href: "/admin/recaps", label: "Recapovi", icon: NotebookPen },
   { href: "/admin/location", label: "GPS", icon: Navigation },
   { href: "/admin/map-events", label: "Pinovi", icon: MapPinned },
+  { href: "/admin/comments", label: "Komentari", icon: MessageCircleMore },
+  { href: "/admin/wall-notes", label: "Zid", icon: StickyNote },
   { href: "/admin/settings", label: "Postavke", icon: BarChart3 }
 ];
 
@@ -70,7 +74,7 @@ export function AdminShell({ email, children }: { email: string; children: React
       <main className="mx-auto max-w-6xl px-4 pb-28 pt-7 lg:pb-12">{children}</main>
 
       <nav
-        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-coffee/10 bg-paper/95 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(47,36,27,0.12)] backdrop-blur lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-7 border-t border-coffee/10 bg-paper/95 px-1 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(47,36,27,0.12)] backdrop-blur lg:hidden"
         aria-label="Mobilna admin navigacija"
       >
         {navigation.map((item) => {
