@@ -20,6 +20,8 @@ type MapEventRow = Database["public"]["Tables"]["map_events"]["Row"];
 type MapEventImageRow = Database["public"]["Tables"]["map_event_images"]["Row"];
 type TripSettingsRow = Database["public"]["Tables"]["trip_settings"]["Row"];
 
+const PUBLIC_DATA_TIMEOUT_MS = 8000;
+
 export type PublicSiteData = {
   recaps: DailyRecap[];
   currentLocation?: CurrentLocation;
@@ -68,8 +70,8 @@ function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[]): DailyReca
       dayNumber: row.day_number,
       date: row.date,
       title: row.title,
-      startLocation: row.start_location ?? "Start nije upisan",
-      endLocation: row.end_location ?? row.sleeping_location ?? "Cilj nije upisan",
+      startLocation: String(totalDistanceKm - distanceKm),
+      endLocation: String(totalDistanceKm),
       sleepingLocation: row.sleeping_location ?? undefined,
       country: row.country ?? "Država nije upisana",
       latitude: row.latitude ?? undefined,
@@ -158,6 +160,20 @@ function previewData(hasDataError: boolean): PublicSiteData {
   };
 }
 
+function withTimeout<T>(promise: Promise<T>, timeoutMs = PUBLIC_DATA_TIMEOUT_MS): Promise<T> {
+  let timeout: ReturnType<typeof setTimeout> | undefined;
+  const timeoutPromise = new Promise<never>((_, reject) => {
+    timeout = setTimeout(() => reject(new Error("Public Supabase fetch timed out")), timeoutMs);
+  });
+
+  return Promise.race([
+    promise.finally(() => {
+      if (timeout) clearTimeout(timeout);
+    }),
+    timeoutPromise
+  ]);
+}
+
 export async function getPublicSiteData(): Promise<PublicSiteData> {
   try {
     const supabase = await createSupabaseServerClient();
@@ -168,7 +184,7 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       mapEventsResult,
       mapEventImagesResult,
       settingsResult
-    ] = await Promise.all([
+    ] = await withTimeout(Promise.all([
       supabase
         .from("daily_recaps")
         .select("*")
@@ -185,7 +201,7 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       supabase.from("map_events").select("*").order("created_at", { ascending: true }),
       supabase.from("map_event_images").select("*").order("sort_order", { ascending: true }),
       supabase.from("trip_settings").select("*").eq("id", 1).maybeSingle()
-    ]);
+    ]));
 
     const firstError = [
       recapsResult.error,

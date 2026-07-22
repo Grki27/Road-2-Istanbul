@@ -1,7 +1,8 @@
 import Image from "next/image";
-import { CalendarDays, Flag, Route } from "lucide-react";
+import { BedDouble, CalendarDays, Flag, Route, Star } from "lucide-react";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
+import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 
 export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap; isPreview?: boolean }) {
   if (!recap) {
@@ -31,11 +32,20 @@ export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap;
             {isPreview ? "Preview zadnjeg updatea" : "Zadnji update s ceste"}
           </p>
           <h2 className="mt-3 font-display text-4xl font-black">{recap.title}</h2>
-          <div className="mt-5 grid gap-3 text-sm font-bold text-coffee/80 sm:grid-cols-3">
+          <p className="mt-3 font-black text-clay">
+            {formatKilometerRange(recap.startLocation, recap.endLocation)}
+          </p>
+          <div className="mt-5 grid gap-3 text-sm font-bold text-coffee/80 sm:grid-cols-2 lg:grid-cols-4">
             <span className="flex items-center gap-2"><CalendarDays size={18} />Dan {recap.dayNumber}</span>
             <span className="flex items-center gap-2"><Route size={18} />{recap.distanceKm} km</span>
-            <span className="flex items-center gap-2"><Flag size={18} />{recap.country}</span>
+            <span className="flex items-center gap-2"><Flag size={18} />{formatCountry(recap.country)}</span>
+            {recap.sleepingLocation ? <span className="flex items-center gap-2"><BedDouble size={18} />{recap.sleepingLocation}</span> : null}
           </div>
+          {recap.specialMilestoneType ? (
+            <div className="mt-3 flex flex-wrap gap-2 text-sm font-black">
+              <span className="inline-flex items-center gap-2 rounded-full bg-sand px-3 py-1.5"><Star size={16} fill="currentColor" />{recap.specialMilestoneType}</span>
+            </div>
+          ) : null}
           <p className="mt-5 text-lg leading-8 text-coffee/88">{recap.shortText}</p>
           <div className="mt-6 grid gap-3 md:grid-cols-2">
             <div className="rounded-2xl bg-white/60 p-4">

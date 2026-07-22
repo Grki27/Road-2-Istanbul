@@ -6,18 +6,33 @@ import { requireAdminContext } from "@/lib/auth/admin-server";
 export default async function EditRecapPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { supabase } = await requireAdminContext();
-  const [recapResult, imagesResult] = await Promise.all([
+  const [recapResult, imagesResult, recapsResult] = await Promise.all([
     supabase.from("daily_recaps").select("*").eq("id", id).maybeSingle(),
-    supabase.from("recap_images").select("*").eq("recap_id", id).order("sort_order", { ascending: true })
+    supabase.from("recap_images").select("*").eq("recap_id", id).order("sort_order", { ascending: true }),
+    supabase.from("daily_recaps").select("id, day_number, distance_km, status")
   ]);
 
   if (!recapResult.data) notFound();
+  const recap = recapResult.data;
+
+  const previousTotalKm = (recapsResult.data ?? [])
+    .filter((row) =>
+      row.id !== id &&
+      row.status !== "archived" &&
+      row.day_number < recap.day_number
+    )
+    .reduce((sum, row) => sum + Number(row.distance_km ?? 0), 0);
 
   return (
     <>
-      <AdminPageHeader eyebrow={`Dan ${recapResult.data.day_number}`} title={`Uredi: ${recapResult.data.title}`} description="Promjene se na javnoj stranici vide nakon objave." backHref="/admin/recaps" />
+      <AdminPageHeader eyebrow={`Dan ${recap.day_number}`} title={`Uredi: ${recap.title}`} description="Promjene se na javnoj stranici vide nakon objave." backHref="/admin/recaps" />
       <RecapForm
-        recap={recapResult.data}
+        recap={recap}
+        defaults={{
+          dayNumber: recap.day_number,
+          date: recap.date,
+          previousTotalKm
+        }}
         initialImages={(imagesResult.data ?? []).map((image) => ({
           id: image.id,
           imageUrl: image.image_url,

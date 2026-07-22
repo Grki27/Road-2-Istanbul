@@ -2,8 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 import { requireAdminContext } from "@/lib/auth/admin-server";
+import type { Database } from "@/types/database";
 import {
   locationInputSchema,
   mapEventInputSchema,
@@ -49,6 +51,41 @@ function validationError(error: z.ZodError): AdminActionResult {
 function nullIfEmpty(value?: string) {
   const cleaned = value?.trim();
   return cleaned ? cleaned : null;
+}
+
+function formatKmValue(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1).replace(/\.0$/, "");
+}
+
+async function recalculateRecapKilometerRanges(supabase: SupabaseClient<Database>) {
+  const { data, error } = await supabase
+    .from("daily_recaps")
+    .select("id, distance_km")
+    .neq("status", "archived")
+    .order("day_number", { ascending: true })
+    .order("date", { ascending: true });
+
+  if (error) return error.message;
+
+  let totalKm = 0;
+  for (const recap of data ?? []) {
+    const distanceKm = recap.distance_km;
+    const startLocation = distanceKm === null ? null : formatKmValue(totalKm);
+    if (distanceKm !== null) totalKm += Number(distanceKm);
+    const endLocation = distanceKm === null ? null : formatKmValue(totalKm);
+
+    const updateResult = await supabase
+      .from("daily_recaps")
+      .update({
+        start_location: startLocation,
+        end_location: endLocation
+      })
+      .eq("id", recap.id);
+
+    if (updateResult.error) return updateResult.error.message;
+  }
+
+  return undefined;
 }
 
 function refreshPublicAndAdmin() {
@@ -101,6 +138,11 @@ export async function saveRecapAction(input: RecapInput): Promise<AdminActionRes
     return { ok: false, message: `Recap nije spremljen: ${result.error.message}` };
   }
 
+  const recalculationError = await recalculateRecapKilometerRanges(supabase);
+  if (recalculationError) {
+    return { ok: false, message: `Recap je spremljen, ali kilometri nisu presloženi: ${recalculationError}` };
+  }
+
   refreshPublicAndAdmin();
   return {
     ok: true,
@@ -124,6 +166,10 @@ export async function setRecapStatusAction(
     .eq("id", parsed.data.id);
 
   if (error) return { ok: false, message: `Status nije promijenjen: ${error.message}` };
+
+  const recalculationError = await recalculateRecapKilometerRanges(supabase);
+  if (recalculationError) return { ok: false, message: `Status je promijenjen, ali kilometri nisu presloženi: ${recalculationError}` };
+
   refreshPublicAndAdmin();
   return { ok: true, message: status === "archived" ? "Recap je arhiviran." : "Status je promijenjen." };
 }
@@ -148,6 +194,9 @@ export async function deleteRecapAction(id: string): Promise<AdminActionResult> 
 
   const { error } = await supabase.from("daily_recaps").delete().eq("id", parsed.data);
   if (error) return { ok: false, message: `Recap nije obrisan: ${error.message}` };
+
+  const recalculationError = await recalculateRecapKilometerRanges(supabase);
+  if (recalculationError) return { ok: false, message: `Recap je obrisan, ali kilometri nisu presloženi: ${recalculationError}` };
 
   refreshPublicAndAdmin();
   return { ok: true, message: "Recap i njegove slike trajno su obrisani." };

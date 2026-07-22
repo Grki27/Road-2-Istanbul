@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import { Flag, LocateFixed, Route } from "lucide-react";
+import { ArrowLeft, ArrowRight, Flag, LocateFixed, Route, X } from "lucide-react";
 import type L from "leaflet";
 import type { CurrentLocation, DailyRecap, MapEvent } from "@/types";
+import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 
 type MapPreviewProps = {
   currentLocation?: CurrentLocation;
@@ -15,6 +17,12 @@ type MapPreviewProps = {
 
 type FocusRecapDetail = {
   recapId: string;
+};
+
+type GalleryDetail = {
+  images: string[];
+  title: string;
+  index: number;
 };
 
 function parseGpx(gpx: string) {
@@ -66,20 +74,34 @@ function createPopupShell() {
 
 function createRecapPopup(recap: DailyRecap) {
   const shell = createPopupShell();
+  const stats = document.createElement("div");
+  stats.className = "map-popup-stats";
+
+  [
+    formatCountry(recap.country),
+    `${recap.distanceKm} km danas`,
+    `${recap.totalDistanceKm} km ukupno`
+  ].forEach((item) => {
+    const stat = document.createElement("span");
+    stat.className = "map-popup-stat";
+    stat.textContent = item;
+    stats.append(stat);
+  });
+
   shell.append(
     createTextElement("span", `Dan ${recap.dayNumber}`, "map-popup-kicker"),
     createTextElement("strong", recap.title, "map-popup-title"),
     createTextElement(
       "p",
-      `${recap.startLocation} → ${recap.endLocation}`,
+      formatKilometerRange(recap.startLocation, recap.endLocation),
       "map-popup-route"
     ),
-    createTextElement(
-      "p",
-      `${recap.country} · ${recap.distanceKm} km · ukupno ${recap.totalDistanceKm} km`,
-      "map-popup-meta"
-    )
+    stats
   );
+
+  if (recap.specialMilestoneType) {
+    shell.append(createTextElement("p", `★ ${recap.specialMilestoneType}`, "map-popup-milestone"));
+  }
 
   if (recap.shortText) {
     shell.append(createTextElement("p", recap.shortText, "map-popup-copy"));
@@ -101,7 +123,7 @@ function createEventPopup(event: MapEvent) {
     createTextElement("strong", event.title, "map-popup-title")
   );
 
-  const location = [event.locationName, event.country].filter(Boolean).join(", ");
+  const location = [event.locationName, event.country ? formatCountry(event.country) : undefined].filter(Boolean).join(", ");
   if (location) {
     shell.append(createTextElement("p", location, "map-popup-route"));
   }
@@ -110,12 +132,38 @@ function createEventPopup(event: MapEvent) {
     shell.append(createTextElement("p", event.description, "map-popup-copy"));
   }
 
-  if (event.images[0]) {
-    const image = document.createElement("img");
-    image.src = event.images[0];
-    image.alt = event.title;
-    image.className = "map-popup-image";
-    shell.append(image);
+  if (event.images.length) {
+    const collage = document.createElement("div");
+    const visibleImages = event.images.slice(0, 4);
+    collage.className = `map-popup-collage map-popup-collage-${Math.min(visibleImages.length, 4)}`;
+
+    visibleImages.forEach((imageUrl, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "map-popup-collage-item";
+      button.setAttribute("aria-label", `Otvori fotografiju ${index + 1} od ${event.images.length}`);
+
+      const image = document.createElement("img");
+      image.src = imageUrl;
+      image.alt = `${event.title}, fotografija ${index + 1}`;
+      button.append(image);
+
+      if (index === visibleImages.length - 1 && event.images.length > visibleImages.length) {
+        const more = document.createElement("span");
+        more.className = "map-popup-collage-more";
+        more.textContent = `+${event.images.length - visibleImages.length}`;
+        button.append(more);
+      }
+
+      button.addEventListener("click", () => {
+        window.dispatchEvent(new CustomEvent<GalleryDetail>("open-map-gallery", {
+          detail: { images: event.images, title: event.title, index }
+        }));
+      });
+      collage.append(button);
+    });
+
+    shell.append(collage);
   }
 
   return shell;
@@ -162,7 +210,25 @@ export function MapPreview({
   const routeBoundsRef = useRef<L.LatLngBounds | null>(null);
   const recapMarkersRef = useRef<Map<string, L.Marker>>(new Map());
   const [routeState, setRouteState] = useState<"loading" | "ready" | "error">("loading");
+  const [gallery, setGallery] = useState<GalleryDetail | null>(null);
   const latestRecap = recaps.at(-1);
+
+  useEffect(() => {
+    if (!gallery) return;
+
+    function handleKeydown(event: KeyboardEvent) {
+      if (event.key === "Escape") setGallery(null);
+      if (event.key === "ArrowLeft") {
+        setGallery((current) => current ? { ...current, index: (current.index - 1 + current.images.length) % current.images.length } : null);
+      }
+      if (event.key === "ArrowRight") {
+        setGallery((current) => current ? { ...current, index: (current.index + 1) % current.images.length } : null);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeydown);
+    return () => window.removeEventListener("keydown", handleKeydown);
+  }, [gallery]);
 
   useEffect(() => {
     let alive = true;
@@ -223,10 +289,20 @@ export function MapPreview({
         if (completedRoute.length > 1) {
           leaflet
             .polyline(completedRoute, {
-              color: "#5c3b25",
-              dashArray: "2 12",
-              weight: 5,
-              opacity: 0.42,
+              color: "#fff8ea",
+              weight: 12,
+              opacity: 0.82,
+              lineCap: "round",
+              lineJoin: "round"
+            })
+            .addTo(map);
+
+          leaflet
+            .polyline(completedRoute, {
+              color: "#315f67",
+              dashArray: "10 9",
+              weight: 7,
+              opacity: 0.96,
               lineCap: "round",
               lineJoin: "round"
             })
@@ -324,9 +400,14 @@ export function MapPreview({
       };
 
       window.addEventListener("focus-map-recap", focusRecap);
+      const openGallery = (event: Event) => {
+        setGallery((event as CustomEvent<GalleryDetail>).detail);
+      };
+      window.addEventListener("open-map-gallery", openGallery);
 
       cleanup = () => {
         window.removeEventListener("focus-map-recap", focusRecap);
+        window.removeEventListener("open-map-gallery", openGallery);
         map.remove();
         mapRef.current = null;
         routeBoundsRef.current = null;
@@ -368,7 +449,14 @@ export function MapPreview({
     }
   }
 
+  function moveGallery(direction: -1 | 1) {
+    setGallery((current) => current
+      ? { ...current, index: (current.index + direction + current.images.length) % current.images.length }
+      : null);
+  }
+
   return (
+    <>
     <section id="karta" className="scroll-mt-4 px-5 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-7 max-w-4xl">
@@ -377,7 +465,7 @@ export function MapPreview({
             Putujte s nama kroz interaktivnu kartu
           </h2>
           <p className="mt-4 max-w-3xl text-lg leading-8 text-coffee/80">
-            Narančasta linija je ono što je ostalo, a prošli dio rute postaje prozirniji i iscrtkan nakon svakog GPS updatea.
+            Narančasta linija je ono što je ostalo, a tamna iscrtana linija jasno pokazuje dio koji smo već prošli.
           </p>
         </div>
 
@@ -440,5 +528,34 @@ export function MapPreview({
         </div>
       </div>
     </section>
+    {gallery ? (
+      <div
+        className="fixed inset-0 z-[2000] grid place-items-center bg-ink/[0.94] p-3 backdrop-blur-sm sm:p-8"
+        role="dialog"
+        aria-modal="true"
+        aria-label={`Galerija: ${gallery.title}`}
+        onClick={() => setGallery(null)}
+      >
+        <div className="relative h-full max-h-[900px] w-full max-w-6xl" onClick={(event) => event.stopPropagation()}>
+          <div className="absolute inset-x-0 top-0 z-10 flex items-center justify-between gap-3 text-paper">
+            <div className="min-w-0">
+              <p className="truncate font-display text-xl font-black sm:text-2xl">{gallery.title}</p>
+              <p className="text-sm font-bold text-paper/70">{gallery.index + 1} / {gallery.images.length}</p>
+            </div>
+            <button type="button" onClick={() => setGallery(null)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-paper text-ink" aria-label="Zatvori galeriju"><X size={22} /></button>
+          </div>
+          <div className="absolute inset-x-0 bottom-0 top-16">
+            <Image src={gallery.images[gallery.index]} alt={`${gallery.title}, fotografija ${gallery.index + 1}`} fill className="object-contain" sizes="100vw" priority unoptimized />
+          </div>
+          {gallery.images.length > 1 ? (
+            <>
+              <button type="button" onClick={() => moveGallery(-1)} className="absolute left-2 top-1/2 z-10 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-paper text-ink shadow-pin sm:left-5" aria-label="Prethodna fotografija"><ArrowLeft size={22} /></button>
+              <button type="button" onClick={() => moveGallery(1)} className="absolute right-2 top-1/2 z-10 grid h-12 w-12 -translate-y-1/2 place-items-center rounded-full bg-paper text-ink shadow-pin sm:right-5" aria-label="Sljedeća fotografija"><ArrowRight size={22} /></button>
+            </>
+          ) : null}
+        </div>
+      </div>
+    ) : null}
+    </>
   );
 }

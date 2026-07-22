@@ -346,6 +346,22 @@ a {
   margin: 0.35rem 0 0;
 }
 
+.map-popup-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.map-popup-stat {
+  background: rgba(255, 255, 255, 0.72);
+  border-radius: 999px;
+  color: rgba(92, 59, 37, 0.78);
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 0.28rem 0.52rem;
+}
+
 .map-popup-copy {
   color: rgba(47, 36, 27, 0.84);
   line-height: 1.55;
@@ -358,12 +374,74 @@ a {
   margin-bottom: 0.35rem;
 }
 
-.map-popup-image {
-  border-radius: 12px;
-  height: 120px;
-  margin-top: 0.7rem;
+.map-popup-milestone {
+  background: #f4dfbc;
+  border-radius: 999px;
+  color: #5c3b25;
+  display: inline-flex;
+  font-size: 0.75rem;
+  font-weight: 900;
+  margin: 0.35rem 0 0;
+  padding: 0.28rem 0.55rem;
+}
+
+.map-popup-collage {
+  display: grid;
+  gap: 3px;
+  height: 160px;
+  margin-top: 0.8rem;
+  overflow: hidden;
+  border-radius: 14px;
+}
+
+.map-popup-collage-1 {
+  grid-template-columns: 1fr;
+}
+
+.map-popup-collage-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.map-popup-collage-3,
+.map-popup-collage-4 {
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+}
+
+.map-popup-collage-3 .map-popup-collage-item:first-child {
+  grid-row: 1 / 3;
+}
+
+.map-popup-collage-item {
+  border: 0;
+  cursor: pointer;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+}
+
+.map-popup-collage-item img {
+  height: 100%;
   object-fit: cover;
+  transition: transform 180ms ease;
   width: 100%;
+}
+
+.map-popup-collage-item:hover img {
+  transform: scale(1.04);
+}
+
+.map-popup-collage-more {
+  align-items: center;
+  background: rgba(47, 36, 27, 0.68);
+  color: #fff8ea;
+  display: flex;
+  font-size: 1.2rem;
+  font-weight: 900;
+  inset: 0;
+  justify-content: center;
+  position: absolute;
 }
 
 .map-popup-link {

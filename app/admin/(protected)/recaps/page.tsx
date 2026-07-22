@@ -3,6 +3,7 @@ import { Edit3, Plus } from "lucide-react";
 import { AdminPageHeader } from "@/components/admin/AdminPageHeader";
 import { RecapRowActions } from "@/components/admin/RecapRowActions";
 import { requireAdminContext } from "@/lib/auth/admin-server";
+import { formatKilometerRange } from "@/lib/trip-format";
 
 const statusStyle = {
   draft: "bg-sand text-ink",
@@ -29,7 +30,7 @@ export default async function AdminRecapsPage() {
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-clay">Dan {recap.day_number} · {recap.date}</p>
                 <h2 className="mt-2 font-display text-2xl font-black">{recap.title}</h2>
-                <p className="mt-1 text-sm font-bold text-coffee/65">{recap.start_location || "?"} → {recap.end_location || "?"}</p>
+                <p className="mt-1 text-sm font-bold text-coffee/65">{formatKilometerRange(recap.start_location ?? undefined, recap.end_location ?? undefined)}</p>
               </div>
               <span className={`rounded-full px-3 py-1 text-xs font-black ${statusStyle[recap.status]}`}>{recap.status}</span>
             </div>

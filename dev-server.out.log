@@ -103,3 +103,21 @@
  GET / 200 in 2936ms
  ○ Compiling /admin/settings ...
  ✓ Compiled /admin/settings in 11s (1275 modules)
+ GET /admin/settings 200 in 15803ms
+ GET / 200 in 1608ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 4.6s (894 modules)
+ GET /admin 200 in 6784ms
+ ✓ Compiled in 7.2s (1286 modules)
+ GET / 200 in 1707ms
+ ✓ Compiled in 6.5s (1273 modules)
+ GET / 200 in 1097ms
+ GET / 200 in 6330ms
+ GET / 200 in 2033ms
+ ✓ Compiled in 11s (1273 modules)
+ GET / 200 in 1476ms
+ GET / 200 in 4631ms
+ GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 5069ms
+ ✓ Compiled in 12.9s (1273 modules)
+ GET / 200 in 1584ms
+[?25h

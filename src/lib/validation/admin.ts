@@ -32,8 +32,6 @@ export const recapInputSchema = z
     if (value.status !== "published") return;
 
     const requiredText: Array<[keyof typeof value, string]> = [
-      ["startLocation", "Upiši početnu lokaciju."],
-      ["endLocation", "Upiši završnu lokaciju."],
       ["country", "Upiši državu."],
       ["shortText", "Upiši tekst recapa."],
       ["highlightOfTheDay", "Upiši highlight dana."],
@@ -53,7 +51,7 @@ export const recapInputSchema = z
       context.addIssue({ code: "custom", path: ["longitude"], message: "Upiši longitude." });
     }
     if (value.distanceKm === null) {
-      context.addIssue({ code: "custom", path: ["distanceKm"], message: "Upiši kilometre." });
+      context.addIssue({ code: "custom", path: ["distanceKm"], message: "Upiši koliko ste danas prošli kilometara." });
     }
     if (value.fatigueRating === null) {
       context.addIssue({ code: "custom", path: ["fatigueRating"], message: "Odaberi stanje dana." });

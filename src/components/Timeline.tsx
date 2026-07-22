@@ -1,7 +1,9 @@
 import Image from "next/image";
+import { Flag, Star } from "lucide-react";
 import { MapFocusButton } from "@/components/MapFocusButton";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
+import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 
 export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPreview: boolean }) {
   return (
@@ -34,13 +36,15 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
                 </div>
                 <div className="p-5">
                   <p className="text-sm font-black text-clay">
-                    {recap.startLocation} → {recap.endLocation}
+                    {formatKilometerRange(recap.startLocation, recap.endLocation)}
                   </p>
                   <h3 className="mt-2 font-display text-2xl font-black">{recap.title}</h3>
                   <p className="mt-3 line-clamp-3 leading-7 text-coffee/80">{recap.shortText}</p>
                   <div className="mt-5 flex flex-wrap gap-2 text-sm font-black">
                     <span className="rounded-full bg-white/70 px-3 py-2">{recap.distanceKm} km</span>
+                    <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-2"><Flag size={16} />{formatCountry(recap.country)}</span>
                     <span className="rounded-full bg-white/70 px-3 py-2">{fatigue.emoji} {fatigue.label}</span>
+                    {recap.specialMilestoneType ? <span className="inline-flex items-center gap-2 rounded-full bg-sand px-3 py-1.5"><Star size={15} fill="currentColor" />{recap.specialMilestoneType}</span> : null}
                   </div>
                   <div className="mt-5 flex gap-2">
                     {recap.latitude !== undefined && recap.longitude !== undefined ? (

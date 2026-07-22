@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, LoaderCircle, Save, Send, WifiOff, X } from "lucide-react";
+import { Eye, Flag, LoaderCircle, Save, Send, Star, WifiOff, X } from "lucide-react";
 import { saveRecapAction, type AdminActionResult } from "@app/admin/actions";
 import { AdminActionMessage, inputClassName, labelClassName, UseCurrentLocationButton } from "@/components/admin/AdminFormUi";
 import { ImageUploader, type AdminImage } from "@/components/admin/ImageUploader";
 import type { Database } from "@/types/database";
+import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 
 type RecapRow = Database["public"]["Tables"]["daily_recaps"]["Row"];
 type FormState = {
@@ -31,14 +32,14 @@ type FormState = {
 };
 
 const fatigueOptions = [
-  { value: "1", label: "😭 katastrofa" },
-  { value: "2", label: "😩 teško" },
-  { value: "3", label: "😐 okej" },
-  { value: "4", label: "🙂 dobro" },
-  { value: "5", label: "🤩 brutalno" }
+  { value: "1", label: "💀 mrtvi" },
+  { value: "2", label: "😵 umiremo" },
+  { value: "3", label: "😐 neloša" },
+  { value: "4", label: "🙂 odmorni" },
+  { value: "5", label: "🚀 letimoo" }
 ];
 
-function stateFromRecap(recap?: RecapRow, defaults?: { dayNumber: number; date: string }): FormState {
+function stateFromRecap(recap?: RecapRow, defaults?: { dayNumber: number; date: string; previousTotalKm?: number }): FormState {
   return {
     dayNumber: String(recap?.day_number ?? defaults?.dayNumber ?? 1),
     date: recap?.date ?? defaults?.date ?? "",
@@ -67,6 +68,10 @@ function nullableNumber(value: string) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function formatKmValue(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1).replace(/\.0$/, "");
+}
+
 function FieldError({ errors }: { errors?: string[] }) {
   return errors?.[0] ? <p className="mt-1 text-xs font-bold text-red-800">{errors[0]}</p> : null;
 }
@@ -75,7 +80,7 @@ function RecapPreview({ form, onClose }: { form: FormState; onClose: () => void 
   const fatigue = fatigueOptions.find((option) => option.value === form.fatigueRating)?.label ?? "Bez ocjene";
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto bg-ink/65 p-3 backdrop-blur-sm sm:p-8">
+    <div className="fixed inset-0 z-[100] overflow-y-auto bg-ink/[0.65] p-3 backdrop-blur-sm sm:p-8">
       <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl bg-paper shadow-paper">
         <div className="sticky top-0 z-10 flex items-center justify-between border-b border-coffee/10 bg-paper/95 px-5 py-4 backdrop-blur">
           <p className="font-black">Preview recapa</p>
@@ -84,11 +89,12 @@ function RecapPreview({ form, onClose }: { form: FormState; onClose: () => void 
         <div className="p-6 sm:p-9">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-clay">Dan {form.dayNumber || "?"} · {form.date || "Datum nije upisan"}</p>
           <h2 className="mt-3 font-display text-4xl font-black sm:text-5xl">{form.title || "Naslov recapa"}</h2>
-          <p className="mt-3 font-black text-clay">{form.startLocation || "Start"} → {form.endLocation || "Cilj"}</p>
+          <p className="mt-3 font-black text-clay">{formatKilometerRange(form.startLocation, form.endLocation)}</p>
           <div className="mt-5 flex flex-wrap gap-2 text-sm font-black">
             <span className="rounded-full bg-white px-3 py-2">{form.distanceKm || 0} km</span>
-            <span className="rounded-full bg-white px-3 py-2">{form.country || "Država"}</span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2"><Flag size={16} />{formatCountry(form.country)}</span>
             <span className="rounded-full bg-sunset px-3 py-2">{fatigue}</span>
+            {form.specialMilestoneType ? <span className="inline-flex items-center gap-2 rounded-full bg-sand px-3 py-1.5"><Star size={15} fill="currentColor" />{form.specialMilestoneType}</span> : null}
           </div>
           <p className="mt-6 whitespace-pre-wrap text-lg leading-8 text-coffee/85">{form.shortText || "Tekst dnevnog recapa pojavit će se ovdje."}</p>
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
@@ -108,7 +114,7 @@ export function RecapForm({
 }: {
   recap?: RecapRow;
   initialImages: AdminImage[];
-  defaults?: { dayNumber: number; date: string };
+  defaults?: { dayNumber: number; date: string; previousTotalKm?: number };
 }) {
   const router = useRouter();
   const [form, setForm] = useState<FormState>(() => stateFromRecap(recap, defaults));
@@ -119,6 +125,12 @@ export function RecapForm({
   const [online, setOnline] = useState(true);
   const [autosaveReady, setAutosaveReady] = useState(false);
   const storageKey = useMemo(() => `sedmo-nebo-admin-recap-${recap?.id ?? "new"}`, [recap?.id]);
+  const previousTotalKm = defaults?.previousTotalKm ?? 0;
+  const todayDistanceKm = nullableNumber(form.distanceKm);
+  const computedStartKm = previousTotalKm;
+  const computedEndKm = previousTotalKm + (todayDistanceKm ?? 0);
+  const computedStartLocation = formatKmValue(computedStartKm);
+  const computedEndLocation = todayDistanceKm === null ? "" : formatKmValue(computedEndKm);
 
   useEffect(() => {
     setOnline(navigator.onLine);
@@ -161,8 +173,6 @@ export function RecapForm({
       dayNumber: Number(form.dayNumber),
       date: form.date,
       title: form.title,
-      startLocation: form.startLocation,
-      endLocation: form.endLocation,
       sleepingLocation: form.sleepingLocation,
       country: form.country,
       latitude: nullableNumber(form.latitude),
@@ -176,6 +186,8 @@ export function RecapForm({
       problemOfTheDay: form.problemOfTheDay,
       isRestDay: form.isRestDay,
       specialMilestoneType: form.specialMilestoneType,
+      startLocation: todayDistanceKm === null ? "" : computedStartLocation,
+      endLocation: todayDistanceKm === null ? "" : computedEndLocation,
       status
     });
     setResult(actionResult);
@@ -218,11 +230,21 @@ export function RecapForm({
           <label className={labelClassName}>Dan puta<input className={inputClassName} type="number" min="1" max="365" value={form.dayNumber} onChange={(e) => update("dayNumber", e.target.value)} /><FieldError errors={errors.dayNumber} /></label>
           <label className={labelClassName}>Datum<input className={inputClassName} type="date" value={form.date} onChange={(e) => update("date", e.target.value)} /><FieldError errors={errors.date} /></label>
           <label className={`${labelClassName} sm:col-span-2`}>Naslov<input className={inputClassName} maxLength={120} value={form.title} onChange={(e) => update("title", e.target.value)} placeholder="Kiša, granica i najbolji burek dosad" /><FieldError errors={errors.title} /></label>
-          <label className={labelClassName}>Start<input className={inputClassName} value={form.startLocation} onChange={(e) => update("startLocation", e.target.value)} /><FieldError errors={errors.startLocation} /></label>
-          <label className={labelClassName}>Cilj<input className={inputClassName} value={form.endLocation} onChange={(e) => update("endLocation", e.target.value)} /><FieldError errors={errors.endLocation} /></label>
-          <label className={labelClassName}>Mjesto spavanja<input className={inputClassName} value={form.sleepingLocation} onChange={(e) => update("sleepingLocation", e.target.value)} /></label>
+          <div className="rounded-2xl bg-sand/75 p-4 sm:col-span-2">
+            <div className="grid gap-3 sm:grid-cols-[1fr_1.2fr_1fr] sm:items-end">
+              <div>
+                <p className="text-xs font-black uppercase text-clay">Start se računa</p>
+                <p className="mt-1 font-display text-3xl font-black">{computedStartLocation} km</p>
+              </div>
+              <label className={labelClassName}>Danas prešli kilometara<input className={inputClassName} type="number" min="0" max="500" step="0.1" value={form.distanceKm} onChange={(e) => update("distanceKm", e.target.value)} placeholder="80" /><FieldError errors={errors.distanceKm} /></label>
+              <div>
+                <p className="text-xs font-black uppercase text-clay">Finish nakon dana</p>
+                <p className="mt-1 font-display text-3xl font-black">{computedEndLocation || `${computedStartLocation} km`}{computedEndLocation ? " km" : ""}</p>
+              </div>
+            </div>
+          </div>
+          <label className={labelClassName}>Mjesto spavanja<input className={inputClassName} value={form.sleepingLocation} onChange={(e) => update("sleepingLocation", e.target.value)} placeholder="Skadar" /></label>
           <label className={labelClassName}>Država<input className={inputClassName} value={form.country} onChange={(e) => update("country", e.target.value)} /><FieldError errors={errors.country} /></label>
-          <label className={labelClassName}>Kilometri<input className={inputClassName} type="number" min="0" max="500" step="0.1" value={form.distanceKm} onChange={(e) => update("distanceKm", e.target.value)} /><FieldError errors={errors.distanceKm} /></label>
           <label className={labelClassName}>Poseban milestone<input className={inputClassName} value={form.specialMilestoneType} onChange={(e) => update("specialMilestoneType", e.target.value)} placeholder="Prva granica, 500 km..." /></label>
         </div>
         <label className="mt-5 flex min-h-12 items-center gap-3 rounded-2xl bg-sand px-4 py-3 font-black"><input type="checkbox" className="h-5 w-5 accent-clay" checked={form.isRestDay} onChange={(e) => update("isRestDay", e.target.checked)} /> Dan odmora</label>
@@ -274,7 +296,16 @@ export function RecapForm({
         <button type="button" onClick={() => void save("published")} disabled={busy !== null} className="inline-flex min-h-12 items-center justify-center gap-2 rounded-full bg-clay px-5 py-3 font-black text-paper disabled:opacity-60">{busy === "published" ? <LoaderCircle className="animate-spin" size={19} /> : <Send size={19} />} Objavi recap</button>
       </div>
 
-      {showPreview ? <RecapPreview form={form} onClose={() => setShowPreview(false)} /> : null}
+      {showPreview ? (
+        <RecapPreview
+          form={{
+            ...form,
+            startLocation: todayDistanceKm === null ? "" : computedStartLocation,
+            endLocation: todayDistanceKm === null ? "" : computedEndLocation
+          }}
+          onClose={() => setShowPreview(false)}
+        />
+      ) : null}
     </div>
   );
 }
