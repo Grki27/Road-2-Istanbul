@@ -21,37 +21,35 @@ const riders: Rider[] = [
     name: "Marin",
     image: "/assets/marin.jpg",
     description:
-      "Splićanin, kreator iza Sedmog Neba, student FER-a, avanturist, ljubitelj svakog sporta, snimanja videa, letenja drona i osoba koja nikad neće reći ne izlasku s ekipom.",
+      "Splićanin, student FER-a i kreator iza profila Sedmo Nebo. Voli igrat svaki sport, svira gitaru, rijetko kad kaže ne izlasku i često ga možete naći na nekom krovu, putovanju ili avanturi.",
     strengths: [
-      { label: "Beskonačna kondicija", value: 5 },
-      { label: "Može spavat bilo gdje", value: 4 },
-      { label: "Može složit kadar iz ničega", value: 5 }
+      { label: "Ima beskonačno kondicije", value: 5 },
+      { label: "Uvijek je spreman za side quest", value: 5 },
+      { label: "Može napravit 10 ruskih zgibova", value: 5 }
     ],
     weaknesses: [
-      { label: "Lako izgori", value: 2 },
-      { label: "Živciraju ga uzbrdice", value: 1 },
-      { label: "Kaže da kreće lagano pa napravi mini dokumentarac", value: 2 }
+      { label: "Iznervira se na uzbrdicama", value: 1 },
+      { label: "Mobitel mu je uvijek mrtav", value: 2 }
     ]
   },
   {
     name: "Marko",
     image: "/assets/marko.jpg",
     description:
-      "Student medicine, ljubitelj biciklizma, svira flautu, voli radit stvari za plot i nekako uvijek pronađe dodatni sidequest kad svi misle da je dan gotov.",
+      "Riječanin, student medicine u Zagrebu i ljubitelj bicikliranja. Odlično kuha, svira flautu i voli se družit s ljudima.",
     strengths: [
       { label: "Zna prvu pomoć", value: 5 },
-      { label: "Voli sidequestat po putu", value: 5 },
-      { label: "Ima bolji bajk", value: 4 }
+      { label: "Uvijek ima neki snack pri ruci", value: 5 },
+      { label: "Ima Dekanovu nagradu", value: 5 }
     ],
     weaknesses: [
-      { label: "Mora nać savršeno mjesto za jest", value: 2 },
-      { label: "Kaže “još malo” bez definicije kilometara", value: 2 },
-      { label: "Previše mirno prihvaća loše ideje", value: 3 }
+      { label: "Iznervira se ako negdje krivo skrenemo", value: 2 },
+      { label: "Mora nać savršeno mjesto za jest", value: 1 }
     ]
   }
 ];
 
-function getBarColor(value: StatItem["value"]) {
+function getScoreColor(value: StatItem["value"]) {
   if (value === 1) return "bg-red-500";
   if (value === 2) return "bg-orange-500";
   if (value === 3) return "bg-yellow-500";
@@ -59,20 +57,24 @@ function getBarColor(value: StatItem["value"]) {
   return "bg-moss";
 }
 
-function StatBars({ item }: { item: StatItem }) {
-  const color = getBarColor(item.value);
+function StatDots({ item }: { item: StatItem }) {
+  const color = getScoreColor(item.value);
 
   return (
-    <li className="space-y-2">
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-sm font-bold leading-5 text-coffee/88">{item.label}</span>
-        <span className="shrink-0 text-xs font-black text-coffee/60">{item.value}/5</span>
-      </div>
-      <div className="grid grid-cols-5 gap-1.5" aria-label={`${item.label}: ${item.value} od 5`}>
+    <li className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3">
+      <span className="text-sm font-bold leading-5 text-coffee/88">{item.label}</span>
+      <div
+        aria-label={`${item.label}: ${item.value} od 5`}
+        className="flex shrink-0 gap-1.5"
+        role="img"
+      >
         {Array.from({ length: 5 }).map((_, index) => (
           <span
+            aria-hidden="true"
             key={index}
-            className={`h-2.5 rounded-full ${index < item.value ? color : "bg-coffee/12"}`}
+            className={`h-3 w-3 rounded-full border ${
+              index < item.value ? `${color} border-transparent` : "border-coffee/25 bg-transparent"
+            }`}
           />
         ))}
       </div>
@@ -124,7 +126,7 @@ export function RidersSection({ latestRecap }: { latestRecap?: DailyRecap }) {
                   <p className="font-black text-moss">Snage</p>
                   <ul className="mt-4 space-y-4">
                     {rider.strengths.map((item) => (
-                      <StatBars key={item.label} item={item} />
+                      <StatDots key={item.label} item={item} />
                     ))}
                   </ul>
                 </div>
@@ -132,7 +134,7 @@ export function RidersSection({ latestRecap }: { latestRecap?: DailyRecap }) {
                   <p className="font-black text-clay">Slabosti</p>
                   <ul className="mt-4 space-y-4">
                     {rider.weaknesses.map((item) => (
-                      <StatBars key={item.label} item={item} />
+                      <StatDots key={item.label} item={item} />
                     ))}
                   </ul>
                 </div>
