@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { LoaderCircle, MapPinPlus } from "lucide-react";
 import { saveMapEventAction, type AdminActionResult } from "@app/admin/actions";
 import { AdminActionMessage, inputClassName, labelClassName, UseCurrentLocationButton } from "@/components/admin/AdminFormUi";
+import { CoordinateMapPicker } from "@/components/admin/CoordinateMapPicker";
 import { ImageUploader, type AdminImage } from "@/components/admin/ImageUploader";
 import type { Database } from "@/types/database";
 
@@ -70,6 +71,14 @@ export function MapEventForm({ event, initialImages }: { event?: EventRow; initi
           <label className={labelClassName}>Latitude<input className={inputClassName} type="number" step="any" value={latitude} onChange={(e) => setLatitude(e.target.value)} /></label>
           <label className={labelClassName}>Longitude<input className={inputClassName} type="number" step="any" value={longitude} onChange={(e) => setLongitude(e.target.value)} /></label>
         </div>
+        <CoordinateMapPicker
+          latitude={latitude}
+          longitude={longitude}
+          onPick={(lat, lng) => {
+            setLatitude(String(lat));
+            setLongitude(String(lng));
+          }}
+        />
       </section>
 
       <section className="rounded-2xl bg-white/70 p-5 shadow-paper sm:p-7">

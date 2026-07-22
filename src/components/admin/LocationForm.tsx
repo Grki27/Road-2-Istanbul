@@ -4,6 +4,7 @@ import { useState } from "react";
 import { LoaderCircle, Navigation } from "lucide-react";
 import { updateCurrentLocationAction, type AdminActionResult } from "@app/admin/actions";
 import { AdminActionMessage, inputClassName, labelClassName, UseCurrentLocationButton } from "@/components/admin/AdminFormUi";
+import { CoordinateMapPicker } from "@/components/admin/CoordinateMapPicker";
 
 export function LocationForm({ defaultCountry = "" }: { defaultCountry?: string }) {
   const [latitude, setLatitude] = useState("");
@@ -43,6 +44,14 @@ export function LocationForm({ defaultCountry = "" }: { defaultCountry?: string 
           <label className={`${labelClassName} sm:col-span-2`}>Kratka napomena<textarea className={`${inputClassName} min-h-24 resize-y`} maxLength={300} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Stali smo na kavu prije granice." /></label>
           <label className={`${labelClassName} sm:col-span-2`}>Trenutna država, opcionalno<input className={inputClassName} maxLength={80} value={country} onChange={(e) => setCountry(e.target.value)} placeholder="Crna Gora" /><span className="mt-2 block text-xs font-bold text-coffee/55">Ako je ostaviš praznom, javna statistika države se neće mijenjati.</span></label>
         </div>
+        <CoordinateMapPicker
+          latitude={latitude}
+          longitude={longitude}
+          onPick={(lat, lng) => {
+            setLatitude(String(lat));
+            setLongitude(String(lng));
+          }}
+        />
         <button type="button" onClick={() => void save()} disabled={busy} className="mt-6 inline-flex min-h-14 w-full items-center justify-center gap-2 rounded-full bg-clay px-6 py-4 font-black text-paper shadow-pin disabled:opacity-60 sm:w-auto">
           {busy ? <LoaderCircle className="animate-spin" size={20} /> : <Navigation size={20} />}
           Objavi trenutnu lokaciju

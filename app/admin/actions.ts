@@ -26,6 +26,10 @@ export type AdminActionResult = {
 
 type ImageKind = "recap" | "event";
 
+const EARTH_RADIUS_METERS = 6378137;
+const LIVE_LOCATION_OFFSET_METERS = 1000;
+const LIVE_LOCATION_OFFSET_BEARING_DEGREES = 45;
+
 const imageInputSchema = z.object({
   kind: z.enum(["recap", "event"]),
   parentId: z.string().uuid(),
@@ -57,6 +61,37 @@ function formatKmValue(value: number) {
   return Number.isInteger(value) ? String(value) : value.toFixed(1).replace(/\.0$/, "");
 }
 
+function toRadians(value: number) {
+  return (value * Math.PI) / 180;
+}
+
+function toDegrees(value: number) {
+  return (value * 180) / Math.PI;
+}
+
+function offsetCoordinates(latitude: number, longitude: number, distanceMeters: number, bearingDegrees: number) {
+  const bearing = toRadians(bearingDegrees);
+  const angularDistance = distanceMeters / EARTH_RADIUS_METERS;
+  const lat1 = toRadians(latitude);
+  const lng1 = toRadians(longitude);
+
+  const lat2 = Math.asin(
+    Math.sin(lat1) * Math.cos(angularDistance) +
+      Math.cos(lat1) * Math.sin(angularDistance) * Math.cos(bearing)
+  );
+  const lng2 =
+    lng1 +
+    Math.atan2(
+      Math.sin(bearing) * Math.sin(angularDistance) * Math.cos(lat1),
+      Math.cos(angularDistance) - Math.sin(lat1) * Math.sin(lat2)
+    );
+
+  return {
+    latitude: Number(toDegrees(lat2).toFixed(7)),
+    longitude: Number((((toDegrees(lng2) + 540) % 360) - 180).toFixed(7))
+  };
+}
+
 async function recalculateRecapKilometerRanges(supabase: SupabaseClient<Database>) {
   const { data, error } = await supabase
     .from("daily_recaps")
@@ -86,6 +121,41 @@ async function recalculateRecapKilometerRanges(supabase: SupabaseClient<Database
   }
 
   return undefined;
+}
+
+async function updateLiveLocationFromPoint(
+  supabase: SupabaseClient<Database>,
+  point: {
+    latitude: number | null;
+    longitude: number | null;
+    note?: string | null;
+    country?: string | null;
+  },
+  options?: {
+    offsetFromPointByMeters?: number;
+  }
+) {
+  if (point.latitude === null || point.longitude === null) return undefined;
+  const coordinates = options?.offsetFromPointByMeters
+    ? offsetCoordinates(
+        point.latitude,
+        point.longitude,
+        options.offsetFromPointByMeters,
+        LIVE_LOCATION_OFFSET_BEARING_DEGREES
+      )
+    : {
+        latitude: point.latitude,
+        longitude: point.longitude
+      };
+
+  const { error } = await supabase.rpc("admin_update_current_location", {
+    p_latitude: coordinates.latitude,
+    p_longitude: coordinates.longitude,
+    p_note: nullIfEmpty(point.note ?? undefined),
+    p_current_country: nullIfEmpty(point.country ?? undefined)
+  });
+
+  return error?.message;
 }
 
 function refreshPublicAndAdmin() {
@@ -141,6 +211,21 @@ export async function saveRecapAction(input: RecapInput): Promise<AdminActionRes
   const recalculationError = await recalculateRecapKilometerRanges(supabase);
   if (recalculationError) {
     return { ok: false, message: `Recap je spremljen, ali kilometri nisu presloženi: ${recalculationError}` };
+  }
+
+  if (value.status === "published") {
+    const locationError = await updateLiveLocationFromPoint(supabase, {
+      latitude: value.latitude,
+      longitude: value.longitude,
+      country: value.country,
+      note: `Dan ${value.dayNumber}: ${value.title}`
+    }, {
+      offsetFromPointByMeters: LIVE_LOCATION_OFFSET_METERS
+    });
+
+    if (locationError) {
+      return { ok: false, message: `Recap je spremljen, ali live lokacija nije ažurirana: ${locationError}` };
+    }
   }
 
   refreshPublicAndAdmin();
@@ -246,6 +331,20 @@ export async function saveMapEventAction(input: MapEventInput): Promise<AdminAct
     : await supabase.from("map_events").insert(payload).select("id").single();
 
   if (result.error) return { ok: false, message: `Pin nije spremljen: ${result.error.message}` };
+
+  const locationError = await updateLiveLocationFromPoint(supabase, {
+    latitude: value.latitude,
+    longitude: value.longitude,
+    country: value.country,
+    note: `Pin: ${value.title}`
+  }, {
+    offsetFromPointByMeters: LIVE_LOCATION_OFFSET_METERS
+  });
+
+  if (locationError) {
+    return { ok: false, message: `Pin je spremljen, ali live lokacija nije ažurirana: ${locationError}` };
+  }
+
   refreshPublicAndAdmin();
   return { ok: true, id: result.data.id, message: "Pin je spremljen i vidljiv na karti." };
 }

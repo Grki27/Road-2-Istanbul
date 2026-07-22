@@ -345,7 +345,7 @@ export function MapPreview({
         });
 
         leaflet
-          .marker([currentLocation.latitude, currentLocation.longitude], { icon: teamIcon })
+          .marker([currentLocation.latitude, currentLocation.longitude], { icon: teamIcon, zIndexOffset: 700 })
           .addTo(map)
           .bindPopup(createCurrentLocationPopup(currentLocation, isPreview));
       }
@@ -354,6 +354,8 @@ export function MapPreview({
         if (recap.latitude === undefined || recap.longitude === undefined) {
           return;
         }
+        const recapLatitude = recap.latitude;
+        const recapLongitude = recap.longitude;
 
         const recapIcon = leaflet.divIcon({
           className: "recap-map-marker",
@@ -364,7 +366,7 @@ export function MapPreview({
         });
 
         const marker = leaflet
-          .marker([recap.latitude, recap.longitude], { icon: recapIcon })
+          .marker([recapLatitude, recapLongitude], { icon: recapIcon, zIndexOffset: 900 })
           .addTo(map)
           .bindPopup(createRecapPopup(recap), { maxWidth: 310 });
 
@@ -384,7 +386,7 @@ export function MapPreview({
         });
 
         leaflet
-          .marker([event.latitude, event.longitude], { icon: eventIcon })
+          .marker([event.latitude, event.longitude], { icon: eventIcon, zIndexOffset: 850 })
           .addTo(map)
           .bindPopup(createEventPopup(event), { maxWidth: 310 });
       });

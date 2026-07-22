@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Flag, Star } from "lucide-react";
+import { ExpandableText } from "@/components/ExpandableText";
 import { MapFocusButton } from "@/components/MapFocusButton";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
@@ -39,7 +40,11 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
                     {formatKilometerRange(recap.startLocation, recap.endLocation)}
                   </p>
                   <h3 className="mt-2 font-display text-2xl font-black">{recap.title}</h3>
-                  <p className="mt-3 line-clamp-3 leading-7 text-coffee/80">{recap.shortText}</p>
+                  <ExpandableText
+                    text={recap.shortText}
+                    className="mt-3 leading-7 text-coffee/80"
+                    threshold={135}
+                  />
                   <div className="mt-5 flex flex-wrap gap-2 text-sm font-black">
                     <span className="rounded-full bg-white/70 px-3 py-2">{recap.distanceKm} km</span>
                     <span className="inline-flex items-center gap-2 rounded-full bg-white/70 px-3 py-2"><Flag size={16} />{formatCountry(recap.country)}</span>

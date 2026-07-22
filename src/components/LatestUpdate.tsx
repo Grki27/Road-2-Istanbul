@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { BedDouble, CalendarDays, Flag, Route, Star } from "lucide-react";
+import { ExpandableText } from "@/components/ExpandableText";
 import type { DailyRecap } from "@/types";
 import { fatigueScale } from "@/data/mockData";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
@@ -46,7 +47,12 @@ export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap;
               <span className="inline-flex items-center gap-2 rounded-full bg-sand px-3 py-1.5"><Star size={16} fill="currentColor" />{recap.specialMilestoneType}</span>
             </div>
           ) : null}
-          <p className="mt-5 text-lg leading-8 text-coffee/88">{recap.shortText}</p>
+          <ExpandableText
+            text={recap.shortText}
+            className="mt-5 text-lg leading-8 text-coffee/88"
+            collapsedClassName="line-clamp-4"
+            threshold={260}
+          />
           <div className="mt-6 grid gap-3 md:grid-cols-2">
             <div className="rounded-2xl bg-white/60 p-4">
               <p className="text-sm font-black text-moss">Highlight dana</p>

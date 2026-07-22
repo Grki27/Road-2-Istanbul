@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Eye, Flag, LoaderCircle, Save, Send, Star, WifiOff, X } from "lucide-react";
 import { saveRecapAction, type AdminActionResult } from "@app/admin/actions";
 import { AdminActionMessage, inputClassName, labelClassName, UseCurrentLocationButton } from "@/components/admin/AdminFormUi";
+import { CoordinateMapPicker } from "@/components/admin/CoordinateMapPicker";
 import { ImageUploader, type AdminImage } from "@/components/admin/ImageUploader";
 import type { Database } from "@/types/database";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
@@ -258,6 +259,14 @@ export function RecapForm({
           <label className={labelClassName}>Latitude<input className={inputClassName} type="number" step="any" value={form.latitude} onChange={(e) => update("latitude", e.target.value)} /><FieldError errors={errors.latitude} /></label>
           <label className={labelClassName}>Longitude<input className={inputClassName} type="number" step="any" value={form.longitude} onChange={(e) => update("longitude", e.target.value)} /><FieldError errors={errors.longitude} /></label>
         </div>
+        <CoordinateMapPicker
+          latitude={form.latitude}
+          longitude={form.longitude}
+          onPick={(lat, lng) => {
+            update("latitude", String(lat));
+            update("longitude", String(lng));
+          }}
+        />
       </section>
 
       <section className="rounded-2xl bg-white/65 p-5 shadow-paper sm:p-6">

@@ -268,7 +268,9 @@ a {
   box-shadow: 0 10px 22px rgba(47, 36, 27, 0.28);
   display: flex;
   font-size: 22px;
+  height: 46px;
   justify-content: center;
+  width: 46px;
 }
 
 .emoji-map-marker span {
@@ -285,8 +287,10 @@ a {
   display: flex;
   font-size: 14px;
   font-weight: 900;
+  height: 52px;
   justify-content: center;
   transform: rotate(-45deg);
+  width: 44px;
 }
 
 .recap-map-marker span {
@@ -304,6 +308,21 @@ a {
   justify-content: center;
   padding: 0.72rem 1rem;
   transition: transform 160ms ease, opacity 160ms ease;
+}
+
+.admin-coordinate-marker {
+  background: transparent;
+  border: 0;
+}
+
+.admin-coordinate-marker span {
+  background: #b9683f;
+  border: 4px solid #fff8ea;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(47, 36, 27, 0.28);
+  display: block;
+  height: 28px;
+  width: 28px;
 }
 
 .map-control-button:not(:disabled):hover {
