@@ -27,7 +27,7 @@ export type AdminActionResult = {
 type ImageKind = "recap" | "event";
 
 const EARTH_RADIUS_METERS = 6378137;
-const LIVE_LOCATION_OFFSET_METERS = 1000;
+const LIVE_LOCATION_OFFSET_METERS = 500;
 const LIVE_LOCATION_OFFSET_BEARING_DEGREES = 45;
 
 const imageInputSchema = z.object({

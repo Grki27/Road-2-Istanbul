@@ -15,7 +15,7 @@ export default function AdminLoginPage() {
           <p className="text-xs font-black uppercase tracking-[0.24em] text-clay">Admin</p>
           <h1 className="mt-3 font-display text-4xl font-black">Prijava za cestu</h1>
           <p className="mt-3 leading-7 text-coffee/80">
-            Unesi admin email i dobit ćeš magic link za ulaz u panel.
+            Prijavi se jednim od dopuštenih admin emailova i lozinkom.
           </p>
           <AdminLoginForm isSupabaseConfigured={isConfigured} />
         </div>

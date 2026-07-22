@@ -1,77 +1,60 @@
 "use client";
 
-import { useState } from "react";
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useActionState } from "react";
+import { loginAdminAction } from "@app/admin/login/actions";
 
 type AdminLoginFormProps = {
   isSupabaseConfigured: boolean;
 };
 
+const initialState = {
+  message: ""
+};
+
 export function AdminLoginForm({ isSupabaseConfigured }: AdminLoginFormProps) {
-  const [email, setEmail] = useState("");
-  const [status, setStatus] = useState<"idle" | "loading" | "sent" | "error">("idle");
-  const [message, setMessage] = useState("");
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    if (!isSupabaseConfigured) {
-      setStatus("error");
-      setMessage("Supabase env varijable još nisu postavljene.");
-      return;
-    }
-
-    setStatus("loading");
-    setMessage("");
-
-    const supabase = createSupabaseBrowserClient();
-    const redirectTo = `${window.location.origin}/auth/callback?next=/admin`;
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: redirectTo
-      }
-    });
-
-    if (error) {
-      setStatus("error");
-      setMessage("Nešto je zapelo. Provjeri email i probaj ponovno.");
-      return;
-    }
-
-    setStatus("sent");
-    setMessage("Magic link je poslan. Otvori email i klikni link za ulaz.");
-  }
+  const [state, formAction, isPending] = useActionState(loginAdminAction, initialState);
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+    <form action={formAction} className="mt-6 space-y-4">
       <label className="block">
         <span className="text-sm font-black text-coffee">Email</span>
         <input
+          autoComplete="email"
           className="mt-2 w-full rounded-2xl border border-coffee/15 bg-paper px-4 py-3 font-semibold outline-none ring-clay/30 transition focus:ring-4"
-          disabled={!isSupabaseConfigured || status === "loading"}
-          onChange={(event) => setEmail(event.target.value)}
+          disabled={!isSupabaseConfigured || isPending}
+          name="email"
           placeholder="sedmonebo27@gmail.com"
           required
           type="email"
-          value={email}
+        />
+      </label>
+      <label className="block">
+        <span className="text-sm font-black text-coffee">Lozinka</span>
+        <input
+          autoComplete="current-password"
+          className="mt-2 w-full rounded-2xl border border-coffee/15 bg-paper px-4 py-3 font-semibold outline-none ring-clay/30 transition focus:ring-4"
+          disabled={!isSupabaseConfigured || isPending}
+          minLength={6}
+          name="password"
+          required
+          type="password"
         />
       </label>
       <button
         className="w-full rounded-full bg-clay px-5 py-3 font-black text-paper shadow-pin transition hover:bg-terracotta disabled:cursor-not-allowed disabled:bg-coffee/30"
-        disabled={!isSupabaseConfigured || status === "loading"}
+        disabled={!isSupabaseConfigured || isPending}
         type="submit"
       >
-        {status === "loading" ? "Šaljem..." : "Pošalji magic link"}
+        {isPending ? "Prijavljujem..." : "Prijavi se"}
       </button>
       {!isSupabaseConfigured ? (
         <p className="rounded-2xl bg-sand px-4 py-3 text-sm font-bold text-coffee">
           Dodaj Supabase vrijednosti u `.env.local` da login proradi.
         </p>
       ) : null}
-      {message ? (
-        <p className={`rounded-2xl px-4 py-3 text-sm font-bold ${status === "error" ? "bg-red-100 text-red-900" : "bg-lime-100 text-lime-900"}`}>
-          {message}
+      {state.message ? (
+        <p className="rounded-2xl bg-red-100 px-4 py-3 text-sm font-bold text-red-900">
+          {state.message}
         </p>
       ) : null}
     </form>
