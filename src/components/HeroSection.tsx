@@ -31,7 +31,7 @@ export function HeroSection() {
           <div className="flex max-w-[72vw] items-center gap-3 overflow-x-auto rounded-full bg-black/18 px-3 py-2 text-xs font-bold text-white/90 backdrop-blur sm:max-w-none sm:gap-4 md:gap-6 md:bg-transparent md:px-0 md:py-0 md:text-sm md:text-white/86 md:backdrop-blur-0">
             <a className="transition hover:text-sunset" href="#karta">Karta</a>
             <a className="transition hover:text-sunset" href="#dnevnik">Dnevnik</a>
-            <a className="transition hover:text-sunset" href="#podrska">Pano</a>
+            <a className="transition hover:text-sunset" href="#podrska">Podrška</a>
             <a className="transition hover:text-sunset" href="#humanitarno">Humanitarno</a>
           </div>
         </nav>
@@ -49,7 +49,7 @@ export function HeroSection() {
           <p className="mt-4 max-w-2xl text-base font-semibold leading-7 text-white/90 sm:text-lg md:text-xl lg:mt-6 lg:text-2xl">
             {siteConfig.tagline}
           </p>
-          <div className="absolute inset-x-5 bottom-28 flex flex-col gap-3 sm:bottom-32 sm:flex-row md:bottom-36 lg:static lg:mt-8">
+          <div className="absolute inset-x-5 bottom-28 flex flex-col gap-3 sm:bottom-32 sm:flex-row md:bottom-36 lg:static lg:mt-8 [@media(max-height:720px)]:bottom-16">
             <a
               href="#karta"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-sunset px-6 py-3.5 font-black text-ink shadow-pin transition hover:-translate-y-0.5 lg:py-4"
