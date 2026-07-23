@@ -42,9 +42,9 @@ export function HeroSection() {
           <div className="mb-4 inline-flex rotate-[-1.5deg] rounded-full bg-paper px-4 py-2 text-sm font-black text-clay shadow-pin sm:text-base lg:text-sm">
             Start: {siteConfig.startDate} · Dubrovnik → Istanbul
           </div>
-          <h1 className="font-display text-4xl font-black leading-[0.95] sm:text-5xl md:text-6xl lg:text-8xl">
-            Sedmo Nebo:
-            <span className="block text-sand">Road to Istanbul</span>
+          <h1 className="font-display font-black leading-[0.95]">
+            <span className="block text-[2.85rem] sm:text-6xl md:text-7xl lg:text-8xl">Sedmo Nebo:</span>
+            <span className="block text-4xl text-sand sm:text-5xl md:text-6xl lg:text-8xl">Road to Istanbul</span>
           </h1>
           <p className="mt-4 max-w-2xl text-lg font-semibold leading-7 text-white/90 sm:text-xl md:text-2xl lg:mt-6">
             {siteConfig.tagline}
