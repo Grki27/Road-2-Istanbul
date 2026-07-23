@@ -21,6 +21,7 @@ const COMMENT_MAX_LENGTH = 700;
 const WALL_NOTE_MAX_LENGTH = 240;
 const allowedPenColors = ["#111111", "#d33a2c", "#1f65d6", "#2f8a4b", "#f0b429", "#7c3aed"] as const;
 const allowedNoteColors = ["#ffe08a", "#c8f3d4", "#ffd0df", "#d6edff", "#f8c98d"] as const;
+const allowedCommentReactionEmojis = ["👍", "❤️", "😂", "😢", "🚲", "💯", "🔥", "🙌", "🤯", "👏"] as const;
 
 const drawingDataSchema = z.object({
   width: z.number().int().min(120).max(900),
@@ -57,6 +58,12 @@ const moveWallNoteSchema = z.object({
 const moderationTargetSchema = z.object({
   id: z.string().uuid(),
   drawingDataUrl: z.string().startsWith("data:image/").max(300_000).optional()
+});
+
+const commentReactionSchema = z.object({
+  commentId: z.string().uuid(),
+  emoji: z.enum(allowedCommentReactionEmojis),
+  clientId: z.string().uuid()
 });
 
 function countWords(text: string) {
@@ -290,6 +297,74 @@ export async function moderateSubmittedWallNoteAction(input: unknown): Promise<P
     status: "approved",
     message: "Sticky note je prošao AI pregled."
   };
+}
+
+export async function toggleCommentReactionAction(input: unknown): Promise<{
+  ok: boolean;
+  message: string;
+  selectedEmoji?: string;
+}> {
+  const parsed = commentReactionSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, message: "Reakcija nije spremljena." };
+  }
+
+  const value = parsed.data;
+  const supabase = createSupabaseServiceClient();
+  const { data: comment, error: commentError } = await supabase
+    .from("comments")
+    .select("id, status")
+    .eq("id", value.commentId)
+    .maybeSingle();
+
+  if (commentError || !comment || comment.status !== "approved") {
+    return { ok: false, message: "Reakcije su moguće samo na objavljene komentare." };
+  }
+
+  const { data: existing, error: existingError } = await supabase
+    .from("comment_reactions")
+    .select("id, emoji")
+    .eq("comment_id", value.commentId)
+    .eq("client_id", value.clientId)
+    .maybeSingle();
+
+  if (existingError) {
+    return { ok: false, message: "Reakcija nije spremljena." };
+  }
+
+  if (existing?.emoji === value.emoji) {
+    const { error } = await supabase
+      .from("comment_reactions")
+      .delete()
+      .eq("id", existing.id);
+
+    if (error) return { ok: false, message: "Reakcija nije uklonjena." };
+    revalidatePath("/");
+    return { ok: true, message: "Reakcija uklonjena." };
+  }
+
+  if (existing) {
+    const { error } = await supabase
+      .from("comment_reactions")
+      .update({ emoji: value.emoji })
+      .eq("id", existing.id);
+
+    if (error) return { ok: false, message: "Reakcija nije promijenjena." };
+    revalidatePath("/");
+    return { ok: true, selectedEmoji: value.emoji, message: "Reakcija promijenjena." };
+  }
+
+  const { error } = await supabase
+    .from("comment_reactions")
+    .insert({
+      comment_id: value.commentId,
+      client_id: value.clientId,
+      emoji: value.emoji
+    });
+
+  if (error) return { ok: false, message: "Reakcija nije spremljena." };
+  revalidatePath("/");
+  return { ok: true, selectedEmoji: value.emoji, message: "Reakcija spremljena." };
 }
 
 export async function moveWallNoteAction(input: unknown): Promise<{ ok: boolean; message: string }> {

@@ -462,7 +462,13 @@ export function MapPreview({
     <section id="karta" className="scroll-mt-4 px-5 py-20">
       <div className="mx-auto max-w-7xl">
         <div className="mb-7 max-w-4xl">
-          <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Live karta</p>
+          <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.26em] text-clay">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-70" />
+              <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-600" />
+            </span>
+            Live karta
+          </p>
           <h2 id="live-map-title" className="mt-3 font-display text-4xl font-black md:text-6xl">
             Putujte s nama kroz interaktivnu kartu
           </h2>

@@ -12,7 +12,7 @@ export const siteConfig = {
     instagram: "https://www.instagram.com/sedmo_nebo__/",
     tiktok: "https://www.tiktok.com/@sedmo_nebo_",
     youtube: "https://www.youtube.com/@sedmo_nebo",
-    facebook: "https://www.facebook.com/"
+    facebook: "https://www.facebook.com/share/1EAqH6LrCj/?mibextid=wwXlfr"
   },
   adminEmails: ["sedmonebo27@gmail.com", "marko.crepulja007@gmail.com"],
   partners: [
@@ -22,19 +22,14 @@ export const siteConfig = {
       url: "https://keindl-sport.hr/"
     },
     {
-      name: "Intersport",
-      logo: "/assets/partner-intersport.png",
-      url: "https://www.intersport.hr/"
-    },
-    {
-      name: "Red Bull",
-      logo: "/assets/partner-redbull.svg",
-      url: "https://www.redbull.com/hr-hr"
-    },
-    {
       name: "SOS Dječje selo Hrvatska",
       logo: "/assets/partner-sos-djecje-selo.png",
       url: "https://sos-dsh.hr/"
+    },
+    {
+      name: "Louder!",
+      logo: "/assets/partner-louder.png",
+      url: "https://louder.hr/"
     }
   ]
 } as const;

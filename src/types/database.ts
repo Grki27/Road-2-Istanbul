@@ -124,6 +124,23 @@ export type Database = {
         Update: Partial<Database["public"]["Tables"]["comments"]["Row"]>;
         Relationships: [];
       };
+      comment_reactions: {
+        Row: {
+          id: string;
+          comment_id: string;
+          client_id: string;
+          emoji: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["comment_reactions"]["Row"]> & {
+          comment_id: string;
+          client_id: string;
+          emoji: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["comment_reactions"]["Row"]>;
+        Relationships: [];
+      };
       wall_notes: {
         Row: {
           id: string;

@@ -2,8 +2,8 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MessageCircleMore, Send, X } from "lucide-react";
-import { moderateSubmittedCommentAction, submitCommentAction } from "@app/public-actions";
+import { MessageCircleMore, Send, SmilePlus, X } from "lucide-react";
+import { moderateSubmittedCommentAction, submitCommentAction, toggleCommentReactionAction } from "@app/public-actions";
 import type { RecapComment } from "@/types";
 
 type RecapCommentsProps = {
@@ -15,6 +15,9 @@ type RecapCommentsProps = {
 
 const defaultButtonClassName =
   "inline-flex items-center justify-center gap-2 rounded-full bg-white/70 px-3 py-2 text-sm font-black text-ink transition hover:bg-white";
+const commentReactionEmojis = ["👍", "❤️", "😂", "😢", "🚲", "💯", "🔥", "🙌", "🤯", "👏"] as const;
+const clientIdStorageKey = "sedmo-nebo-comment-reaction-client-id";
+const reactionStorageKeyPrefix = "sedmo-nebo-comment-reaction-";
 
 function wordCount(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
@@ -25,6 +28,15 @@ function statusClassName(status?: string) {
   if (status === "pending") return "bg-sand text-ink";
   if (status === "rejected") return "bg-red-100 text-red-950";
   return "bg-white/70 text-coffee";
+}
+
+function getClientId() {
+  const existing = window.localStorage.getItem(clientIdStorageKey);
+  if (existing) return existing;
+
+  const next = window.crypto.randomUUID();
+  window.localStorage.setItem(clientIdStorageKey, next);
+  return next;
 }
 
 export function RecapComments({
@@ -38,7 +50,10 @@ export function RecapComments({
   const [authorName, setAuthorName] = useState("");
   const [message, setMessage] = useState("");
   const [result, setResult] = useState<{ status?: "approved" | "pending" | "rejected"; message: string } | null>(null);
+  const [openPickerCommentId, setOpenPickerCommentId] = useState<string | null>(null);
+  const [reactionBurst, setReactionBurst] = useState<{ commentId: string; emoji: string; nonce: number } | null>(null);
   const [isPending, startTransition] = useTransition();
+  const [isReactionPending, startReactionTransition] = useTransition();
   const visibleComments = useMemo(() => comments, [comments]);
   const currentWordCount = wordCount(message);
   const commentCount = visibleComments.length;
@@ -64,6 +79,29 @@ export function RecapComments({
           router.refresh();
         }
       }
+    });
+  }
+
+  function reactToComment(commentId: string, emoji: (typeof commentReactionEmojis)[number]) {
+    startReactionTransition(async () => {
+      const clientId = getClientId();
+      const storageKey = `${reactionStorageKeyPrefix}${commentId}`;
+      const actionResult = await toggleCommentReactionAction({ commentId, emoji, clientId });
+
+      if (!actionResult.ok) {
+        setResult({ status: "pending", message: actionResult.message });
+        return;
+      }
+
+      if (actionResult.selectedEmoji) {
+        window.localStorage.setItem(storageKey, actionResult.selectedEmoji);
+        setReactionBurst({ commentId, emoji: actionResult.selectedEmoji, nonce: Date.now() });
+      } else {
+        window.localStorage.removeItem(storageKey);
+      }
+
+      setOpenPickerCommentId(null);
+      router.refresh();
     });
   }
 
@@ -106,14 +144,58 @@ export function RecapComments({
               <div className="space-y-3">
                 {visibleComments.length ? (
                   visibleComments.map((comment) => (
-                    <article key={comment.id} className="rounded-2xl bg-white/70 p-4">
+                    <article key={comment.id} className="relative rounded-2xl bg-white/70 p-4">
                       <div className="flex items-center justify-between gap-3">
                         <p className="font-display text-lg font-black">{comment.authorName}</p>
-                        <time className="text-xs font-bold text-coffee/55" dateTime={comment.createdAt}>
-                          {new Intl.DateTimeFormat("hr-HR", { day: "numeric", month: "short" }).format(new Date(comment.createdAt))}
-                        </time>
+                        <div className="flex items-center gap-2">
+                          <time className="text-xs font-bold text-coffee/55" dateTime={comment.createdAt}>
+                            {new Intl.DateTimeFormat("hr-HR", { day: "numeric", month: "short" }).format(new Date(comment.createdAt))}
+                          </time>
+                          <button
+                            aria-label="Dodaj reakciju"
+                            className="grid h-8 w-8 place-items-center rounded-full bg-paper text-coffee shadow-pin transition hover:-translate-y-0.5 hover:text-ink disabled:opacity-50"
+                            disabled={isReactionPending}
+                            onClick={() => setOpenPickerCommentId((current) => current === comment.id ? null : comment.id)}
+                            type="button"
+                          >
+                            <SmilePlus size={16} />
+                          </button>
+                        </div>
                       </div>
                       <p className="mt-2 leading-7 text-coffee/85">{comment.message}</p>
+                      {comment.reactions.length ? (
+                        <div className="mt-3 flex flex-wrap gap-1.5">
+                          {comment.reactions.map((reaction) => (
+                            <span
+                              className={`inline-flex items-center gap-1 rounded-full bg-paper px-2.5 py-1 text-sm font-black text-ink shadow-sm ${
+                                reactionBurst?.commentId === comment.id && reactionBurst.emoji === reaction.emoji
+                                  ? "comment-reaction-pop"
+                                  : ""
+                              }`}
+                              key={`${reaction.emoji}-${reactionBurst?.nonce ?? "stable"}`}
+                            >
+                              <span>{reaction.emoji}</span>
+                              <span className="text-xs text-coffee/70">{reaction.count}</span>
+                            </span>
+                          ))}
+                        </div>
+                      ) : null}
+                      {openPickerCommentId === comment.id ? (
+                        <div className="absolute right-4 top-14 z-20 flex flex-wrap gap-1 rounded-2xl bg-paper p-2 shadow-paper">
+                          {commentReactionEmojis.map((emoji) => (
+                            <button
+                              aria-label={`Reagiraj: ${emoji}`}
+                              className="grid h-9 w-9 place-items-center rounded-full text-lg transition hover:scale-110 hover:bg-white disabled:opacity-50"
+                              disabled={isReactionPending}
+                              key={emoji}
+                              onClick={() => reactToComment(comment.id, emoji)}
+                              type="button"
+                            >
+                              {emoji}
+                            </button>
+                          ))}
+                        </div>
+                      ) : null}
                     </article>
                   ))
                 ) : (

@@ -20,3 +20,99 @@
  POST / 200 in 687ms
  POST / 200 in 735ms
  POST / 200 in 646ms
+   Reload env: .env.local
+ ✓ Compiled in 1610ms (972 modules)
+ GET / 200 in 1456ms
+ POST / 200 in 2228ms
+ ✓ Compiled in 4.8s (986 modules)
+ GET / 200 in 1511ms
+ ✓ Compiled in 1208ms (986 modules)
+ GET / 200 in 1475ms
+ ✓ Compiled in 964ms (986 modules)
+ GET / 200 in 765ms
+ ✓ Compiled in 925ms (986 modules)
+ GET / 200 in 1969ms
+ ✓ Compiled in 3.5s (986 modules)
+ GET / 200 in 2434ms
+ ✓ Compiled in 1672ms (986 modules)
+ GET / 200 in 867ms
+ ✓ Compiled in 1216ms (292 modules)
+ ✓ Compiled in 585ms (292 modules)
+ ✓ Compiled in 732ms (292 modules)
+ GET / 200 in 2364ms
+ GET / 200 in 1715ms
+ GET / 200 in 916ms
+ ✓ Compiled in 515ms (292 modules)
+ ✓ Compiled in 573ms (292 modules)
+ ○ Compiling /_error ...
+ ✓ Compiled /_error in 27.5s (1333 modules)
+ GET / 500 in 31861ms
+ GET / 200 in 2317ms
+ GET / 200 in 2655ms
+ GET / 200 in 12683ms
+ ✓ Compiled in 3.6s (1333 modules)
+ ✓ Compiled in 6.4s (1333 modules)
+ GET / 200 in 2343ms
+ ✓ Compiled in 4.9s (1237 modules)
+ GET / 200 in 2930ms
+ GET / 200 in 2007ms
+ POST / 200 in 562ms
+ POST / 200 in 72ms
+ POST / 200 in 52ms
+ ✓ Compiled in 4.6s (1239 modules)
+ GET / 200 in 1984ms
+ ✓ Compiled in 3.5s (1239 modules)
+ GET / 200 in 1340ms
+ ✓ Compiled in 1060ms (1239 modules)
+ GET / 200 in 703ms
+ ✓ Compiled in 1157ms (1239 modules)
+ GET / 200 in 949ms
+ ✓ Compiled in 1945ms (1239 modules)
+ GET / 200 in 1282ms
+ GET / 200 in 2120ms
+ ✓ Compiled in 6.5s (1239 modules)
+ GET / 200 in 1996ms
+ ✓ Compiled in 2s (1239 modules)
+ GET / 200 in 1323ms
+ ✓ Compiled in 1661ms (1239 modules)
+ GET / 200 in 970ms
+ ✓ Compiled in 6.2s (1239 modules)
+ GET / 200 in 1427ms
+ ✓ Compiled in 1249ms (1239 modules)
+ GET / 200 in 1077ms
+ ✓ Compiled in 872ms (1239 modules)
+ GET / 200 in 1782ms
+ ✓ Compiled in 503ms (1239 modules)
+ GET / 200 in 520ms
+ ✓ Compiled in 958ms (1239 modules)
+ GET / 200 in 1014ms
+ ✓ Compiled in 744ms (1239 modules)
+ GET / 200 in 662ms
+ ○ Compiling /admin/recaps ...
+ ✓ Compiled /admin/recaps in 5.5s (1395 modules)
+ GET /admin/recaps 200 in 8195ms
+ ○ Compiling /admin/recaps/new ...
+ ✓ Compiled /admin/recaps/new in 6s (1542 modules)
+ GET /admin/recaps/new 200 in 7380ms
+ POST /admin/recaps/new 200 in 2458ms
+ ○ Compiling /admin/recaps/[id]/edit ...
+ ✓ Compiled /admin/recaps/[id]/edit in 3s (1544 modules)
+ GET /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 6494ms
+ POST /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 1462ms
+ GET /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 375ms
+ POST /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 1005ms
+ GET /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 594ms
+ POST /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 1336ms
+ GET /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 883ms
+ POST /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 1464ms
+ GET /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 770ms
+ POST /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 1089ms
+ GET /admin/recaps/7297a5a0-67ee-43a4-af4d-3b3efd8a933c/edit 200 in 392ms
+ GET / 200 in 1765ms
+ POST / 200 in 3221ms
+ GET / 200 in 2105ms
+ POST / 200 in 1160ms
+ POST / 200 in 2928ms
+ GET / 200 in 1961ms
+ POST / 200 in 2598ms
+ GET / 200 in 1423ms

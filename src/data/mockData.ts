@@ -37,6 +37,7 @@ export const previewRecaps: DailyRecap[] = [
         authorName: "Ana",
         message: "Ajmo jako, ovo vec izgleda kao film.",
         status: "approved",
+        reactions: [],
         createdAt: "2026-08-25T12:00:00.000Z"
       },
       {
@@ -45,6 +46,7 @@ export const previewRecaps: DailyRecap[] = [
         authorName: "Luka",
         message: "Pratim svaki kilometar, samo nemojte zaboravit jest.",
         status: "approved",
+        reactions: [],
         createdAt: "2026-08-25T13:15:00.000Z"
       }
     ],

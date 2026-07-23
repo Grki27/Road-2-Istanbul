@@ -22,6 +22,7 @@ type CurrentLocationRow = Database["public"]["Tables"]["current_locations"]["Row
 type MapEventRow = Database["public"]["Tables"]["map_events"]["Row"];
 type MapEventImageRow = Database["public"]["Tables"]["map_event_images"]["Row"];
 type CommentRow = Database["public"]["Tables"]["comments"]["Row"];
+type CommentReactionRow = Database["public"]["Tables"]["comment_reactions"]["Row"];
 type WallNoteRow = Database["public"]["Tables"]["wall_notes"]["Row"];
 type TripSettingsRow = Database["public"]["Tables"]["trip_settings"]["Row"];
 
@@ -55,18 +56,35 @@ function toFatigueRating(value: number | null): 1 | 2 | 3 | 4 | 5 {
   return 3;
 }
 
-function mapComments(rows: CommentRow[]): RecapComment[] {
+function mapCommentReactions(rows: CommentReactionRow[]) {
+  const reactionsByComment = new Map<string, Map<string, number>>();
+
+  rows.forEach((row) => {
+    const reactions = reactionsByComment.get(row.comment_id) ?? new Map<string, number>();
+    reactions.set(row.emoji, (reactions.get(row.emoji) ?? 0) + 1);
+    reactionsByComment.set(row.comment_id, reactions);
+  });
+
+  return reactionsByComment;
+}
+
+function mapComments(rows: CommentRow[], reactionRows: CommentReactionRow[]): RecapComment[] {
+  const reactionsByComment = mapCommentReactions(reactionRows);
+
   return rows.map((row) => ({
     id: row.id,
     recapId: row.recap_id,
     authorName: row.author_name,
     message: row.message,
     status: row.status,
+    reactions: Array.from(reactionsByComment.get(row.id)?.entries() ?? [])
+      .map(([emoji, count]) => ({ emoji, count }))
+      .sort((first, second) => second.count - first.count),
     createdAt: row.created_at
   }));
 }
 
-function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[], commentRows: CommentRow[]): DailyRecap[] {
+function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[], commentRows: CommentRow[], reactionRows: CommentReactionRow[]): DailyRecap[] {
   const imagesByRecap = new Map<string, string[]>();
   const commentsByRecap = new Map<string, RecapComment[]>();
 
@@ -76,7 +94,7 @@ function mapRecaps(rows: DailyRecapRow[], imageRows: RecapImageRow[], commentRow
     imagesByRecap.set(image.recap_id, images);
   });
 
-  mapComments(commentRows).forEach((comment) => {
+  mapComments(commentRows, reactionRows).forEach((comment) => {
     const comments = commentsByRecap.get(comment.recapId) ?? [];
     comments.push(comment);
     commentsByRecap.set(comment.recapId, comments);
@@ -231,6 +249,7 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       mapEventsResult,
       mapEventImagesResult,
       commentsResult,
+      commentReactionsResult,
       wallNotesResult,
       settingsResult
     ] = await withTimeout(Promise.all([
@@ -253,6 +272,10 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
         .from("comments")
         .select("*")
         .eq("status", "approved")
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("comment_reactions")
+        .select("*")
         .order("created_at", { ascending: true }),
       supabase
         .from("wall_notes")
@@ -279,7 +302,12 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
       return previewData(true);
     }
 
-    const recaps = mapRecaps(recapsResult.data ?? [], recapImagesResult.data ?? [], commentsResult.data ?? []);
+    const recaps = mapRecaps(
+      recapsResult.data ?? [],
+      recapImagesResult.data ?? [],
+      commentsResult.data ?? [],
+      commentReactionsResult.error ? [] : commentReactionsResult.data ?? []
+    );
     const currentLocation = mapCurrentLocation(currentLocationResult.data);
     const mapEventsData = mapEvents(mapEventsResult.data ?? [], mapEventImagesResult.data ?? []);
     const wallNotesData = mapWallNotes(wallNotesResult.data ?? []);

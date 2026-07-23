@@ -341,7 +341,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
         <SectionHeader
           eyebrow="Zid podrske"
           title="Ostavi nam poruku podrške."
-          text="Kratki papirići podrške žive 24 sata. Dodaj poruku, nacrtaj nešto ako te ponese i zalijepi je na pano."
+          text="Sticky notes žive 24 sata - kao Instagram storyji. Dodaj poruku, nacrtaj nešto ako te ponese i zalijepi je na pano."
         />
         <div ref={boardRef} className="relative isolate min-h-[620px] overflow-hidden rounded-[2rem] bg-cork bg-[length:18px_18px,auto] p-4 shadow-paper md:min-h-[650px] md:p-8">
           <button

@@ -33,7 +33,13 @@ export type RecapComment = {
   authorName: string;
   message: string;
   status: ModerationStatus;
+  reactions: CommentReactionSummary[];
   createdAt: string;
+};
+
+export type CommentReactionSummary = {
+  emoji: string;
+  count: number;
 };
 
 export type CurrentLocation = {

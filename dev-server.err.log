@@ -1,0 +1,61 @@
+ ⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/'
+}
+Public data loader failed: TypeError: Cannot read properties of undefined (reading 'forEach')
+    at mapCommentReactions (src\lib\public-data.ts:62:8)
+    at mapComments (src\lib\public-data.ts:72:30)
+    at mapRecaps (src\lib\public-data.ts:97:3)
+    at getPublicSiteData (src\lib\public-data.ts:300:20)
+    at async Home (app\page.tsx:18:16)
+  60 |   const reactionsByComment = new Map<string, Map<string, number>>();
+  61 |
+> 62 |   rows.forEach((row) => {
+     |        ^
+  63 |     const reactions = reactionsByComment.get(row.comment_id) ?? new Map<string, number>();
+  64 |     reactions.set(row.emoji, (reactions.get(row.emoji) ?? 0) + 1);
+  65 |     reactionsByComment.set(row.comment_id, reactions);
+Public data loader failed: TypeError: Cannot read properties of undefined (reading 'forEach')
+    at mapCommentReactions (src\lib\public-data.ts:62:8)
+    at mapComments (src\lib\public-data.ts:72:30)
+    at mapRecaps (src\lib\public-data.ts:97:3)
+    at getPublicSiteData (src\lib\public-data.ts:300:20)
+    at async Home (app\page.tsx:18:16)
+  60 |   const reactionsByComment = new Map<string, Map<string, number>>();
+  61 |
+> 62 |   rows.forEach((row) => {
+     |        ^
+  63 |     const reactions = reactionsByComment.get(row.comment_id) ?? new Map<string, number>();
+  64 |     reactions.set(row.emoji, (reactions.get(row.emoji) ?? 0) + 1);
+  65 |     reactionsByComment.set(row.comment_id, reactions);
+Public data loader failed: TypeError: Cannot read properties of undefined (reading 'forEach')
+    at mapCommentReactions (src\lib\public-data.ts:62:8)
+    at mapComments (src\lib\public-data.ts:72:30)
+    at mapRecaps (src\lib\public-data.ts:97:3)
+    at getPublicSiteData (src\lib\public-data.ts:300:20)
+    at async Home (app\page.tsx:18:16)
+  60 |   const reactionsByComment = new Map<string, Map<string, number>>();
+  61 |
+> 62 |   rows.forEach((row) => {
+     |        ^
+  63 |     const reactions = reactionsByComment.get(row.comment_id) ?? new Map<string, number>();
+  64 |     reactions.set(row.emoji, (reactions.get(row.emoji) ?? 0) + 1);
+  65 |     reactionsByComment.set(row.comment_id, reactions);
+Public data loader failed: TypeError: Cannot read properties of undefined (reading 'forEach')
+    at mapCommentReactions (src\lib\public-data.ts:62:8)
+    at mapComments (src\lib\public-data.ts:72:30)
+    at mapRecaps (src\lib\public-data.ts:97:3)
+    at getPublicSiteData (src\lib\public-data.ts:300:20)
+    at async Home (app\page.tsx:18:16)
+  60 |   const reactionsByComment = new Map<string, Map<string, number>>();
+  61 |
+> 62 |   rows.forEach((row) => {
+     |        ^
+  63 |     const reactions = reactionsByComment.get(row.comment_id) ?? new Map<string, number>();
+  64 |     reactions.set(row.emoji, (reactions.get(row.emoji) ?? 0) + 1);
+  65 |     reactionsByComment.set(row.comment_id, reactions);
+Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache
+Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache
+Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache
+Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache
+Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache

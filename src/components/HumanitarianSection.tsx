@@ -1,10 +1,11 @@
 import { HeartHandshake, Share2 } from "lucide-react";
 import type { TripSettings } from "@/types";
 
+const campaignDonationGoal = 1500;
+
 export function HumanitarianSection({ settings }: { settings: TripSettings }) {
-  const progress = settings.donationGoal
-    ? Math.min((settings.donationRaised / settings.donationGoal) * 100, 100)
-    : 0;
+  const progress = Math.min((settings.donationRaised / campaignDonationGoal) * 100, 100);
+  const isGoalReached = settings.donationRaised >= campaignDonationGoal;
 
   return (
     <section id="humanitarno" className="px-5 py-20">
@@ -48,14 +49,22 @@ export function HumanitarianSection({ settings }: { settings: TripSettings }) {
           <p className="text-sm font-black uppercase tracking-[0.2em] text-clay">Cilj kampanje</p>
           <div className="mt-4 flex items-end justify-between gap-4">
             <p className="font-display text-5xl font-black">{settings.donationRaised} €</p>
-            <p className="pb-2 font-black text-coffee/70">od {settings.donationGoal} €</p>
+            <p className="pb-2 font-black text-coffee/70">
+              {isGoalReached ? "cilj probijen" : `od ${campaignDonationGoal} €`}
+            </p>
           </div>
           <div className="mt-6 h-5 overflow-hidden rounded-full bg-sand">
             <div className="h-full rounded-full bg-clay" style={{ width: `${progress}%` }} />
           </div>
-          <p className="mt-5 leading-7 text-coffee/80">
-            Ruta ima oko {settings.plannedTotalKm} kilometara, zato je cilj {settings.donationGoal} €. Napredak i link kampanje ažuriraju se iz admin postavki.
-          </p>
+          {isGoalReached ? (
+            <p className="mt-5 font-black leading-7 text-clay">
+              PREPONOSAN SAM LJUDI, IDEMO VIDJET DO KOLIKO EURA MOŽEMO DOĆI!!
+            </p>
+          ) : (
+            <p className="mt-5 leading-7 text-coffee/80">
+              Ruta ima oko 1500 kilometara, zato je cilj {campaignDonationGoal} €. Ako imate eur viška, dajte onima koji nemaju i motivirajte nas da odvozimo dodatni kilometar :)
+            </p>
+          )}
         </div>
       </div>
     </section>
