@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowRight, Flag, LocateFixed, Route, X } from "lucide-react";
 import type L from "leaflet";
 import type { CurrentLocation, DailyRecap, MapEvent } from "@/types";
+import { readableMapTiles } from "@/lib/map-tiles";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 
 type MapPreviewProps = {
@@ -134,17 +135,14 @@ function createRecapPopup(recap: DailyRecap) {
   focusLink.textContent = popupText?.isShortened ? "Pročitaj više u dnevniku" : "Pronađi u dnevniku";
   focusLink.addEventListener("click", (event) => {
     event.preventDefault();
-    document.getElementById(`recap-${recap.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
-
-    if (popupText?.isShortened) {
-      window.setTimeout(() => {
-        window.dispatchEvent(
-          new CustomEvent("expand-recap-text", {
-            detail: { recapId: recap.id }
-          })
-        );
-      }, 450);
-    }
+    window.dispatchEvent(
+      new CustomEvent("show-recap-in-timeline", {
+        detail: {
+          recapId: recap.id,
+          expand: Boolean(popupText?.isShortened)
+        }
+      })
+    );
   });
   shell.append(focusLink);
 
@@ -288,10 +286,9 @@ export function MapPreview({
       leaflet.control.zoom({ position: "bottomright" }).addTo(map);
 
       leaflet
-        .tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        .tileLayer(readableMapTiles.url, {
           maxZoom: 19,
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          attribution: readableMapTiles.attribution
         })
         .addTo(map);
 

@@ -360,7 +360,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
             return (
               <article
                 aria-label={`Sticky note od ${note.authorName}`}
-                className="absolute aspect-[4/5] w-44 cursor-grab touch-none overflow-hidden rounded-sm p-5 shadow-pin active:cursor-grabbing md:w-56"
+                className="absolute aspect-[4/5] w-32 cursor-grab touch-none overflow-hidden rounded-sm p-3 shadow-pin active:cursor-grabbing sm:w-40 md:w-56 md:p-5"
                 key={note.id}
                 onPointerCancel={endDrag}
                 onPointerDown={(event) => startDrag(event, note)}
@@ -376,8 +376,8 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
               >
                 <span className="absolute left-1/2 top-2 h-4 w-4 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
                 <div className="relative z-10">
-                  <p className="mt-8 font-display text-lg font-black md:text-xl">{note.authorName}</p>
-                  <p className="mt-4 whitespace-pre-wrap text-sm font-bold leading-6 text-ink/82 md:text-base md:leading-7">{note.message}</p>
+                  <p className="mt-6 font-display text-base font-black sm:text-lg md:mt-8 md:text-xl">{note.authorName}</p>
+                  <p className="mt-3 whitespace-pre-wrap text-xs font-bold leading-5 text-ink/82 sm:text-sm sm:leading-6 md:mt-4 md:text-base md:leading-7">{note.message}</p>
                 </div>
                 <DrawingLayer drawingData={note.drawingData} className="pointer-events-none absolute inset-0 h-full w-full" />
               </article>
