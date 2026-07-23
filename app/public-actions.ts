@@ -11,6 +11,7 @@ type PublicActionResult = {
   status: PublicModerationStatus;
   message: string;
   reason?: string;
+  id?: string;
 };
 
 const AUTHOR_MAX_LENGTH = 24;
@@ -53,6 +54,11 @@ const moveWallNoteSchema = z.object({
   yPosition: z.number().min(0).max(100)
 });
 
+const moderationTargetSchema = z.object({
+  id: z.string().uuid(),
+  drawingDataUrl: z.string().startsWith("data:image/").max(300_000).optional()
+});
+
 function countWords(text: string) {
   return text.trim().split(/\s+/).filter(Boolean).length;
 }
@@ -64,24 +70,6 @@ function validationResult(message: string): PublicActionResult {
     message,
     reason: message
   };
-}
-
-function statusMessage(status: PublicModerationStatus, kind: "comment" | "note", reason?: string) {
-  if (status === "approved") {
-    return kind === "comment"
-      ? "Komentar je objavljen."
-      : "Sticky note je objavljen na zidu.";
-  }
-
-  if (status === "pending") {
-    return kind === "comment"
-      ? "Komentar je pending i ceka kratko admin odobrenje."
-      : "Sticky note je objavljen na zidu.";
-  }
-
-  return reason || (kind === "comment"
-    ? "Komentar nije prosao moderaciju."
-    : "Sticky note nije prosao moderaciju.");
 }
 
 function randomNotePlacement() {
@@ -112,17 +100,13 @@ export async function submitCommentAction(input: unknown): Promise<PublicActionR
     return validationResult("Komentari su moguci samo na objavljene dnevne recapove.");
   }
 
-  const moderation = await moderatePublicContent({
-    text: `${value.authorName}\n${value.message}`
-  });
-
-  const { error } = await supabase.from("comments").insert({
+  const { data: insertedComment, error } = await supabase.from("comments").insert({
     recap_id: value.recapId,
     author_name: value.authorName,
     message: value.message,
-    status: moderation.status,
-    moderation_reason: moderation.reason ?? null
-  });
+    status: "approved",
+    moderation_reason: null
+  }).select("id").single();
 
   if (error) {
     return {
@@ -135,9 +119,68 @@ export async function submitCommentAction(input: unknown): Promise<PublicActionR
   revalidatePath("/");
   return {
     ok: true,
-    status: moderation.status,
-    message: statusMessage(moderation.status, "comment", moderation.reason),
-    reason: moderation.reason
+    id: insertedComment.id,
+    status: "approved",
+    message: "Komentar je objavljen. AI pregled je u tijeku."
+  };
+}
+
+export async function moderateSubmittedCommentAction(input: unknown): Promise<PublicActionResult> {
+  const parsed = moderationTargetSchema.safeParse(input);
+  if (!parsed.success) return validationResult("Komentar nije pronađen.");
+
+  const supabase = createSupabaseServiceClient();
+  const { data: comment, error } = await supabase
+    .from("comments")
+    .select("id, author_name, message, status")
+    .eq("id", parsed.data.id)
+    .maybeSingle();
+
+  if (error || !comment || comment.status !== "approved") {
+    return {
+      ok: false,
+      status: "pending",
+      message: "AI pregled nije uspio pronaći komentar."
+    };
+  }
+
+  const moderation = await moderatePublicContent({
+    text: `${comment.author_name}\n${comment.message}`
+  });
+
+  if (moderation.status === "rejected") {
+    await supabase
+      .from("comments")
+      .update({
+        status: "rejected",
+        moderation_reason: moderation.reason ?? "Komentar nije prošao moderaciju."
+      })
+      .eq("id", comment.id);
+    revalidatePath("/");
+
+    return {
+      ok: true,
+      id: comment.id,
+      status: "rejected",
+      message: moderation.reason ?? "Komentar je maknut jer nije prošao AI moderaciju.",
+      reason: moderation.reason
+    };
+  }
+
+  if (moderation.status === "pending") {
+    return {
+      ok: true,
+      id: comment.id,
+      status: "pending",
+      message: moderation.reason ?? "AI pregled trenutno nije dovršen. Komentar ostaje objavljen."
+    };
+  }
+
+  return {
+    ok: true,
+    id: comment.id,
+    status: "approved",
+    message: "Komentar je prošao AI pregled."
   };
 }
 
@@ -150,10 +193,6 @@ export async function submitWallNoteAction(input: unknown): Promise<PublicAction
     return validationResult(`Sticky note moze imati najvise ${WALL_NOTE_MAX_WORDS} rijeci.`);
   }
 
-  const moderation = await moderateStickyNoteContent({
-    text: `${value.authorName}\n${value.message}`,
-    drawingDataUrl: value.drawingDataUrl
-  });
   const placement = randomNotePlacement();
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   const supabase = createSupabaseServiceClient();
@@ -165,12 +204,12 @@ export async function submitWallNoteAction(input: unknown): Promise<PublicAction
     y_position: placement.yPosition,
     rotation: placement.rotation,
     drawing_data: value.drawingData ?? null,
-    status: moderation.status,
-    moderation_reason: moderation.reason ?? null,
+    status: "approved",
+    moderation_reason: null,
     expires_at: expiresAt
   };
 
-  const { error } = await supabase.from("wall_notes").insert(payload);
+  const { data: insertedNote, error } = await supabase.from("wall_notes").insert(payload).select("id").single();
 
   if (error) {
     return {
@@ -183,9 +222,73 @@ export async function submitWallNoteAction(input: unknown): Promise<PublicAction
   revalidatePath("/");
   return {
     ok: true,
-    status: moderation.status,
-    message: statusMessage(moderation.status, "note", moderation.reason),
-    reason: moderation.reason
+    id: insertedNote.id,
+    status: "approved",
+    message: "Sticky note je objavljen. AI pregled je u tijeku."
+  };
+}
+
+export async function moderateSubmittedWallNoteAction(input: unknown): Promise<PublicActionResult> {
+  const parsed = moderationTargetSchema.safeParse(input);
+  if (!parsed.success) return validationResult("Sticky note nije pronađen.");
+
+  const supabase = createSupabaseServiceClient();
+  const { data: note, error } = await supabase
+    .from("wall_notes")
+    .select("id, author_name, message, drawing_data, status")
+    .eq("id", parsed.data.id)
+    .maybeSingle();
+
+  if (error || !note || note.status !== "approved") {
+    return {
+      ok: false,
+      status: "pending",
+      message: "AI pregled nije uspio pronaći sticky note."
+    };
+  }
+
+  const drawingData = note.drawing_data && typeof note.drawing_data === "object" && !Array.isArray(note.drawing_data)
+    ? note.drawing_data as Parameters<typeof moderateStickyNoteContent>[0]["drawingData"]
+    : undefined;
+  const moderation = await moderateStickyNoteContent({
+    text: `${note.author_name}\n${note.message}`,
+    drawingData,
+    drawingDataUrl: parsed.data.drawingDataUrl
+  });
+
+  if (moderation.status === "rejected") {
+    await supabase
+      .from("wall_notes")
+      .update({
+        status: "rejected",
+        moderation_reason: moderation.reason ?? "Sticky note nije prošao moderaciju."
+      })
+      .eq("id", note.id);
+    revalidatePath("/");
+
+    return {
+      ok: true,
+      id: note.id,
+      status: "rejected",
+      message: moderation.reason ?? "Sticky note je maknut jer nije prošao AI moderaciju.",
+      reason: moderation.reason
+    };
+  }
+
+  if (moderation.status === "pending") {
+    return {
+      ok: true,
+      id: note.id,
+      status: "pending",
+      message: moderation.reason ?? "AI pregled trenutno nije dovršen. Sticky note ostaje objavljen."
+    };
+  }
+
+  return {
+    ok: true,
+    id: note.id,
+    status: "approved",
+    message: "Sticky note je prošao AI pregled."
   };
 }
 

@@ -467,7 +467,7 @@ export function MapPreview({
             Putujte s nama kroz interaktivnu kartu
           </h2>
           <p className="mt-4 max-w-3xl text-lg leading-8 text-coffee/80">
-            Narančasta linija je ono što je ostalo, a tamna iscrtana linija jasno pokazuje dio koji smo već prošli.
+            Pratite rutu, dnevne recapove i fora trenutke pomoću ikonica na karti :)
           </p>
         </div>
 

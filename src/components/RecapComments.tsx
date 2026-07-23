@@ -3,7 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { MessageCircleMore, Send, X } from "lucide-react";
-import { submitCommentAction } from "@app/public-actions";
+import { moderateSubmittedCommentAction, submitCommentAction } from "@app/public-actions";
 import type { RecapComment } from "@/types";
 
 type RecapCommentsProps = {
@@ -54,9 +54,15 @@ export function RecapComments({
 
       setResult({ status: actionResult.status, message: actionResult.message });
 
-      if (actionResult.ok && actionResult.status === "approved") {
+      if (actionResult.ok && actionResult.status === "approved" && actionResult.id) {
         setMessage("");
         router.refresh();
+
+        const moderationResult = await moderateSubmittedCommentAction({ id: actionResult.id });
+        setResult({ status: moderationResult.status, message: moderationResult.message });
+        if (moderationResult.status === "rejected") {
+          router.refresh();
+        }
       }
     });
   }

@@ -13,7 +13,7 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 max-w-3xl">
           <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Dnevnik puta</p>
-          <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">Dan po dan, kad cesta počne.</h2>
+          <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">Kilometri, granice i dnevni recapovi</h2>
           {isPreview ? (
             <p className="mt-4 text-lg leading-8 text-coffee/80">
               Ovo je jasno označen preview. Zamijenit će ga prvi dnevni update koji admin objavi.

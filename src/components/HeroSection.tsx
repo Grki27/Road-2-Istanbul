@@ -13,7 +13,7 @@ export function HeroSection() {
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-ink/82" />
-      <div className="absolute inset-x-0 top-0 z-10">
+      <div className="absolute inset-x-0 top-0 z-[90]">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-5 py-5">
           <a href="#" className="flex items-center gap-3">
             <span className="relative h-12 w-12 overflow-hidden rounded-full bg-paper/90 p-1 shadow-pin">
@@ -29,10 +29,10 @@ export function HeroSection() {
             </span>
           </a>
           <div className="hidden items-center gap-6 text-sm font-bold text-white/86 md:flex">
-            <a href="#karta">Karta</a>
-            <a href="#dnevnik">Dnevnik</a>
-            <a href="#podrska">Zid podrške</a>
-            <a href="#humanitarno">Humanitarno</a>
+            <a className="transition hover:text-sunset" href="#karta">Karta</a>
+            <a className="transition hover:text-sunset" href="#dnevnik">Dnevnik</a>
+            <a className="transition hover:text-sunset" href="#podrska">Zid podrške</a>
+            <a className="transition hover:text-sunset" href="#humanitarno">Humanitarno</a>
           </div>
         </nav>
       </div>

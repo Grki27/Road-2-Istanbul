@@ -3,7 +3,7 @@
 import { type PointerEvent, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Eraser, Palette, PenLine, Plus, RotateCcw, Send, X } from "lucide-react";
-import { moveWallNoteAction, submitWallNoteAction } from "@app/public-actions";
+import { moderateSubmittedWallNoteAction, moveWallNoteAction, submitWallNoteAction } from "@app/public-actions";
 import { SectionHeader } from "@/components/SectionHeader";
 import type { DrawingData, DrawingPoint, DrawingStroke, StickyNote } from "@/types";
 
@@ -49,18 +49,31 @@ function createEmptyDrawingData(): DrawingData {
 
 function drawingToDataUrl(drawingData?: DrawingData) {
   if (!drawingData || !drawingData.strokes.length) return undefined;
-  const polylines = drawingData.strokes
-    .filter((stroke) => stroke.points.length)
-    .map((stroke) => {
-      const points = stroke.points
-        .map((point) => `${Math.round(point.x * drawingData.width)},${Math.round(point.y * drawingData.height)}`)
-        .join(" ");
-      return `<polyline points="${points}" fill="none" stroke="${stroke.color || "#111111"}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`;
-    })
-    .join("");
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${drawingData.width}" height="${drawingData.height}" viewBox="0 0 ${drawingData.width} ${drawingData.height}"><rect width="100%" height="100%" fill="#fff8ea"/>${polylines}</svg>`;
+  const canvas = document.createElement("canvas");
+  canvas.width = drawingData.width;
+  canvas.height = drawingData.height;
+  const context = canvas.getContext("2d");
+  if (!context) return undefined;
 
-  return `data:image/svg+xml;base64,${window.btoa(svg)}`;
+  context.fillStyle = "#fff8ea";
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  context.lineCap = "round";
+  context.lineJoin = "round";
+  context.lineWidth = 7;
+
+  drawingData.strokes.forEach((stroke) => {
+    if (!stroke.points.length) return;
+    context.beginPath();
+    context.strokeStyle = stroke.color || "#111111";
+    const [firstPoint, ...restPoints] = stroke.points;
+    context.moveTo(firstPoint.x * drawingData.width, firstPoint.y * drawingData.height);
+    restPoints.forEach((point) => {
+      context.lineTo(point.x * drawingData.width, point.y * drawingData.height);
+    });
+    context.stroke();
+  });
+
+  return canvas.toDataURL("image/png");
 }
 
 function drawingPoints(stroke: DrawingStroke, drawingData: DrawingData) {
@@ -123,6 +136,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
   const boardRef = useRef<HTMLDivElement | null>(null);
   const drawingRef = useRef<SVGSVGElement | null>(null);
   const nextComposerColorIndexRef = useRef(0);
+  const knownNoteIdsRef = useRef(new Set(notes.map((note) => note.id)));
   const topLayerRef = useRef(100);
   const [isOpen, setIsOpen] = useState(false);
   const [authorName, setAuthorName] = useState("");
@@ -145,10 +159,29 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
   const currentWordCount = wordCount(message);
 
   useEffect(() => {
+    const liveIds = new Set(notes.map((note) => note.id));
+    const addedIds = notes
+      .map((note) => note.id)
+      .filter((id) => !knownNoteIdsRef.current.has(id));
+
     setPositions(new Map(notes.map((note) => [note.id, {
       xPosition: note.xPosition,
       yPosition: note.yPosition
     }])));
+
+    setFrontLayers((currentLayers) => {
+      const nextLayers = new Map(currentLayers);
+      for (const id of nextLayers.keys()) {
+        if (!liveIds.has(id)) nextLayers.delete(id);
+      }
+      for (const id of addedIds) {
+        topLayerRef.current += 1;
+        nextLayers.set(id, topLayerRef.current);
+      }
+
+      return nextLayers;
+    });
+    knownNoteIdsRef.current = liveIds;
   }, [notes]);
 
   function resetComposer() {
@@ -286,9 +319,18 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
       });
       setResult({ status: actionResult.status, message: actionResult.message });
 
-      if (actionResult.ok && actionResult.status === "approved") {
+      if (actionResult.ok && actionResult.status === "approved" && actionResult.id) {
         resetComposer();
         router.refresh();
+
+        const moderationResult = await moderateSubmittedWallNoteAction({
+          id: actionResult.id,
+          drawingDataUrl: drawingToDataUrl(drawingData)
+        });
+        setResult({ status: moderationResult.status, message: moderationResult.message });
+        if (moderationResult.status === "rejected") {
+          router.refresh();
+        }
       }
     });
   }
@@ -298,10 +340,10 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
       <div className="mx-auto max-w-7xl">
         <SectionHeader
           eyebrow="Zid podrske"
-          title="Ostavi nam poruku za cestu."
-          text="Kratki papirici podrske zive 24 sata. Dodaj poruku, nacrtaj nesto ako te ponese i zalijepi je na pano."
+          title="Ostavi nam poruku podrške."
+          text="Kratki papirići podrške žive 24 sata. Dodaj poruku, nacrtaj nešto ako te ponese i zalijepi je na pano."
         />
-        <div ref={boardRef} className="relative min-h-[620px] overflow-hidden rounded-[2rem] bg-cork bg-[length:18px_18px,auto] p-4 shadow-paper md:min-h-[650px] md:p-8">
+        <div ref={boardRef} className="relative isolate min-h-[620px] overflow-hidden rounded-[2rem] bg-cork bg-[length:18px_18px,auto] p-4 shadow-paper md:min-h-[650px] md:p-8">
           <button
             className="absolute right-5 top-5 z-30 inline-flex items-center gap-2 rounded-full bg-paper px-5 py-3 font-black text-ink shadow-pin transition hover:-translate-y-0.5"
             onClick={openComposer}
@@ -351,7 +393,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
       </div>
 
       {isOpen ? (
-        <div className="fixed inset-0 z-[105] flex items-end bg-ink/55 px-3 pb-3 pt-10 backdrop-blur-sm sm:items-center sm:justify-center sm:p-5">
+        <div className="fixed inset-0 z-[9999] flex items-end bg-ink/55 px-3 pb-3 pt-10 backdrop-blur-sm sm:items-center sm:justify-center sm:p-5">
           <div aria-modal="true" className="max-h-[92vh] w-full max-w-xl overflow-hidden rounded-[2rem] bg-paper shadow-paper" role="dialog">
             <div className="flex items-start justify-between gap-4 border-b border-coffee/10 p-5">
               <div>

@@ -8,116 +8,15 @@
    - Environments: .env.local
 
  ✓ Starting...
- ✓ Ready in 18.2s
+ ✓ Ready in 3.3s
  ○ Compiling / ...
- ✓ Compiled / in 45.6s (755 modules)
- GET / 200 in 53532ms
- ○ Compiling /admin/login ...
- ✓ Compiled /admin/login in 16.3s (901 modules)
- GET /admin/login 200 in 18753ms
- ○ Compiling /admin/recaps/new ...
- ✓ Compiled /admin/recaps/new in 21.2s (1179 modules)
- ✓ Compiled in 2.9s (368 modules)
- GET /admin/recaps/new 200 in 25624ms
- ○ Compiling /admin ...
- ✓ Compiled /admin in 8s (1094 modules)
- GET /admin 307 in 11265ms
- ○ Compiling /admin/login ...
- ✓ Compiled /admin/login in 4.7s (789 modules)
- ○ Compiling / ...
- ✓ Compiled / in 5.9s (860 modules)
- GET /admin 307 in 5899ms
- GET /admin/login 200 in 3566ms
- ○ Compiling /auth/callback ...
- ✓ Compiled /auth/callback in 7.5s (1246 modules)
- GET /auth/callback?error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&next=%2Fadmin 307 in 8208ms
- GET /admin 307 in 3827ms
- GET /admin/login 200 in 1306ms
- GET /auth/callback?code=901aea76-8c61-43eb-98ed-319a06ec3c71&next=%2Fadmin 307 in 119ms
- GET /admin 307 in 628ms
- GET /admin/login 200 in 546ms
- GET /auth/callback?code=54ea9c13-23d3-4992-adcb-c3dd48771c63&next=%2Fadmin 307 in 633ms
- GET /admin 200 in 1867ms
- ○ Compiling /admin/recaps ...
- ✓ Compiled /admin/recaps in 10.7s (1183 modules)
- GET /admin/recaps 200 in 12566ms
- GET /admin 200 in 916ms
- ○ Compiling /admin/location ...
- ✓ Compiled /admin/location in 3.9s (1193 modules)
- GET /admin/location 200 in 5302ms
- POST /admin/location 200 in 3417ms
- ○ Compiling / ...
- ✓ Compiled / in 6.7s (883 modules)
- GET / 200 in 10928ms
- GET /admin/recaps 200 in 850ms
- ○ Compiling /admin/recaps/new ...
- ✓ Compiled /admin/recaps/new in 8.5s (904 modules)
- GET /admin/recaps/new 200 in 10888ms
- POST /admin/recaps/new 200 in 3431ms
- ○ Compiling /admin/recaps/[id]/edit ...
- ✓ Compiled /admin/recaps/[id]/edit in 5.8s (1256 modules)
- GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 11792ms
- POST /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 2548ms
- GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 878ms
- POST /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 1038ms
- GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 743ms
- GET / 200 in 2714ms
- ○ Compiling /admin ...
- GET /admin/location 200 in 5256ms
- ✓ Compiled /admin in 8.2s (894 modules)
- GET /admin 200 in 12823ms
- GET /admin/location 200 in 935ms
- ○ Compiling /admin/map-events ...
- ✓ Compiled /admin/map-events in 5.9s (1284 modules)
- GET /admin/map-events 200 in 7475ms
- ✓ Compiled in 1516ms (380 modules)
- ○ Compiling /admin/map-events/new ...
- ✓ Compiled /admin/map-events/new in 7.1s (1296 modules)
- GET /admin/map-events/new 200 in 7667ms
- POST /admin/map-events/new 200 in 2275ms
- ○ Compiling /admin/map-events/[id]/edit ...
- ✓ Compiled /admin/map-events/[id]/edit in 7.9s (1275 modules)
- GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 15299ms
- GET / 200 in 2959ms
- POST /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 1935ms
- GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 701ms
- POST /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 1075ms
- GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 548ms
- POST /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 1116ms
- GET /admin/map-events/1bfb76b6-773a-4790-b3d5-cd79cada0437/edit 200 in 613ms
- GET / 200 in 1617ms
- GET /admin/location 200 in 1861ms
- POST /admin/location 200 in 1825ms
- GET / 200 in 4057ms
- ○ Compiling /admin/map-events ...
- ✓ Compiled /admin/map-events in 4.8s (891 modules)
- GET /admin/map-events 200 in 7595ms
- ○ Compiling /admin/recaps ...
- ✓ Compiled /admin/recaps in 5s (893 modules)
- GET /admin/recaps 200 in 6572ms
- GET /admin/location 200 in 1331ms
- GET /admin/recaps 200 in 916ms
- GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 1374ms
- POST /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 2792ms
- GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 765ms
- GET / 200 in 2936ms
- ○ Compiling /admin/settings ...
- ✓ Compiled /admin/settings in 11s (1275 modules)
- GET /admin/settings 200 in 15803ms
- GET / 200 in 1608ms
- ○ Compiling /admin ...
- ✓ Compiled /admin in 4.6s (894 modules)
- GET /admin 200 in 6784ms
- ✓ Compiled in 7.2s (1286 modules)
- GET / 200 in 1707ms
- ✓ Compiled in 6.5s (1273 modules)
- GET / 200 in 1097ms
- GET / 200 in 6330ms
- GET / 200 in 2033ms
- ✓ Compiled in 11s (1273 modules)
- GET / 200 in 1476ms
- GET / 200 in 4631ms
- GET /admin/recaps/1ec9d494-1c7e-49fa-9dcf-2ba13941c6fa/edit 200 in 5069ms
- ✓ Compiled in 12.9s (1273 modules)
- GET / 200 in 1584ms
-[?25h
+ ✓ Compiled / in 6.8s (972 modules)
+ GET / 200 in 9528ms
+ GET / 200 in 1764ms
+ POST / 200 in 2908ms
+ GET / 200 in 2049ms
+ POST / 200 in 2536ms
+ POST / 200 in 981ms
+ POST / 200 in 687ms
+ POST / 200 in 735ms
+ POST / 200 in 646ms
