@@ -116,3 +116,191 @@
  GET / 200 in 1961ms
  POST / 200 in 2598ms
  GET / 200 in 1423ms
+ ○ Compiling /admin/location ...
+ ✓ Compiled /admin/location in 8.3s (1554 modules)
+ GET /admin/location 200 in 10456ms
+ ✓ Compiled in 4.7s (1568 modules)
+ GET /admin/location 200 in 546ms
+ GET / 200 in 1641ms
+ POST /admin/location 200 in 1419ms
+ ✓ Compiled in 2.2s (1568 modules)
+ GET /admin/location 200 in 720ms
+ GET / 200 in 1204ms
+ GET / 200 in 4652ms
+ ✓ Compiled in 5.6s (1568 modules)
+ GET /admin/location 200 in 1797ms
+ GET / 200 in 5626ms
+ ✓ Compiled in 3.3s (1568 modules)
+ GET /admin/location 200 in 3146ms
+ GET / 200 in 5899ms
+ ✓ Compiled in 25.6s (1568 modules)
+ ○ Compiling /admin/map-events ...
+ ✓ Compiled /admin/map-events in 11.1s (1564 modules)
+ GET /admin/map-events 200 in 691ms
+ GET /admin/map-events 200 in 14007ms
+ GET / 200 in 13339ms
+ ○ Compiling /admin/map-events/new ...
+ ✓ Compiled /admin/map-events/new in 17.8s (1568 modules)
+ GET /admin/map-events/new 200 in 23194ms
+ GET /admin/map-events/new 200 in 1170ms
+ POST /admin/map-events/new 200 in 1915ms
+ ○ Compiling /admin/map-events/[id]/edit ...
+ ✓ Compiled /admin/map-events/[id]/edit in 3.3s (1568 modules)
+ GET /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 6088ms
+ POST /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 1446ms
+ GET /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 676ms
+ POST /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 1216ms
+ GET /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 637ms
+ POST /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 922ms
+ GET /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 485ms
+ POST /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 581ms
+ GET /admin/map-events/76d945b2-50bb-4499-b5d4-9d43e4632376/edit 200 in 362ms
+ GET / 200 in 1564ms
+ GET /admin/map-events 200 in 470ms
+ ○ Compiling /admin/comments ...
+ ✓ Compiled /admin/comments in 4.4s (1573 modules)
+ GET /admin/comments 200 in 5363ms
+ GET /admin/comments?status=approved 200 in 421ms
+ ○ Compiling /admin/wall-notes ...
+ ✓ Compiled /admin/wall-notes in 1275ms (1570 modules)
+ GET /admin/wall-notes 200 in 2311ms
+ GET /admin/wall-notes?status=approved 200 in 463ms
+ POST /admin/wall-notes?status=approved 200 in 1292ms
+ GET /admin/wall-notes?status=approved 200 in 533ms
+ POST /admin/wall-notes?status=approved 200 in 708ms
+ GET /admin/wall-notes?status=approved 200 in 420ms
+ POST /admin/wall-notes?status=approved 200 in 674ms
+ GET /admin/wall-notes?status=approved 200 in 391ms
+ POST /admin/wall-notes?status=approved 200 in 681ms
+ GET /admin/wall-notes?status=approved 200 in 422ms
+ POST /admin/wall-notes?status=approved 200 in 709ms
+ GET /admin/wall-notes?status=approved 200 in 435ms
+ POST /admin/wall-notes?status=approved 200 in 604ms
+ GET /admin/wall-notes?status=approved 200 in 363ms
+ ○ Compiling /admin/settings ...
+ ✓ Compiled /admin/settings in 1741ms (1581 modules)
+ GET /admin/settings 200 in 2381ms
+ ○ Compiling /admin ...
+ ✓ Compiled /admin in 2.7s (1593 modules)
+ GET /admin 200 in 3786ms
+ GET / 200 in 2710ms
+ POST / 200 in 1042ms
+ POST / 200 in 569ms
+ GET /admin/settings 200 in 557ms
+ POST /admin/settings 200 in 625ms
+ GET / 200 in 940ms
+ POST /admin/settings 200 in 471ms
+ GET / 200 in 988ms
+ ✓ Compiled in 7.8s (1523 modules)
+ GET /admin/settings 200 in 2913ms
+ GET / 200 in 3638ms
+ GET / 200 in 2447ms
+ POST /admin/settings 200 in 1082ms
+ GET / 200 in 949ms
+ POST / 200 in 2659ms
+ GET / 200 in 1770ms
+ GET / 200 in 1338ms
+ POST / 200 in 2349ms
+ GET / 200 in 1618ms
+ GET / 200 in 3518ms
+ POST / 200 in 17609ms
+ GET / 200 in 5776ms
+ POST / 200 in 2838ms
+ ○ Compiling /admin/recaps ...
+ ✓ Compiled /admin/recaps in 9.2s (970 modules)
+ GET /admin/recaps 200 in 10848ms
+ ○ Compiling /admin/recaps/new ...
+ ✓ Compiled /admin/recaps/new in 12.6s (1608 modules)
+ GET /admin/recaps/new 200 in 14149ms
+ GET /admin/recaps/new 200 in 613ms
+ GET / 200 in 1638ms
+ ✓ Compiled in 4.8s (1595 modules)
+ GET /admin/recaps/new 200 in 3647ms
+ GET / 200 in 5030ms
+ ✓ Compiled in 8.3s (1595 modules)
+ GET /admin/recaps/new 200 in 7697ms
+ GET / 200 in 7789ms
+ ○ Compiling /admin/recaps/[id]/edit ...
+ POST /admin/recaps/new 200 in 4352ms
+ ✓ Compiled /admin/recaps/[id]/edit in 3s (1033 modules)
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 4549ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 471ms
+ GET / 200 in 1701ms
+ POST /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 1323ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 410ms
+ POST /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 1127ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 685ms
+ POST /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 1271ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 634ms
+ POST /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 938ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 653ms
+ POST /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 1076ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 611ms
+ POST /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 1065ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 560ms
+ POST /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 1155ms
+ GET /admin/recaps/e3c700c0-015a-4d11-9ac3-94c406a03883/edit 200 in 501ms
+ GET / 200 in 1570ms
+ POST / 200 in 8619ms
+ GET / 200 in 4722ms
+ POST / 200 in 2580ms
+ POST / 200 in 3818ms
+ GET / 200 in 1430ms
+ GET /admin/recaps 200 in 779ms
+ GET /admin/recaps/new 200 in 363ms
+ POST /admin/recaps/new 200 in 146ms
+ POST /admin/recaps/new 200 in 92ms
+ POST /admin/recaps/new 200 in 56ms
+ POST /admin/recaps/new 200 in 51ms
+ POST /admin/recaps/new 200 in 37ms
+ POST /admin/recaps/new 200 in 61ms
+ POST /admin/recaps/new 200 in 41ms
+ POST /admin/recaps/new 200 in 1721ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 449ms
+ POST /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 69ms
+ POST /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 1640ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 332ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 389ms
+ POST /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 1408ms
+ GET / 200 in 1396ms
+ GET /admin/recaps 200 in 8135ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 653ms
+ ✓ Compiled in 34.8s (1590 modules)
+ ✓ Compiled in 1ms (1026 modules)
+ ✓ Compiled in 1ms (1026 modules)
+ ✓ Compiled in 1ms (1026 modules)
+ POST /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 15583ms
+ ✓ Compiled in 11ms (1026 modules)
+ GET / 200 in 20146ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 17454ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 3457ms
+ POST /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 5332ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 2421ms
+ POST /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 1845ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 1931ms
+ POST /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 3657ms
+ GET /admin/recaps/ba2c0882-3b08-4cce-8e31-c9fdb96af20e/edit 200 in 799ms
+ GET / 200 in 3131ms
+ ○ Compiling /admin/map-events ...
+ ✓ Compiled /admin/map-events in 3.5s (1033 modules)
+ GET /admin/map-events 200 in 144ms
+ GET / 200 in 1681ms
+ GET /admin/map-events 200 in 5348ms
+ GET /admin/recaps 200 in 343ms
+ GET /admin/recaps/new 200 in 323ms
+ GET /admin/recaps/new 200 in 1371ms
+ GET /admin/recaps/new 200 in 412ms
+ POST /admin/recaps/new 200 in 1029ms
+ POST /admin/recaps/new 200 in 2920ms
+ GET /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 703ms
+ ✓ Compiled in 31.4s (1590 modules)
+ GET /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 365ms
+ GET / 200 in 4645ms
+ POST /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 10389ms
+ GET /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 551ms
+ POST /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 2097ms
+ GET /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 1265ms
+ POST /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 204ms
+ POST /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 156ms
+ POST /admin/recaps/e9e4d695-a4e7-4c08-adc2-d28e98192fbd/edit 200 in 132ms
+ GET / 200 in 6233ms

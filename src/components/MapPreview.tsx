@@ -25,6 +25,8 @@ type GalleryDetail = {
   index: number;
 };
 
+const recapPopupTextLimit = 220;
+
 function parseGpx(gpx: string) {
   const doc = new DOMParser().parseFromString(gpx, "application/xml");
 
@@ -72,6 +74,23 @@ function createPopupShell() {
   return shell;
 }
 
+function shortenPopupText(text: string) {
+  if (text.length <= recapPopupTextLimit) {
+    return {
+      isShortened: false,
+      text
+    };
+  }
+
+  const clipped = text.slice(0, recapPopupTextLimit);
+  const lastSpace = clipped.lastIndexOf(" ");
+
+  return {
+    isShortened: true,
+    text: `${(lastSpace > 140 ? clipped.slice(0, lastSpace) : clipped).trim()}...`
+  };
+}
+
 function createRecapPopup(recap: DailyRecap) {
   const shell = createPopupShell();
   const stats = document.createElement("div");
@@ -103,14 +122,30 @@ function createRecapPopup(recap: DailyRecap) {
     shell.append(createTextElement("p", `★ ${recap.specialMilestoneType}`, "map-popup-milestone"));
   }
 
-  if (recap.shortText) {
-    shell.append(createTextElement("p", recap.shortText, "map-popup-copy"));
+  const popupText = recap.shortText ? shortenPopupText(recap.shortText) : undefined;
+
+  if (popupText?.text) {
+    shell.append(createTextElement("p", popupText.text, "map-popup-copy"));
   }
 
   const focusLink = document.createElement("a");
   focusLink.href = `#recap-${recap.id}`;
   focusLink.className = "map-popup-link";
-  focusLink.textContent = "Pronađi u dnevniku";
+  focusLink.textContent = popupText?.isShortened ? "Pročitaj više u dnevniku" : "Pronađi u dnevniku";
+  focusLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    document.getElementById(`recap-${recap.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    if (popupText?.isShortened) {
+      window.setTimeout(() => {
+        window.dispatchEvent(
+          new CustomEvent("expand-recap-text", {
+            detail: { recapId: recap.id }
+          })
+        );
+      }, 450);
+    }
+  });
   shell.append(focusLink);
 
   return shell;

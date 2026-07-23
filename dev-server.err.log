@@ -59,3 +59,12 @@ Public Supabase fetch failed: Could not find the table 'public.comment_reactions
 Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache
 Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache
 Public Supabase fetch failed: Could not find the table 'public.comment_reactions' in the schema cache
+Public data loader failed: Error: Public Supabase fetch timed out
+    at Timeout.eval [as _onTimeout] (src\lib\public-data.ts:231:39)
+  229 |   let timeout: ReturnType<typeof setTimeout> | undefined;
+  230 |   const timeoutPromise = new Promise<never>((_, reject) => {
+> 231 |     timeout = setTimeout(() => reject(new Error("Public Supabase fetch timed out")), timeoutMs);
+      |                                       ^
+  232 |   });
+  233 |
+  234 |   return Promise.race([

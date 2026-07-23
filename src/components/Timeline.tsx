@@ -48,6 +48,7 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
                     text={recap.shortText}
                     className="mt-3 leading-7 text-coffee/80"
                     threshold={135}
+                    expandEventId={recap.id}
                   />
                   <div className="mt-5 flex flex-wrap gap-2 text-sm font-black">
                     <span className="rounded-full bg-white/70 px-3 py-2">{recap.distanceKm} km</span>

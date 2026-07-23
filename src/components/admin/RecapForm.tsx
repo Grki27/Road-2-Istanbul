@@ -35,7 +35,7 @@ type FormState = {
 const fatigueOptions = [
   { value: "1", label: "💀 mrtvi" },
   { value: "2", label: "😵 umiremo" },
-  { value: "3", label: "😐 neloša" },
+  { value: "3", label: "🤷 neloše" },
   { value: "4", label: "🙂 odmorni" },
   { value: "5", label: "🚀 letimoo" }
 ];

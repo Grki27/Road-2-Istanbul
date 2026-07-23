@@ -33,16 +33,23 @@ export function CoordinateMapPicker({
       const leaflet = await import("leaflet");
       if (!alive || !elementRef.current || mapRef.current) return;
 
-      const parsedLat = Number(initialLatitudeRef.current);
-      const parsedLng = Number(initialLongitudeRef.current);
-      const hasPoint = Number.isFinite(parsedLat) && Number.isFinite(parsedLng);
+      const initialLatitude = initialLatitudeRef.current.trim();
+      const initialLongitude = initialLongitudeRef.current.trim();
+      const parsedLat = Number(initialLatitude);
+      const parsedLng = Number(initialLongitude);
+      const hasPoint = Boolean(
+        initialLatitude &&
+        initialLongitude &&
+        Number.isFinite(parsedLat) &&
+        Number.isFinite(parsedLng)
+      );
       const center: [number, number] = hasPoint ? [parsedLat, parsedLng] : DEFAULT_CENTER;
       const map = leaflet
         .map(elementRef.current, {
           zoomControl: true,
           scrollWheelZoom: true
         })
-        .setView(center, hasPoint ? 12 : 7);
+        .setView(center, hasPoint ? 12 : 11);
 
       mapRef.current = map;
 
@@ -92,8 +99,12 @@ export function CoordinateMapPicker({
     const map = mapRef.current;
     if (!map) return;
 
-    const parsedLat = Number(latitude);
-    const parsedLng = Number(longitude);
+    const nextLatitude = latitude.trim();
+    const nextLongitude = longitude.trim();
+    if (!nextLatitude || !nextLongitude) return;
+
+    const parsedLat = Number(nextLatitude);
+    const parsedLng = Number(nextLongitude);
     if (!Number.isFinite(parsedLat) || !Number.isFinite(parsedLng)) return;
 
     import("leaflet").then((leaflet) => {

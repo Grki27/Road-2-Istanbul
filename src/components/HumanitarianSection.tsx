@@ -50,7 +50,7 @@ export function HumanitarianSection({ settings }: { settings: TripSettings }) {
           <div className="mt-4 flex items-end justify-between gap-4">
             <p className="font-display text-5xl font-black">{settings.donationRaised} €</p>
             <p className="pb-2 font-black text-coffee/70">
-              {isGoalReached ? "cilj probijen" : `od ${campaignDonationGoal} €`}
+              {isGoalReached ? "cilj probijen 😎" : `od ${campaignDonationGoal} €`}
             </p>
           </div>
           <div className="mt-6 h-5 overflow-hidden rounded-full bg-sand">

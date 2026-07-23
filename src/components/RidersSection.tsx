@@ -113,7 +113,7 @@ export function RidersSection({ latestRecap }: { latestRecap?: DailyRecap }) {
                   >
                     {fatigueByRider[rider.name as keyof typeof fatigueByRider]
                       ? fatigueScale[fatigueByRider[rider.name as keyof typeof fatigueByRider]!].emoji
-                      : "😐"}
+                      : "🤷"}
                   </div>
                 </div>
                 <div>

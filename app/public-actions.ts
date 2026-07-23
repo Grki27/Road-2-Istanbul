@@ -87,6 +87,34 @@ function randomNotePlacement() {
   };
 }
 
+async function getWallNoteExpiresAt(supabase: ReturnType<typeof createSupabaseServiceClient>) {
+  const [recapsResult, settingsResult] = await Promise.all([
+    supabase
+      .from("daily_recaps")
+      .select("distance_km")
+      .eq("status", "published"),
+    supabase
+      .from("trip_settings")
+      .select("planned_total_km")
+      .eq("id", 1)
+      .maybeSingle()
+  ]);
+
+  if (!recapsResult.error) {
+    const completedKm = (recapsResult.data ?? []).reduce(
+      (sum, recap) => sum + Number(recap.distance_km ?? 0),
+      0
+    );
+    const plannedKm = Number(settingsResult.data?.planned_total_km ?? 1500);
+
+    if (completedKm >= plannedKm) {
+      return "9999-12-31T23:59:59.000Z";
+    }
+  }
+
+  return new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+}
+
 export async function submitCommentAction(input: unknown): Promise<PublicActionResult> {
   const parsed = commentSchema.safeParse(input);
   if (!parsed.success) return validationResult(parsed.error.issues[0]?.message ?? "Provjeri komentar.");
@@ -200,9 +228,9 @@ export async function submitWallNoteAction(input: unknown): Promise<PublicAction
     return validationResult(`Sticky note moze imati najvise ${WALL_NOTE_MAX_WORDS} rijeci.`);
   }
 
-  const placement = randomNotePlacement();
-  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
   const supabase = createSupabaseServiceClient();
+  const placement = randomNotePlacement();
+  const expiresAt = await getWallNoteExpiresAt(supabase);
   const payload: Database["public"]["Tables"]["wall_notes"]["Insert"] = {
     author_name: value.authorName,
     message: value.message,
