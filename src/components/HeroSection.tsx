@@ -37,12 +37,12 @@ export function HeroSection() {
         </nav>
       </div>
 
-      <div className="relative z-10 mx-auto flex min-h-[96vh] max-w-7xl items-start px-5 pb-72 pt-36 sm:pt-36 md:pt-40 lg:items-end lg:pb-32 lg:pt-28">
+      <div className="relative z-10 mx-auto flex min-h-[96vh] max-w-7xl items-start px-5 pb-72 pt-32 sm:pt-32 md:pt-36 lg:items-end lg:pb-32 lg:pt-28">
         <div className="max-w-[24rem] sm:max-w-xl lg:max-w-4xl">
           <div className="mb-4 inline-flex rotate-[-1.5deg] rounded-full bg-paper px-4 py-2 text-sm font-black text-clay shadow-pin sm:text-base lg:text-sm">
             Start: {siteConfig.startDate} · Dubrovnik → Istanbul
           </div>
-          <h1 className="font-display text-[2.85rem] font-black leading-[0.92] sm:text-6xl md:text-7xl lg:text-8xl">
+          <h1 className="font-display text-4xl font-black leading-[0.95] sm:text-5xl md:text-6xl lg:text-8xl">
             Sedmo Nebo:
             <span className="block text-sand">Road to Istanbul</span>
           </h1>
