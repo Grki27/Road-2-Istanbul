@@ -1,4 +1,4 @@
-import Image from "next/image";
+﻿import Image from "next/image";
 import { SectionHeader } from "@/components/SectionHeader";
 import { fatigueScale } from "@/data/mockData";
 import type { DailyRecap } from "@/types";
@@ -21,7 +21,7 @@ const riders: Rider[] = [
     name: "Marin",
     image: "/assets/marin.jpg",
     description:
-      "Splićanin, student FER-a i kreator iza profila Sedmo Nebo.",
+      "Splićanin, student FER-a i kreator iza profila Sedmo Nebo. Voli igrat svaki sport, svira gitaru, rijetko kad kaže ne izlasku i često ga možete naći na nekom krovu, putovanju ili avanturi.",
     strengths: [
       { label: "Ima beskonačno kondicije", value: 5 },
       { label: "Uvijek je spreman za side quest", value: 5 },
@@ -36,10 +36,10 @@ const riders: Rider[] = [
     name: "Marko",
     image: "/assets/marko.jpg",
     description:
-      "Riječanin i student medicine koji obožava bicikklirat.",
+      "Riječanin, student medicine u Zagrebu i ljubitelj bicikliranja. Odlično kuha, svira flautu i voli se družit s ljudima.",
     strengths: [
       { label: "Zna prvu pomoć", value: 5 },
-      { label: "Dobro kuha", value: 5 },
+      { label: "Uvijek ima neki snack pri ruci", value: 5 },
       { label: "Ima Dekanovu nagradu", value: 5 }
     ],
     weaknesses: [
