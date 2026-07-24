@@ -62,7 +62,7 @@ export function HumanitarianSection({ settings }: { settings: TripSettings }) {
             </p>
           ) : (
             <p className="mt-5 leading-7 text-coffee/80">
-              Ruta ima oko 1500 kilometara, zato je cilj {campaignDonationGoal} €. Ako imate eur viška, dajte onima koji nemaju i motivirajte nas da odvozimo dodatni kilometar :)
+              Ruta ima oko 1500 kilometara, zato je cilj {campaignDonationGoal} € :)
             </p>
           )}
         </div>
