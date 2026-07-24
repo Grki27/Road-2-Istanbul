@@ -86,7 +86,7 @@ export default async function AdminDashboardPage() {
             <StickyNote className="text-clay" />
             <span className="rounded-full bg-sand px-3 py-1 text-xs font-black">{pendingNotes.count ?? 0} pending</span>
           </div>
-          <h2 className="mt-4 font-display text-2xl font-black">Zid podrske</h2>
+          <h2 className="mt-4 font-display text-2xl font-black">Zid podrške</h2>
           <p className="mt-2 text-sm font-bold text-coffee/65">Odobri sticky notes, provjeri crteze i makni ono sto ne pase na pano.</p>
         </Link>
       </section>

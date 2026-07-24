@@ -1,4 +1,4 @@
-import { BedDouble, CalendarDays, Flag, Route, Star } from "lucide-react";
+import { BedDouble, CalendarDays, Flag, Route } from "lucide-react";
 import { ExpandableText } from "@/components/ExpandableText";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { RecapComments } from "@/components/RecapComments";
@@ -9,7 +9,7 @@ import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap; isPreview?: boolean }) {
   if (!recap) {
     return (
-      <section id="zadnji-update" className="px-5 py-12">
+      <section className="hidden px-5 py-12 md:block">
         <div className="paper-edge mx-auto max-w-5xl rounded-[2rem] bg-paper p-8 text-center shadow-paper">
           <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">Zadnji update s ceste</p>
           <h2 className="mt-3 font-display text-4xl font-black">Put još nije krenuo.</h2>
@@ -27,7 +27,7 @@ export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap;
     : [recap.coverImage ?? "/assets/journey-support-1.jpg"];
 
   return (
-    <section id="zadnji-update" className="px-5 py-12">
+    <section className="hidden px-5 py-12 md:block">
       <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[2rem] bg-paper shadow-paper md:grid-cols-[0.9fr_1.1fr]">
         <PhotoGallery images={images} title={recap.title} className="min-h-[320px]" priority />
         <div className="p-7 md:p-10">
@@ -44,11 +44,6 @@ export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap;
             <span className="flex items-center gap-2"><Flag size={18} />{formatCountry(recap.country)}</span>
             {recap.sleepingLocation ? <span className="flex items-center gap-2"><BedDouble size={18} />{recap.sleepingLocation}</span> : null}
           </div>
-          {recap.specialMilestoneType ? (
-            <div className="mt-3 flex flex-wrap gap-2 text-sm font-black">
-              <span className="inline-flex items-center gap-2 rounded-full bg-sand px-3 py-1.5"><Star size={16} fill="currentColor" />{recap.specialMilestoneType}</span>
-            </div>
-          ) : null}
           <ExpandableText
             text={recap.shortText}
             className="mt-5 text-lg leading-8 text-coffee/88"

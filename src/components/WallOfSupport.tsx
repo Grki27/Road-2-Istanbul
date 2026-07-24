@@ -339,7 +339,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
     <section id="podrska" className="px-5 py-20">
       <div className="mx-auto max-w-7xl">
         <SectionHeader
-          eyebrow="Zid podrske"
+          eyebrow="Zid podrške"
           title="Ostavi nam poruku podrške."
           text="Sticky notes žive 24 sata - kao Instagram storyji. Dodaj poruku, nacrtaj nešto ako te ponese i zalijepi je na pano."
         />
@@ -397,7 +397,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
           <div aria-modal="true" className="max-h-[92vh] w-full max-w-xl overflow-hidden rounded-[2rem] bg-paper shadow-paper" role="dialog">
             <div className="flex items-start justify-between gap-4 border-b border-coffee/10 p-5">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-clay">Zid podrske</p>
+                <p className="text-xs font-black uppercase tracking-[0.2em] text-clay">Zid podrške</p>
                 <h3 className="mt-1 font-display text-2xl font-black">Novi sticky note</h3>
               </div>
               <button aria-label="Zatvori" className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink text-paper" onClick={() => setIsOpen(false)} type="button">

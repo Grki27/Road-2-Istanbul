@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, Flag, LoaderCircle, Save, Send, Star, WifiOff, X } from "lucide-react";
+import { Eye, Flag, LoaderCircle, Save, Send, WifiOff, X } from "lucide-react";
 import { saveRecapAction, type AdminActionResult } from "@app/admin/actions";
 import { AdminActionMessage, inputClassName, labelClassName, UseCurrentLocationButton } from "@/components/admin/AdminFormUi";
 import { CoordinateMapPicker } from "@/components/admin/CoordinateMapPicker";
@@ -29,7 +29,6 @@ type FormState = {
   highlightOfTheDay: string;
   problemOfTheDay: string;
   isRestDay: boolean;
-  specialMilestoneType: string;
 };
 
 const fatigueOptions = [
@@ -58,8 +57,7 @@ function stateFromRecap(recap?: RecapRow, defaults?: { dayNumber: number; date: 
     markoFatigueRating: recap?.marko_fatigue_rating ? String(recap.marko_fatigue_rating) : "",
     highlightOfTheDay: recap?.highlight_of_the_day ?? "",
     problemOfTheDay: recap?.problem_of_the_day ?? "",
-    isRestDay: recap?.is_rest_day ?? false,
-    specialMilestoneType: recap?.special_milestone_type ?? ""
+    isRestDay: recap?.is_rest_day ?? false
   };
 }
 
@@ -95,7 +93,6 @@ function RecapPreview({ form, onClose }: { form: FormState; onClose: () => void 
             <span className="rounded-full bg-white px-3 py-2">{form.distanceKm || 0} km</span>
             <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-2"><Flag size={16} />{formatCountry(form.country)}</span>
             <span className="rounded-full bg-sunset px-3 py-2">{fatigue}</span>
-            {form.specialMilestoneType ? <span className="inline-flex items-center gap-2 rounded-full bg-sand px-3 py-1.5"><Star size={15} fill="currentColor" />{form.specialMilestoneType}</span> : null}
           </div>
           <p className="mt-6 whitespace-pre-wrap text-lg leading-8 text-coffee/85">{form.shortText || "Tekst dnevnog recapa pojavit će se ovdje."}</p>
           <div className="mt-7 grid gap-4 sm:grid-cols-2">
@@ -186,7 +183,6 @@ export function RecapForm({
       highlightOfTheDay: form.highlightOfTheDay,
       problemOfTheDay: form.problemOfTheDay,
       isRestDay: form.isRestDay,
-      specialMilestoneType: form.specialMilestoneType,
       startLocation: todayDistanceKm === null ? "" : computedStartLocation,
       endLocation: todayDistanceKm === null ? "" : computedEndLocation,
       status
@@ -246,7 +242,6 @@ export function RecapForm({
           </div>
           <label className={labelClassName}>Mjesto spavanja<input className={inputClassName} value={form.sleepingLocation} onChange={(e) => update("sleepingLocation", e.target.value)} placeholder="Skadar" /></label>
           <label className={labelClassName}>Država<input className={inputClassName} value={form.country} onChange={(e) => update("country", e.target.value)} /><FieldError errors={errors.country} /></label>
-          <label className={labelClassName}>Poseban milestone<input className={inputClassName} value={form.specialMilestoneType} onChange={(e) => update("specialMilestoneType", e.target.value)} placeholder="Prva granica, 500 km..." /></label>
         </div>
         <label className="mt-5 flex min-h-12 items-center gap-3 rounded-2xl bg-sand px-4 py-3 font-black"><input type="checkbox" className="h-5 w-5 accent-clay" checked={form.isRestDay} onChange={(e) => update("isRestDay", e.target.checked)} /> Dan odmora</label>
       </section>

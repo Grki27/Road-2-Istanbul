@@ -41,6 +41,7 @@ export default async function Home() {
         isPreview={data.isPreview}
         hasDataError={data.hasDataError}
       />
+      <div id="zadnji-update" className="scroll-mt-24" aria-hidden="true" />
       <LatestUpdate recap={latestRecap} isPreview={data.isPreview} />
       <Timeline recaps={data.recaps} isPreview={data.isPreview} />
       <WallOfSupport notes={data.wallNotes} />

@@ -119,10 +119,6 @@ function createRecapPopup(recap: DailyRecap) {
     stats
   );
 
-  if (recap.specialMilestoneType) {
-    shell.append(createTextElement("p", `★ ${recap.specialMilestoneType}`, "map-popup-milestone"));
-  }
-
   const popupText = recap.shortText ? shortenPopupText(recap.shortText) : undefined;
 
   if (popupText?.text) {
@@ -139,7 +135,7 @@ function createRecapPopup(recap: DailyRecap) {
       new CustomEvent("show-recap-in-timeline", {
         detail: {
           recapId: recap.id,
-          expand: Boolean(popupText?.isShortened)
+          expand: false
         }
       })
     );
