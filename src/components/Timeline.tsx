@@ -370,10 +370,6 @@ function MobileTimelineCard({
 
           {expanded ? (
             <div className="mt-5 space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full bg-sunset px-4 py-2 font-black">
-                <span>{fatigue.emoji}</span>
-                Razina umora: {fatigue.label}
-              </div>
               <div className="grid gap-3">
                 <div className="rounded-2xl bg-white/60 p-4">
                   <p className="text-sm font-black text-moss">Highlight dana</p>
