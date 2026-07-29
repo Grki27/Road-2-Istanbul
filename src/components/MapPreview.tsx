@@ -253,6 +253,7 @@ export function MapPreview({
   const recapMarkersRef = useRef<Map<string, L.Marker>>(new Map());
   const [routeState, setRouteState] = useState<"loading" | "ready" | "error">("loading");
   const [gallery, setGallery] = useState<GalleryDetail | null>(null);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const latestRecap = recaps.at(-1);
 
   useEffect(() => {
@@ -331,6 +332,7 @@ export function MapPreview({
         const popupElement = popup.getElement();
         const dragSurface = popupElement?.querySelector<HTMLElement>(".leaflet-popup-content-wrapper");
 
+        setIsPopupOpen(true);
         centerPopup(popup);
         if (!dragSurface) return;
 
@@ -408,6 +410,7 @@ export function MapPreview({
       const handlePopupClose = (event: L.PopupEvent) => {
         popupGestureCleanups.get(event.popup)?.();
         popupGestureCleanups.delete(event.popup);
+        setIsPopupOpen(false);
       };
 
       map.on("popupopen", handlePopupOpen);
@@ -574,6 +577,7 @@ export function MapPreview({
         map.off("popupclose", handlePopupClose);
         popupGestureCleanups.forEach((removeListeners) => removeListeners());
         popupGestureCleanups.clear();
+        setIsPopupOpen(false);
         map.remove();
         mapRef.current = null;
         routeBoundsRef.current = null;
@@ -667,7 +671,12 @@ export function MapPreview({
               ) : null}
             </div>
 
-            <div className="absolute bottom-4 left-4 right-16 z-[450] flex flex-wrap gap-2 sm:bottom-auto sm:left-auto sm:right-4 sm:top-4 sm:max-w-[70%] sm:justify-end">
+            <div
+              className={`absolute bottom-4 left-4 right-16 z-[450] flex flex-wrap gap-2 transition duration-200 sm:bottom-auto sm:left-auto sm:right-4 sm:top-4 sm:max-w-[70%] sm:justify-end ${
+                isPopupOpen ? "pointer-events-none translate-y-2 opacity-0" : "opacity-100"
+              }`}
+              aria-hidden={isPopupOpen}
+            >
               <button
                 onClick={fitRoute}
                 disabled={routeState !== "ready"}
