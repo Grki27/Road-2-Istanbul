@@ -1,11 +1,40 @@
+"use client";
+
+import { useState } from "react";
 import { HeartHandshake, Share2 } from "lucide-react";
 import type { TripSettings } from "@/types";
 
 const campaignDonationGoal = 1500;
 
 export function HumanitarianSection({ settings }: { settings: TripSettings }) {
+  const [shareLabel, setShareLabel] = useState("Podijeli priču");
   const progress = Math.min((settings.donationRaised / campaignDonationGoal) * 100, 100);
   const isGoalReached = settings.donationRaised >= campaignDonationGoal;
+
+  async function shareCampaign() {
+    if (!settings.donationUrl) return;
+
+    const shareData = {
+      title: "Sedmo Nebo: Road to Istanbul",
+      text: "Podrži naš put do Istanbula i humanitarnu kampanju za SOS Dječje selo Hrvatska.",
+      url: settings.donationUrl
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        return;
+      }
+
+      await navigator.clipboard.writeText(settings.donationUrl);
+      setShareLabel("Link je kopiran");
+      window.setTimeout(() => setShareLabel("Podijeli priču"), 2200);
+    } catch (error) {
+      if (error instanceof DOMException && error.name === "AbortError") return;
+      setShareLabel("Pokušaj ponovno");
+      window.setTimeout(() => setShareLabel("Podijeli priču"), 2200);
+    }
+  }
 
   return (
     <section id="humanitarno" className="px-5 py-20">
@@ -36,13 +65,15 @@ export function HumanitarianSection({ settings }: { settings: TripSettings }) {
                 Link stiže uskoro
               </button>
             )}
-            <a
-              href="https://www.instagram.com/sedmo_nebo__/"
+            <button
+              type="button"
+              onClick={() => void shareCampaign()}
+              disabled={!settings.donationUrl}
               className="inline-flex items-center justify-center gap-2 rounded-full border border-paper/30 px-6 py-4 font-black"
             >
               <Share2 size={20} />
-              Podijeli priču
-            </a>
+              {shareLabel}
+            </button>
           </div>
         </div>
         <div className="rounded-[1.5rem] bg-paper p-6 text-ink">

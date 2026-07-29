@@ -360,7 +360,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
             return (
               <article
                 aria-label={`Sticky note od ${note.authorName}`}
-                className="absolute aspect-[4/5] w-32 cursor-grab touch-none overflow-hidden rounded-sm p-3 shadow-pin active:cursor-grabbing sm:w-40 md:w-56 md:p-5"
+                className="sticky-note-surface absolute aspect-[4/5] w-32 cursor-grab touch-none overflow-hidden rounded-sm shadow-pin active:cursor-grabbing sm:w-40 md:w-56"
                 key={note.id}
                 onPointerCancel={endDrag}
                 onPointerDown={(event) => startDrag(event, note)}
@@ -374,11 +374,9 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
                   zIndex: frontLayer ?? 5 + index
                 }}
               >
-                <span className="absolute left-1/2 top-2 h-4 w-4 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
-                <div className="relative z-10">
-                  <p className="mt-6 font-display text-base font-black sm:text-lg md:mt-8 md:text-xl">{note.authorName}</p>
-                  <p className="mt-3 whitespace-pre-wrap text-xs font-bold leading-5 text-ink/82 sm:text-sm sm:leading-6 md:mt-4 md:text-base md:leading-7">{note.message}</p>
-                </div>
+                <span className="sticky-note-pin absolute left-1/2 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
+                <p className="sticky-note-author-field pointer-events-none font-display font-black">{note.authorName}</p>
+                <p className="sticky-note-message-field pointer-events-none whitespace-pre-wrap font-bold text-ink/82">{note.message}</p>
                 <DrawingLayer drawingData={note.drawingData} className="pointer-events-none absolute inset-0 h-full w-full" />
               </article>
             );
@@ -407,13 +405,13 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
             <div className="max-h-[calc(92vh-6rem)] overflow-y-auto p-5">
               <div className="mx-auto max-w-sm">
                 <div
-                  className="relative aspect-[4/5] overflow-hidden rounded-sm p-5 shadow-pin"
+                  className="sticky-note-surface relative aspect-[4/5] overflow-hidden rounded-sm shadow-pin"
                   style={{ backgroundColor: composerNoteColor }}
                 >
-                  <span className="absolute left-1/2 top-2 z-20 h-4 w-4 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
+                  <span className="sticky-note-pin absolute left-1/2 z-20 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
                   <input
                     aria-label="Ime za sticky note"
-                    className="relative z-10 mt-8 w-full border-0 bg-transparent font-display text-2xl font-black text-ink outline-none placeholder:text-ink/35"
+                    className="sticky-note-author-field w-auto border-0 bg-transparent font-display font-black text-ink outline-none placeholder:text-ink/35"
                     maxLength={24}
                     onChange={(event) => setAuthorName(event.target.value)}
                     placeholder="Tvoje ime"
@@ -421,7 +419,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
                   />
                   <textarea
                     aria-label="Poruka za sticky note"
-                    className="relative z-10 mt-4 h-36 w-full resize-none border-0 bg-transparent text-lg font-bold leading-7 text-ink/85 outline-none placeholder:text-ink/35"
+                    className="sticky-note-message-field sticky-note-message-input w-auto border-0 bg-transparent font-bold text-ink/85 outline-none placeholder:text-ink/35"
                     maxLength={240}
                     onChange={(event) => setMessage(event.target.value)}
                     placeholder="Kratka poruka za cestu..."

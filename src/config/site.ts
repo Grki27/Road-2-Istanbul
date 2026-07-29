@@ -7,7 +7,7 @@ export const siteConfig = {
   plannedTotalKm: 1500,
   donationGoal: 1500,
   donationRaised: 0,
-  donationUrl: "",
+  donationUrl: "https://sos-dsh.hr/do-istanbula-na-dva-kotaca/",
   socials: {
     instagram: "https://www.instagram.com/sedmo_nebo__/",
     tiktok: "https://www.tiktok.com/@sedmo_nebo_",
@@ -19,17 +19,26 @@ export const siteConfig = {
     {
       name: "Keindl Sport",
       logo: "/assets/partner-keindl.png",
-      url: "https://keindl-sport.hr/"
+      url: "https://keindl-sport.hr/",
+      theme: "light"
     },
     {
       name: "SOS Dječje selo Hrvatska",
       logo: "/assets/partner-sos-djecje-selo.png",
-      url: "https://sos-dsh.hr/"
+      url: "https://sos-dsh.hr/",
+      theme: "blue"
     },
     {
       name: "Louder!",
       logo: "/assets/partner-louder.png",
-      url: "https://louder.hr/"
+      url: "https://louder.hr/",
+      theme: "light"
+    },
+    {
+      name: "FastBike",
+      logo: "/assets/partner-fastbike.png",
+      url: "https://fastbike-rent.com/hr/",
+      theme: "dark"
     }
   ]
 } as const;

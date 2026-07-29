@@ -72,6 +72,19 @@ function createTextElement(tag: "p" | "strong" | "span", text: string, className
 function createPopupShell() {
   const shell = document.createElement("div");
   shell.className = "map-popup";
+  const closeButton = document.createElement("button");
+  closeButton.type = "button";
+  closeButton.className = "map-popup-close";
+  closeButton.setAttribute("aria-label", "Zatvori prozor");
+  closeButton.textContent = "×";
+  closeButton.addEventListener("click", () => {
+    const popupElement = closeButton.closest(".leaflet-popup");
+    const leafletCloseButton = popupElement?.querySelector<HTMLElement>(
+      ".leaflet-popup-close-button"
+    );
+    leafletCloseButton?.click();
+  });
+  shell.append(closeButton);
   return shell;
 }
 
@@ -281,6 +294,125 @@ export function MapPreview({
       mapRef.current = map;
       leaflet.control.zoom({ position: "bottomright" }).addTo(map);
 
+      const popupOptions = (): L.PopupOptions => ({
+        autoPan: true,
+        autoPanPaddingTopLeft: leaflet.point(18, 18),
+        autoPanPaddingBottomRight: leaflet.point(18, 18),
+        className: "journey-map-popup",
+        closeButton: true,
+        maxWidth: 320,
+        minWidth: 0
+      });
+      const popupGestureCleanups = new Map<L.Popup, () => void>();
+
+      const centerPopup = (popup: L.Popup) => {
+        window.requestAnimationFrame(() => {
+          window.requestAnimationFrame(() => {
+            const popupElement = popup.getElement();
+            if (!popupElement || !mapRef.current) return;
+
+            const mapRect = map.getContainer().getBoundingClientRect();
+            const popupRect = popupElement.getBoundingClientRect();
+            const offsetX = popupRect.left + popupRect.width / 2 - (mapRect.left + mapRect.width / 2);
+            const offsetY = popupRect.top + popupRect.height / 2 - (mapRect.top + mapRect.height / 2);
+
+            if (Math.abs(offsetX) > 1 || Math.abs(offsetY) > 1) {
+              map.panBy([offsetX, offsetY], {
+                animate: true,
+                duration: 0.24
+              });
+            }
+          });
+        });
+      };
+
+      const handlePopupOpen = (event: L.PopupEvent) => {
+        const popup = event.popup;
+        const popupElement = popup.getElement();
+        const dragSurface = popupElement?.querySelector<HTMLElement>(".leaflet-popup-content-wrapper");
+
+        centerPopup(popup);
+        if (!dragSurface) return;
+
+        let pointerId: number | null = null;
+        let lastX = 0;
+        let lastY = 0;
+        let startX = 0;
+        let startY = 0;
+        let didDrag = false;
+
+        const startPopupDrag = (pointerEvent: PointerEvent) => {
+          const target = pointerEvent.target as Element | null;
+          if (
+            pointerEvent.button !== 0 ||
+            target?.closest("a, button, .leaflet-popup-close-button")
+          ) {
+            return;
+          }
+
+          pointerId = pointerEvent.pointerId;
+          startX = lastX = pointerEvent.clientX;
+          startY = lastY = pointerEvent.clientY;
+          didDrag = false;
+          dragSurface.setPointerCapture(pointerEvent.pointerId);
+        };
+
+        const movePopupDrag = (pointerEvent: PointerEvent) => {
+          if (pointerId !== pointerEvent.pointerId) return;
+
+          const totalDistance = Math.hypot(
+            pointerEvent.clientX - startX,
+            pointerEvent.clientY - startY
+          );
+          if (!didDrag && totalDistance < 6) return;
+
+          didDrag = true;
+          pointerEvent.preventDefault();
+          const deltaX = pointerEvent.clientX - lastX;
+          const deltaY = pointerEvent.clientY - lastY;
+          lastX = pointerEvent.clientX;
+          lastY = pointerEvent.clientY;
+          map.panBy([-deltaX, -deltaY], { animate: false });
+        };
+
+        const endPopupDrag = (pointerEvent: PointerEvent) => {
+          if (pointerId !== pointerEvent.pointerId) return;
+          if (dragSurface.hasPointerCapture(pointerEvent.pointerId)) {
+            dragSurface.releasePointerCapture(pointerEvent.pointerId);
+          }
+          pointerId = null;
+        };
+
+        const suppressDraggedClick = (clickEvent: MouseEvent) => {
+          if (!didDrag) return;
+          clickEvent.preventDefault();
+          clickEvent.stopPropagation();
+          didDrag = false;
+        };
+
+        dragSurface.addEventListener("pointerdown", startPopupDrag);
+        dragSurface.addEventListener("pointermove", movePopupDrag);
+        dragSurface.addEventListener("pointerup", endPopupDrag);
+        dragSurface.addEventListener("pointercancel", endPopupDrag);
+        dragSurface.addEventListener("click", suppressDraggedClick, true);
+
+        popupGestureCleanups.set(popup, () => {
+          dragSurface.removeEventListener("pointerdown", startPopupDrag);
+          dragSurface.removeEventListener("pointermove", movePopupDrag);
+          dragSurface.removeEventListener("pointerup", endPopupDrag);
+          dragSurface.removeEventListener("pointercancel", endPopupDrag);
+          dragSurface.removeEventListener("click", suppressDraggedClick, true);
+        });
+      };
+
+      const handlePopupClose = (event: L.PopupEvent) => {
+        popupGestureCleanups.get(event.popup)?.();
+        popupGestureCleanups.delete(event.popup);
+      };
+
+      map.on("popupopen", handlePopupOpen);
+      map.on("popupclose", handlePopupClose);
+
       leaflet
         .tileLayer(readableMapTiles.url, {
           maxZoom: 19,
@@ -375,7 +507,7 @@ export function MapPreview({
         leaflet
           .marker([currentLocation.latitude, currentLocation.longitude], { icon: teamIcon, zIndexOffset: 700 })
           .addTo(map)
-          .bindPopup(createCurrentLocationPopup(currentLocation, isPreview));
+          .bindPopup(createCurrentLocationPopup(currentLocation, isPreview), popupOptions());
       }
 
       recaps.forEach((recap) => {
@@ -396,7 +528,7 @@ export function MapPreview({
         const marker = leaflet
           .marker([recapLatitude, recapLongitude], { icon: recapIcon, zIndexOffset: 900 })
           .addTo(map)
-          .bindPopup(createRecapPopup(recap), { maxWidth: 310 });
+          .bindPopup(createRecapPopup(recap), popupOptions());
 
         recapMarkersRef.current.set(recap.id, marker);
       });
@@ -416,7 +548,7 @@ export function MapPreview({
         leaflet
           .marker([event.latitude, event.longitude], { icon: eventIcon, zIndexOffset: 850 })
           .addTo(map)
-          .bindPopup(createEventPopup(event), { maxWidth: 310 });
+          .bindPopup(createEventPopup(event), popupOptions());
       });
 
       const focusRecap = (event: Event) => {
@@ -438,6 +570,10 @@ export function MapPreview({
       cleanup = () => {
         window.removeEventListener("focus-map-recap", focusRecap);
         window.removeEventListener("open-map-gallery", openGallery);
+        map.off("popupopen", handlePopupOpen);
+        map.off("popupclose", handlePopupClose);
+        popupGestureCleanups.forEach((removeListeners) => removeListeners());
+        popupGestureCleanups.clear();
         map.remove();
         mapRef.current = null;
         routeBoundsRef.current = null;
