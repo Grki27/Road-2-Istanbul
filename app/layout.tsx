@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { siteConfig } from "@/config/site";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -14,15 +15,66 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://sedmo-nebo-road-to-istanbul.vercel.app"),
-  title: "Sedmo Nebo: Road to Istanbul",
+  metadataBase: new URL(siteConfig.url),
+  applicationName: "Sedmo Nebo",
+  title: {
+    default: "Sedmo Nebo | Road to Istanbul",
+    template: "%s | Sedmo Nebo"
+  },
   description:
-    "Live dnevnik puta: dva studenta, dvije bicikle, preko 1500 kilometara i humanitarna priča za SOS Dječje selo Hrvatska.",
+    "Sedmo Nebo Road to Istanbul je live biciklisticki dnevnik puta od Dubrovnika do Istanbula i humanitarna prica za SOS Djecje selo Hrvatska.",
+  keywords: [
+    "Sedmo Nebo",
+    "Sedmo Nebo Road to Istanbul",
+    "sedmonebo",
+    "sedmo nebo bicikla",
+    "Dubrovnik Istanbul biciklom",
+    "Road to Istanbul",
+    "SOS Djecje selo Hrvatska"
+  ],
+  authors: [{ name: "Sedmo Nebo", url: siteConfig.url }],
+  creator: "Sedmo Nebo",
+  publisher: "Sedmo Nebo",
+  alternates: {
+    canonical: "/"
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1
+    }
+  },
   openGraph: {
-    title: "Sedmo Nebo: Road to Istanbul",
+    type: "website",
+    locale: "hr_HR",
+    url: siteConfig.url,
+    siteName: "Sedmo Nebo",
+    title: "Sedmo Nebo | Road to Istanbul",
     description:
-      "Prati biciklističku avanturu od Dubrovnika do Istanbula, dan po dan.",
+      "Prati biciklisticku avanturu od Dubrovnika do Istanbula, dan po dan.",
+    images: [
+      {
+        url: "/assets/hero-road-to-istanbul.jpg",
+        width: 1600,
+        height: 1067,
+        alt: "Sedmo Nebo Road to Istanbul"
+      }
+    ]
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sedmo Nebo | Road to Istanbul",
+    description:
+      "Live dnevnik puta od Dubrovnika do Istanbula: karta, recapovi i humanitarna kampanja.",
     images: ["/assets/hero-road-to-istanbul.jpg"]
+  },
+  icons: {
+    icon: "/assets/sedmo-nebo-logo.png",
+    apple: "/assets/sedmo-nebo-logo.png"
   }
 };
 
@@ -39,3 +91,4 @@ export default function RootLayout({
     </html>
   );
 }
+

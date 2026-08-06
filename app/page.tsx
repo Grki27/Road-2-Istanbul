@@ -9,6 +9,7 @@ import { RidersSection } from "@/components/RidersSection";
 import { PartnersSection } from "@/components/PartnersSection";
 import { Footer } from "@/components/Footer";
 import { WanderingBicycle } from "@/components/WanderingBicycle";
+import { siteConfig } from "@/config/site";
 import { getPublicSiteData } from "@/lib/public-data";
 import { getTripStats } from "@/lib/stats";
 
@@ -18,9 +19,29 @@ export default async function Home() {
   const data = await getPublicSiteData();
   const stats = getTripStats(data.isPreview ? [] : data.recaps, data.settings);
   const latestRecap = data.recaps.at(-1);
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Sedmo Nebo",
+    alternateName: ["Sedmo Nebo Road to Istanbul", "sedmonebo"],
+    url: siteConfig.url,
+    description:
+      "Live biciklisticki dnevnik puta od Dubrovnika do Istanbula i humanitarna kampanja za SOS Djecje selo Hrvatska.",
+    image: `${siteConfig.url}/assets/hero-road-to-istanbul.jpg`,
+    sameAs: [
+      siteConfig.socials.instagram,
+      siteConfig.socials.tiktok,
+      siteConfig.socials.youtube,
+      siteConfig.socials.facebook
+    ]
+  };
 
   return (
     <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <WanderingBicycle />
       <HeroSection />
       <StatsStrip

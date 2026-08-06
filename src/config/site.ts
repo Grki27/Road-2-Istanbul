@@ -1,5 +1,6 @@
 export const siteConfig = {
   name: "Sedmo Nebo: Road to Istanbul",
+  url: "https://sedmonebo.com",
   tagline:
     "Dva studenta, dvije bicikle, preko 1500 kilometara, 6 država i humanitarna priča za SOS Dječje selo.",
   startDate: "25.8.2026.",
