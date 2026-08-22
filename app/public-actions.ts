@@ -43,7 +43,7 @@ const commentSchema = z.object({
 
 const wallNoteSchema = z.object({
   authorName: z.string().trim().min(1, "Upisi ime.").max(AUTHOR_MAX_LENGTH, "Ime moze imati najvise 24 znaka."),
-  message: z.string().trim().min(1, "Upisi poruku.").max(WALL_NOTE_MAX_LENGTH, "Poruka je preduga."),
+  message: z.string().trim().max(WALL_NOTE_MAX_LENGTH, "Poruka je preduga."),
   noteColor: z.enum(allowedNoteColors).catch("#ffe08a"),
   drawingData: drawingDataSchema.optional(),
   drawingDataUrl: z.string().startsWith("data:image/").max(300_000).optional()
@@ -244,7 +244,22 @@ export async function submitWallNoteAction(input: unknown): Promise<PublicAction
     expires_at: expiresAt
   };
 
-  const { data: insertedNote, error } = await supabase.from("wall_notes").insert(payload).select("id").single();
+  let { data: insertedNote, error } = await supabase
+    .from("wall_notes")
+    .insert(payload)
+    .select("id")
+    .single();
+
+  // Existing deployments may not have applied the optional-message constraint yet.
+  if (error?.code === "23514" && !value.message) {
+    const retry = await supabase
+      .from("wall_notes")
+      .insert({ ...payload, message: " " })
+      .select("id")
+      .single();
+    insertedNote = retry.data;
+    error = retry.error;
+  }
 
   if (error) {
     return {
@@ -257,7 +272,7 @@ export async function submitWallNoteAction(input: unknown): Promise<PublicAction
   revalidatePath("/");
   return {
     ok: true,
-    id: insertedNote.id,
+    id: insertedNote!.id,
     status: "approved",
     message: "Sticky note je objavljen. AI pregled je u tijeku."
   };

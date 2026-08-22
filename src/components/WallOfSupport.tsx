@@ -376,7 +376,11 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
               >
                 <span className="sticky-note-pin absolute left-1/2 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
                 <p className="sticky-note-author-field pointer-events-none font-display font-black">{note.authorName}</p>
-                <p className="sticky-note-message-field pointer-events-none whitespace-pre-wrap font-bold text-ink/82">{note.message}</p>
+                {note.message.trim() ? (
+                  <p className="sticky-note-message-field pointer-events-none whitespace-pre-wrap font-bold text-ink/82">
+                    {note.message}
+                  </p>
+                ) : null}
                 <DrawingLayer drawingData={note.drawingData} className="pointer-events-none absolute inset-0 h-full w-full" />
               </article>
             );
@@ -422,7 +426,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
                     className="sticky-note-message-field sticky-note-message-input w-auto border-0 bg-transparent font-bold text-ink/85 outline-none placeholder:text-ink/35"
                     maxLength={240}
                     onChange={(event) => setMessage(event.target.value)}
-                    placeholder="Kratka poruka za cestu..."
+                    placeholder="Poruka nije obavezna..."
                     value={message}
                   />
                   <svg
@@ -496,7 +500,7 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
               ) : null}
               <button
                 className="mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-full bg-ink px-5 py-3 font-black text-paper disabled:opacity-55"
-                disabled={isPending || !authorName.trim() || !message.trim() || currentWordCount > 20}
+                disabled={isPending || !authorName.trim() || currentWordCount > 20}
                 onClick={submit}
                 type="button"
               >

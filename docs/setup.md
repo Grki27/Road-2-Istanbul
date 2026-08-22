@@ -29,6 +29,7 @@ Run these files in Supabase SQL Editor in order:
 2. `supabase/migrations/002_admin_location_rpc.sql`
 3. `supabase/migrations/003_phase_5_comments_wall.sql`
 4. `supabase/migrations/004_comment_reactions.sql`
+5. `supabase/migrations/005_optional_wall_note_message.sql`
 
 The migrations create the public tables, RLS policies, helper functions, and Storage buckets used by the application.
 
