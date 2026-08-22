@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const data = await getPublicSiteData();
-  const stats = getTripStats(data.isPreview ? [] : data.recaps, data.settings);
+  const stats = getTripStats(data.recaps, data.settings);
   const latestRecap = data.recaps.at(-1);
   const structuredData = {
     "@context": "https://schema.org",
@@ -51,7 +51,7 @@ export default async function Home() {
           { label: "Dana na putu", value: `${stats.daysOnRoad}` },
           {
             label: "Trenutna država",
-            value: data.isPreview ? "Čekamo start" : stats.currentCountry
+            value: stats.currentCountry
           }
         ]}
       />
@@ -59,15 +59,14 @@ export default async function Home() {
         currentLocation={data.currentLocation}
         recaps={data.recaps}
         mapEvents={data.mapEvents}
-        isPreview={data.isPreview}
         hasDataError={data.hasDataError}
       />
       <div id="zadnji-update" className="scroll-mt-24" aria-hidden="true" />
-      <LatestUpdate recap={latestRecap} isPreview={data.isPreview} />
-      <Timeline recaps={data.recaps} isPreview={data.isPreview} />
+      <LatestUpdate recap={latestRecap} />
+      <Timeline recaps={data.recaps} />
       <WallOfSupport notes={data.wallNotes} />
       <HumanitarianSection settings={data.settings} />
-      <RidersSection latestRecap={data.isPreview ? undefined : latestRecap} />
+      <RidersSection latestRecap={latestRecap} />
       <PartnersSection />
       <Footer />
     </main>

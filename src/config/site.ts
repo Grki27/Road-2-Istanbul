@@ -2,13 +2,14 @@ export const siteConfig = {
   name: "Sedmo Nebo: Road to Istanbul",
   url: "https://sedmonebo.com",
   tagline:
-    "Dva studenta, dvije bicikle, preko 1500 kilometara, 6 država i humanitarna priča za SOS Dječje selo.",
+    "Dva studenta, dva bicikla, preko 1500 kilometara, 6 država i humanitarna priča za SOS Dječje selo.",
   startDate: "25.8.2026.",
   contactEmail: "sedmonebo27@gmail.com",
   plannedTotalKm: 1500,
   donationGoal: 1500,
   donationRaised: 0,
-  donationUrl: "https://sos-dsh.hr/do-istanbula-na-dva-kotaca/",
+  donationUrl:
+    "https://sos-dsh.hr/do-istanbula-na-dva-kotaca/?utm_source=instagram&utm_medium=link&utm_campaign=SedmoNebo",
   socials: {
     instagram: "https://www.instagram.com/sedmo_nebo__/",
     tiktok: "https://www.tiktok.com/@sedmo_nebo_",

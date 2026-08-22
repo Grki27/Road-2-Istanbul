@@ -12,7 +12,6 @@ type MapPreviewProps = {
   currentLocation?: CurrentLocation;
   recaps: DailyRecap[];
   mapEvents: MapEvent[];
-  isPreview: boolean;
   hasDataError: boolean;
 };
 
@@ -211,12 +210,12 @@ function createEventPopup(event: MapEvent) {
   return shell;
 }
 
-function createCurrentLocationPopup(location: CurrentLocation, isPreview: boolean) {
+function createCurrentLocationPopup(location: CurrentLocation) {
   const shell = createPopupShell();
   shell.append(
     createTextElement(
       "span",
-      isPreview ? "Preview lokacija" : "Zadnja live lokacija",
+      "Zadnja live lokacija",
       "map-popup-kicker"
     ),
     createTextElement("strong", "Marin i Marko", "map-popup-title")
@@ -244,7 +243,6 @@ export function MapPreview({
   currentLocation,
   recaps,
   mapEvents,
-  isPreview,
   hasDataError
 }: MapPreviewProps) {
   const mapElementRef = useRef<HTMLDivElement | null>(null);
@@ -424,7 +422,7 @@ export function MapPreview({
         .addTo(map);
 
       try {
-        const response = await fetch("/assets/ruta.gpx");
+        const response = await fetch("/assets/ruta-v2.gpx");
         if (!response.ok) {
           throw new Error(`GPX request failed with ${response.status}`);
         }
@@ -510,7 +508,7 @@ export function MapPreview({
         leaflet
           .marker([currentLocation.latitude, currentLocation.longitude], { icon: teamIcon, zIndexOffset: 700 })
           .addTo(map)
-          .bindPopup(createCurrentLocationPopup(currentLocation, isPreview), popupOptions());
+          .bindPopup(createCurrentLocationPopup(currentLocation), popupOptions());
       }
 
       recaps.forEach((recap) => {
@@ -591,7 +589,7 @@ export function MapPreview({
       alive = false;
       cleanup?.();
     };
-  }, [currentLocation, hasDataError, isPreview, mapEvents, recaps]);
+  }, [currentLocation, hasDataError, mapEvents, recaps]);
 
   function fitRoute() {
     if (mapRef.current && routeBoundsRef.current) {
@@ -654,11 +652,6 @@ export function MapPreview({
             />
 
             <div className="absolute left-4 top-4 z-[450] flex max-w-[calc(100%-2rem)] flex-wrap gap-2">
-              {isPreview ? (
-                <span className="rounded-full bg-paper px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-clay shadow-pin">
-                  Preview podaci
-                </span>
-              ) : null}
               {hasDataError ? (
                 <span className="rounded-full bg-red-700 px-4 py-2 text-xs font-black text-white shadow-pin">
                   Live podaci trenutno nisu dostupni

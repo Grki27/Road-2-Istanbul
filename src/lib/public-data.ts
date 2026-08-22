@@ -1,10 +1,4 @@
 import { siteConfig } from "@/config/site";
-import {
-  previewCurrentLocation,
-  previewMapEvents,
-  previewRecaps,
-  wallNotes
-} from "@/data/mockData";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type {
   CurrentLocation,
@@ -34,7 +28,6 @@ export type PublicSiteData = {
   mapEvents: MapEvent[];
   wallNotes: StickyNote[];
   settings: TripSettings;
-  isPreview: boolean;
   hasDataError: boolean;
 };
 
@@ -213,14 +206,13 @@ function mapSettings(row: TripSettingsRow | null): TripSettings {
   };
 }
 
-function previewData(hasDataError: boolean): PublicSiteData {
+function emptyData(hasDataError: boolean): PublicSiteData {
   return {
-    recaps: previewRecaps,
-    currentLocation: previewCurrentLocation,
-    mapEvents: previewMapEvents,
-    wallNotes,
+    recaps: [],
+    currentLocation: undefined,
+    mapEvents: [],
+    wallNotes: [],
     settings: defaultSettings,
-    isPreview: true,
     hasDataError
   };
 }
@@ -299,7 +291,7 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
 
     if (firstError) {
       console.error("Public Supabase fetch failed:", firstError.message);
-      return previewData(true);
+      return emptyData(true);
     }
 
     const recaps = mapRecaps(
@@ -311,27 +303,16 @@ export async function getPublicSiteData(): Promise<PublicSiteData> {
     const currentLocation = mapCurrentLocation(currentLocationResult.data);
     const mapEventsData = mapEvents(mapEventsResult.data ?? [], mapEventImagesResult.data ?? []);
     const wallNotesData = mapWallNotes(wallNotesResult.data ?? []);
-    const hasLiveJourneyData = Boolean(recaps.length || currentLocation || mapEventsData.length);
-
-    if (!hasLiveJourneyData) {
-      return {
-        ...previewData(false),
-        wallNotes: wallNotesData.length ? wallNotesData : wallNotes,
-        settings: mapSettings(settingsResult.data)
-      };
-    }
-
     return {
       recaps,
       currentLocation,
       mapEvents: mapEventsData,
       wallNotes: wallNotesData,
       settings: mapSettings(settingsResult.data),
-      isPreview: false,
       hasDataError: false
     };
   } catch (error) {
     console.error("Public data loader failed:", error);
-    return previewData(true);
+    return emptyData(true);
   }
 }

@@ -6,7 +6,7 @@ import { ExpandableText } from "@/components/ExpandableText";
 import { MapFocusButton } from "@/components/MapFocusButton";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { RecapComments } from "@/components/RecapComments";
-import { fatigueScale } from "@/data/mockData";
+import { fatigueScale } from "@/config/fatigue";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 import type { DailyRecap } from "@/types";
 
@@ -14,7 +14,7 @@ const mobileRecapsBatchSize = 3;
 const desktopRecapsBatchSize = 6;
 const swipeThresholdPx = 50;
 
-export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPreview: boolean }) {
+export function Timeline({ recaps }: { recaps: DailyRecap[] }) {
   const [isMobile, setIsMobile] = useState(false);
   const [visibleRecaps, setVisibleRecaps] = useState(desktopRecapsBatchSize);
   const [activeMobileIndex, setActiveMobileIndex] = useState(Math.max(recaps.length - 1, 0));
@@ -151,11 +151,6 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
           <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">
             Kilometri, granice i dnevni recapovi
           </h2>
-          {isPreview ? (
-            <p className="mt-4 text-lg leading-8 text-coffee/80">
-              Ovo je jasno označen preview. Zamijenit će ga prvi dnevni update koji admin objavi.
-            </p>
-          ) : null}
         </div>
 
         {recaps.length && isMobile && activeMobileRecap ? (
@@ -163,7 +158,6 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
             canGoNewer={activeMobileIndex < recaps.length - 1}
             canGoOlder={activeMobileIndex > 0}
             expanded={expandedMobileRecapIds.has(activeMobileRecap.id)}
-            isPreview={isPreview}
             onGoNewer={goToNewerDay}
             onGoOlder={goToOlderDay}
             onTouchEnd={handleTouchEnd}
@@ -176,11 +170,7 @@ export function Timeline({ recaps, isPreview }: { recaps: DailyRecap[]; isPrevie
         {recaps.length && !isMobile ? (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {shownRecaps.map((recap) => (
-              <DesktopTimelineCard
-                isPreview={isPreview}
-                key={recap.id}
-                recap={recap}
-              />
+              <DesktopTimelineCard key={recap.id} recap={recap} />
             ))}
           </div>
         ) : null}
@@ -216,7 +206,7 @@ function getRecapImages(recap: DailyRecap) {
     : [recap.coverImage ?? "/assets/journey-support-1.jpg"];
 }
 
-function DesktopTimelineCard({ recap, isPreview }: { recap: DailyRecap; isPreview: boolean }) {
+function DesktopTimelineCard({ recap }: { recap: DailyRecap }) {
   const fatigue = fatigueScale[recap.fatigueRating];
 
   return (
@@ -227,7 +217,7 @@ function DesktopTimelineCard({ recap, isPreview }: { recap: DailyRecap; isPrevie
       <div className="relative h-56">
         <PhotoGallery images={getRecapImages(recap)} title={recap.title} className="h-full" />
         <div className="absolute left-4 top-4 rounded-full bg-ink px-4 py-2 text-sm font-black text-paper">
-          {isPreview ? "Preview · " : ""}Dan {recap.dayNumber}
+          Dan {recap.dayNumber}
         </div>
       </div>
       <div className="p-5">
@@ -273,7 +263,6 @@ function DesktopTimelineCard({ recap, isPreview }: { recap: DailyRecap; isPrevie
 
 function MobileTimelineCard({
   recap,
-  isPreview,
   expanded,
   canGoNewer,
   canGoOlder,
@@ -284,7 +273,6 @@ function MobileTimelineCard({
   onTouchEnd
 }: {
   recap: DailyRecap;
-  isPreview: boolean;
   expanded: boolean;
   canGoNewer: boolean;
   canGoOlder: boolean;
@@ -326,7 +314,7 @@ function MobileTimelineCard({
         <div className="relative h-60">
           <PhotoGallery images={getRecapImages(recap)} title={recap.title} className="h-full" />
           <div className="absolute left-4 top-4 rounded-full bg-ink px-4 py-2 text-sm font-black text-paper">
-            {isPreview ? "Preview · " : ""}Dan {recap.dayNumber}
+            Dan {recap.dayNumber}
           </div>
         </div>
         <div className="p-5">

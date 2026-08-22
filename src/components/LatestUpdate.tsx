@@ -3,10 +3,10 @@ import { ExpandableText } from "@/components/ExpandableText";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { RecapComments } from "@/components/RecapComments";
 import type { DailyRecap } from "@/types";
-import { fatigueScale } from "@/data/mockData";
+import { fatigueScale } from "@/config/fatigue";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 
-export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap; isPreview?: boolean }) {
+export function LatestUpdate({ recap }: { recap?: DailyRecap }) {
   if (!recap) {
     return (
       <section className="hidden px-5 py-12 md:block">
@@ -32,7 +32,7 @@ export function LatestUpdate({ recap, isPreview = false }: { recap?: DailyRecap;
         <PhotoGallery images={images} title={recap.title} className="min-h-[320px]" priority />
         <div className="p-7 md:p-10">
           <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">
-            {isPreview ? "Preview zadnjeg updatea" : "Zadnji update s ceste"}
+            Zadnji update s ceste
           </p>
           <h2 className="mt-3 font-display text-4xl font-black">{recap.title}</h2>
           <p className="mt-3 font-black text-clay">

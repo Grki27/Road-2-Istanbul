@@ -1,6 +1,6 @@
 ﻿import Image from "next/image";
 import { SectionHeader } from "@/components/SectionHeader";
-import { fatigueScale } from "@/data/mockData";
+import { fatigueScale } from "@/config/fatigue";
 import type { DailyRecap } from "@/types";
 
 type StatItem = {

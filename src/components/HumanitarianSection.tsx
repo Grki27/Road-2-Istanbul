@@ -42,7 +42,7 @@ export function HumanitarianSection({ settings }: { settings: TripSettings }) {
         <div>
           <p className="text-xs font-black uppercase tracking-[0.26em] text-sunset">Humanitarna priča</p>
           <h2 className="mt-3 font-display text-4xl font-black md:text-6xl">
-            Jedan kilometar = Jedan donirani eur
+            Jedan kilometar = Jedan donirani euro
           </h2>
           <p className="mt-5 max-w-2xl text-lg leading-8 text-paper/82">
             Cilj je jednostavan: za svaki prijeđeni kilometar prema Istanbulu pokušavamo skupiti jedan euro za SOS Dječje selo Hrvatska.
