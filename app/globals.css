@@ -445,31 +445,43 @@ a {
   width: clamp(1rem, 5cqw, 1.25rem);
 }
 
-.sticky-note-author-field {
-  font-size: clamp(1rem, 9cqw, 1.5rem);
+.sticky-note-copy {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.2rem, 2cqw, 0.5rem);
   inset-inline: 8%;
-  line-height: 1.08;
-  margin: 0;
   position: absolute;
   top: 14%;
   z-index: 10;
 }
 
-.sticky-note-message-field {
-  font-size: clamp(0.75rem, 6.5cqw, 1.125rem);
-  inset-inline: 8%;
-  line-height: 1.5;
+.sticky-note-copy-editor {
+  bottom: 4%;
+}
+
+.sticky-note-author-field {
+  flex: 0 0 auto;
+  font-size: clamp(0.72rem, 9cqw, 1.5rem);
+  line-height: 1.08;
   margin: 0;
-  max-height: 64%;
+  min-width: 0;
+  width: 100%;
+}
+
+.sticky-note-message-field {
+  font-size: clamp(0.625rem, 6.5cqw, 1.125rem);
+  line-height: 1.35;
+  margin: 0;
+  max-height: 100%;
+  min-width: 0;
   overflow: hidden;
-  position: absolute;
-  top: 28%;
-  z-index: 10;
+  width: 100%;
 }
 
 .sticky-note-message-input {
-  bottom: 4%;
+  flex: 1 1 auto;
   max-height: none;
+  min-height: 0;
   resize: none;
 }
 

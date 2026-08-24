@@ -10,13 +10,20 @@ import { PartnersSection } from "@/components/PartnersSection";
 import { Footer } from "@/components/Footer";
 import { WanderingBicycle } from "@/components/WanderingBicycle";
 import { siteConfig } from "@/config/site";
+import { getCampaignDonationAmount } from "@/lib/campaign-donations";
 import { getPublicSiteData } from "@/lib/public-data";
 import { getTripStats } from "@/lib/stats";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const data = await getPublicSiteData();
+  const [data, campaignDonationAmount] = await Promise.all([
+    getPublicSiteData(),
+    getCampaignDonationAmount()
+  ]);
+  const settings = campaignDonationAmount === null
+    ? data.settings
+    : { ...data.settings, donationRaised: campaignDonationAmount };
   const stats = getTripStats(data.recaps, data.settings);
   const latestRecap = data.recaps.at(-1);
   const structuredData = {
@@ -65,7 +72,7 @@ export default async function Home() {
       <LatestUpdate recap={latestRecap} />
       <Timeline recaps={data.recaps} />
       <WallOfSupport notes={data.wallNotes} />
-      <HumanitarianSection settings={data.settings} />
+      <HumanitarianSection settings={settings} />
       <RidersSection latestRecap={latestRecap} />
       <PartnersSection />
       <Footer />

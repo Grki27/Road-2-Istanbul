@@ -375,12 +375,14 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
                 }}
               >
                 <span className="sticky-note-pin absolute left-1/2 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
-                <p className="sticky-note-author-field pointer-events-none font-display font-black">{note.authorName}</p>
-                {note.message.trim() ? (
-                  <p className="sticky-note-message-field pointer-events-none whitespace-pre-wrap font-bold text-ink/82">
-                    {note.message}
-                  </p>
-                ) : null}
+                <div className="sticky-note-copy pointer-events-none">
+                  <p className="sticky-note-author-field font-display font-black">{note.authorName}</p>
+                  {note.message.trim() ? (
+                    <p className="sticky-note-message-field whitespace-pre-wrap font-bold text-ink/82">
+                      {note.message}
+                    </p>
+                  ) : null}
+                </div>
                 <DrawingLayer drawingData={note.drawingData} className="pointer-events-none absolute inset-0 h-full w-full" />
               </article>
             );
@@ -413,22 +415,24 @@ export function WallOfSupport({ notes }: { notes: StickyNote[] }) {
                   style={{ backgroundColor: composerNoteColor }}
                 >
                   <span className="sticky-note-pin absolute left-1/2 z-20 -translate-x-1/2 rounded-full bg-clay shadow-inner" />
-                  <input
-                    aria-label="Ime za sticky note"
-                    className="sticky-note-author-field w-auto border-0 bg-transparent font-display font-black text-ink outline-none placeholder:text-ink/35"
-                    maxLength={24}
-                    onChange={(event) => setAuthorName(event.target.value)}
-                    placeholder="Tvoje ime"
-                    value={authorName}
-                  />
-                  <textarea
-                    aria-label="Poruka za sticky note"
-                    className="sticky-note-message-field sticky-note-message-input w-auto border-0 bg-transparent font-bold text-ink/85 outline-none placeholder:text-ink/35"
-                    maxLength={240}
-                    onChange={(event) => setMessage(event.target.value)}
-                    placeholder="Poruka nije obavezna..."
-                    value={message}
-                  />
+                  <div className="sticky-note-copy sticky-note-copy-editor">
+                    <input
+                      aria-label="Ime za sticky note"
+                      className="sticky-note-author-field border-0 bg-transparent font-display font-black text-ink outline-none placeholder:text-ink/35"
+                      maxLength={24}
+                      onChange={(event) => setAuthorName(event.target.value)}
+                      placeholder="Tvoje ime"
+                      value={authorName}
+                    />
+                    <textarea
+                      aria-label="Poruka za sticky note"
+                      className="sticky-note-message-field sticky-note-message-input border-0 bg-transparent font-bold text-ink/85 outline-none placeholder:text-ink/35"
+                      maxLength={240}
+                      onChange={(event) => setMessage(event.target.value)}
+                      placeholder="Poruka nije obavezna..."
+                      value={message}
+                    />
+                  </div>
                   <svg
                     ref={drawingRef}
                     className={`absolute inset-0 h-full w-full ${drawingMode ? "z-30 touch-none cursor-crosshair" : "pointer-events-none"}`}

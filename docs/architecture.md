@@ -6,6 +6,8 @@ The Next.js App Router homepage is rendered dynamically and loads journey data f
 
 `src/lib/public-data.ts` maps database rows into the public domain types. Trip statistics are derived from published recaps plus the single `trip_settings` row.
 
+The public donation total is read from the SOS campaign progress markup and cached for 15 minutes. The `trip_settings.donation_raised` value remains the fallback if the campaign page is unavailable or its markup changes.
+
 ## Map and Route
 
 Leaflet renders the public map. The planned route is loaded from `public/assets/ruta-v2.gpx`. The latest live location is matched to the closest GPX point so the route can be split into completed and remaining segments.
