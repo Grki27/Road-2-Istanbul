@@ -1,6 +1,6 @@
 # Sedmo Nebo: Road to Istanbul
 
-[sedmonebo.com](https://sedmonebo.com) is a live Croatian travel diary for Marin and Marko's bicycle journey from Dubrovnik to Istanbul. It combines an interactive GPX map, daily photo recaps, live location updates, a humanitarian campaign for SOS Children's Village Croatia, public comments, and a collaborative wall of support.
+[sedmonebo.com](https://sedmonebo.com) is a live Croatian travel diary for Marin and Marko's bicycle journey from Dubrovnik to Istanbul. It combines an interactive GPX map, daily photo recaps, live location updates, a humanitarian campaign for SOS Children's Village Croatia, public comments, and a collaborative wall of support. 
 
 ![Sedmo Nebo hero](public/assets/hero-road-to-istanbul.jpg)
 
