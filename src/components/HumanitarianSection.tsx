@@ -5,11 +5,21 @@ import { HeartHandshake, Share2 } from "lucide-react";
 import type { TripSettings } from "@/types";
 
 const campaignDonationGoal = 1500;
+const amountFormatter = new Intl.NumberFormat("hr-HR", {
+  maximumFractionDigits: 0
+});
 
 export function HumanitarianSection({ settings }: { settings: TripSettings }) {
   const [shareLabel, setShareLabel] = useState("Podijeli priču");
-  const progress = Math.min((settings.donationRaised / campaignDonationGoal) * 100, 100);
+  const donationRaised = Math.max(settings.donationRaised, 0);
   const isGoalReached = settings.donationRaised >= campaignDonationGoal;
+  const amountAboveGoal = Math.max(donationRaised - campaignDonationGoal, 0);
+  const progressScale = Math.max(donationRaised, campaignDonationGoal);
+  const goalProgress = (campaignDonationGoal / progressScale) * 100;
+  const raisedToGoalProgress =
+    (Math.min(donationRaised, campaignDonationGoal) / progressScale) * 100;
+  const aboveGoalProgress = (amountAboveGoal / progressScale) * 100;
+  const goalLabelAlignment = goalProgress > 90 ? "translateX(-100%)" : "translateX(-50%)";
 
   async function shareCampaign() {
     if (!settings.donationUrl) return;
@@ -77,15 +87,53 @@ export function HumanitarianSection({ settings }: { settings: TripSettings }) {
           </div>
         </div>
         <div className="rounded-[1.5rem] bg-paper p-6 text-ink">
-          <p className="text-sm font-black uppercase tracking-[0.2em] text-clay">Cilj kampanje</p>
-          <div className="mt-4 flex items-end justify-between gap-4">
-            <p className="font-display text-5xl font-black">{settings.donationRaised} €</p>
-            <p className="pb-2 font-black text-coffee/70">
-              {isGoalReached ? "cilj probijen 😎" : `od ${campaignDonationGoal} €`}
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-black uppercase tracking-[0.2em] text-clay">Cilj kampanje</p>
+            <p className="ml-auto rounded-full bg-sand/70 px-3 py-1.5 text-xs font-black leading-none text-coffee/75">
+              {isGoalReached ? "Cilj probijen 😎" : `Od ${amountFormatter.format(campaignDonationGoal)} €`}
             </p>
           </div>
-          <div className="mt-6 h-5 overflow-hidden rounded-full bg-sand">
-            <div className="h-full rounded-full bg-clay" style={{ width: `${progress}%` }} />
+          <p className="mt-4 whitespace-nowrap font-display text-[clamp(2.75rem,13vw,3.75rem)] font-black leading-none tracking-tight">
+            {amountFormatter.format(donationRaised)} €
+          </p>
+          <div className="mt-3">
+            <div className="relative pt-5">
+              <span
+                className="absolute top-0 whitespace-nowrap text-xs font-black text-coffee"
+                style={{ left: `${goalProgress}%`, transform: goalLabelAlignment }}
+              >
+                {amountFormatter.format(campaignDonationGoal)} €
+              </span>
+              <div className="relative flex h-5 overflow-hidden rounded-full bg-sand shadow-inner">
+                <div
+                  className="h-full bg-clay transition-[width] duration-700"
+                  style={{ width: `${raisedToGoalProgress}%` }}
+                />
+                {amountAboveGoal > 0 ? (
+                  <div
+                    className="campaign-extra-progress h-full transition-[width] duration-700"
+                    style={{ width: `${aboveGoalProgress}%` }}
+                  />
+                ) : null}
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-y-0 z-10 w-0.5 -translate-x-1/2 bg-ink shadow-[0_0_0_1px_rgba(255,248,234,0.75)]"
+                  style={{ left: `${goalProgress}%` }}
+                />
+              </div>
+            </div>
+            {amountAboveGoal > 0 ? (
+              <div className="mt-3 flex items-center gap-2 text-sm font-bold text-coffee/80">
+                <span
+                  aria-hidden="true"
+                  className="campaign-extra-dot h-2.5 w-2.5 shrink-0 rounded-full bg-sunset"
+                />
+                <span>Prikupljeno iznad cilja</span>
+                <span className="ml-auto shrink-0 font-black text-clay">
+                  +{amountFormatter.format(amountAboveGoal)} €
+                </span>
+              </div>
+            ) : null}
           </div>
           {isGoalReached ? (
             <p className="mt-5 font-black leading-7 text-clay">
