@@ -26,6 +26,16 @@ type GalleryDetail = {
 };
 
 const recapPopupTextLimit = 220;
+const markerPanes = {
+  recap: "recap-markers",
+  event: "event-markers",
+  live: "live-location-markers"
+} as const;
+
+function getOptimizedImageUrl(src: string, width = 640) {
+  if (!src.startsWith("http://") && !src.startsWith("https://")) return src;
+  return `/_next/image?url=${encodeURIComponent(src)}&w=${width}&q=75`;
+}
 
 function parseGpx(gpx: string) {
   const doc = new DOMParser().parseFromString(gpx, "application/xml");
@@ -185,7 +195,9 @@ function createEventPopup(event: MapEvent) {
       button.setAttribute("aria-label", `Otvori fotografiju ${index + 1} od ${event.images.length}`);
 
       const image = document.createElement("img");
-      image.src = imageUrl;
+      image.decoding = "async";
+      image.loading = "lazy";
+      image.src = getOptimizedImageUrl(imageUrl);
       image.alt = `${event.title}, fotografija ${index + 1}`;
       button.append(image);
 
@@ -292,6 +304,15 @@ export function MapPreview({
 
       mapRef.current = map;
       leaflet.control.zoom({ position: "bottomright" }).addTo(map);
+
+      [
+        [markerPanes.recap, 610],
+        [markerPanes.event, 630],
+        [markerPanes.live, 650]
+      ].forEach(([name, zIndex]) => {
+        const pane = map.createPane(String(name));
+        pane.style.zIndex = String(zIndex);
+      });
 
       const popupOptions = (): L.PopupOptions => ({
         autoPan: true,
@@ -506,9 +527,12 @@ export function MapPreview({
         });
 
         leaflet
-          .marker([currentLocation.latitude, currentLocation.longitude], { icon: teamIcon, zIndexOffset: 700 })
+          .marker([currentLocation.latitude, currentLocation.longitude], {
+            icon: teamIcon,
+            pane: markerPanes.live
+          })
           .addTo(map)
-          .bindPopup(createCurrentLocationPopup(currentLocation), popupOptions());
+          .bindPopup(() => createCurrentLocationPopup(currentLocation), popupOptions());
       }
 
       recaps.forEach((recap) => {
@@ -527,9 +551,12 @@ export function MapPreview({
         });
 
         const marker = leaflet
-          .marker([recapLatitude, recapLongitude], { icon: recapIcon, zIndexOffset: 900 })
+          .marker([recapLatitude, recapLongitude], {
+            icon: recapIcon,
+            pane: markerPanes.recap
+          })
           .addTo(map)
-          .bindPopup(createRecapPopup(recap), popupOptions());
+          .bindPopup(() => createRecapPopup(recap), popupOptions());
 
         recapMarkersRef.current.set(recap.id, marker);
       });
@@ -547,9 +574,12 @@ export function MapPreview({
         });
 
         leaflet
-          .marker([event.latitude, event.longitude], { icon: eventIcon, zIndexOffset: 850 })
+          .marker([event.latitude, event.longitude], {
+            icon: eventIcon,
+            pane: markerPanes.event
+          })
           .addTo(map)
-          .bindPopup(createEventPopup(event), popupOptions());
+          .bindPopup(() => createEventPopup(event), popupOptions());
       });
 
       const focusRecap = (event: Event) => {
@@ -719,7 +749,7 @@ export function MapPreview({
             <button type="button" onClick={() => setGallery(null)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-paper text-ink" aria-label="Zatvori galeriju"><X size={22} /></button>
           </div>
           <div className="absolute inset-x-0 bottom-0 top-16">
-            <Image src={gallery.images[gallery.index]} alt={`${gallery.title}, fotografija ${gallery.index + 1}`} fill className="object-contain" sizes="100vw" priority unoptimized />
+            <Image src={gallery.images[gallery.index]} alt={`${gallery.title}, fotografija ${gallery.index + 1}`} fill className="object-contain" sizes="100vw" priority />
           </div>
           {gallery.images.length > 1 ? (
             <>

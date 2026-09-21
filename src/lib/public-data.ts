@@ -1,5 +1,5 @@
 import { siteConfig } from "@/config/site";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabasePublicServerClient } from "@/lib/supabase/server";
 import type {
   CurrentLocation,
   DailyRecap,
@@ -233,7 +233,7 @@ function withTimeout<T>(promise: Promise<T>, timeoutMs = PUBLIC_DATA_TIMEOUT_MS)
 
 export async function getPublicSiteData(): Promise<PublicSiteData> {
   try {
-    const supabase = await createSupabaseServerClient();
+    const supabase = createSupabasePublicServerClient();
     const [
       recapsResult,
       recapImagesResult,

@@ -34,7 +34,7 @@ export function ExpandableText({
 
   return (
     <div>
-      <p className={`${className ?? ""} ${canExpand && !expanded ? collapsedClassName : ""}`}>
+      <p className={`whitespace-pre-line ${className ?? ""} ${canExpand && !expanded ? collapsedClassName : ""}`}>
         {text}
       </p>
       {canExpand ? (

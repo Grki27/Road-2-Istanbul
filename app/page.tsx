@@ -14,7 +14,7 @@ import { getCampaignDonationAmount } from "@/lib/campaign-donations";
 import { getPublicSiteData } from "@/lib/public-data";
 import { getTripStats } from "@/lib/stats";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 900;
 
 export default async function Home() {
   const [data, campaignDonationAmount] = await Promise.all([
@@ -52,6 +52,7 @@ export default async function Home() {
       <WanderingBicycle />
       <HeroSection />
       <StatsStrip
+        tripCompleted={stats.kilometersToIstanbul === 0 && stats.totalDistanceKm >= data.settings.plannedTotalKm}
         stats={[
           { label: "Odvoženo", value: `${stats.totalDistanceKm} km` },
           { label: "Do Istanbula", value: `${stats.kilometersToIstanbul} km` },

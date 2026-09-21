@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import Image, { type ImageProps } from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -11,6 +11,56 @@ type PhotoGalleryProps = {
   fallback?: string;
   priority?: boolean;
 };
+
+type GalleryImageProps = Pick<ImageProps, "alt" | "fill" | "priority" | "sizes"> & {
+  className?: string;
+  fallback: string;
+  src: string;
+};
+
+function GalleryImage({
+  alt,
+  className = "",
+  fallback,
+  fill,
+  priority,
+  sizes,
+  src
+}: GalleryImageProps) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const imageSrc = failed ? fallback : src;
+
+  useEffect(() => {
+    setLoaded(false);
+    setFailed(false);
+  }, [src]);
+
+  return (
+    <>
+      <span
+        aria-hidden="true"
+        className={`gallery-image-placeholder absolute inset-0 transition-opacity duration-300 ${loaded ? "opacity-0" : "opacity-100"}`}
+      />
+      <Image
+        alt={alt}
+        className={`${className} transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"}`}
+        fill={fill}
+        onError={() => {
+          if (failed) {
+            setLoaded(true);
+            return;
+          }
+          setFailed(true);
+        }}
+        onLoad={() => setLoaded(true)}
+        priority={priority}
+        sizes={sizes}
+        src={imageSrc}
+      />
+    </>
+  );
+}
 
 export function PhotoGallery({
   images,
@@ -61,14 +111,14 @@ export function PhotoGallery({
         onClick={() => setActiveIndex(0)}
         type="button"
       >
-        <Image
+        <GalleryImage
           alt={title}
           className="object-cover transition duration-300 group-hover:scale-[1.03]"
+          fallback={fallback}
           fill
           priority={priority}
           sizes="(max-width: 768px) 100vw, 50vw"
           src={galleryImages[0]}
-          unoptimized
         />
       </button>
     );
@@ -87,14 +137,14 @@ export function PhotoGallery({
             onClick={() => setActiveIndex(index)}
             type="button"
           >
-            <Image
+            <GalleryImage
               alt={`${title}, fotografija ${index + 1}`}
               className="object-cover transition duration-300 group-hover:scale-[1.04]"
+              fallback={fallback}
               fill
               priority={priority && index === 0}
               sizes="(max-width: 768px) 50vw, 33vw"
               src={imageUrl}
-              unoptimized
             />
             {index === visibleImages.length - 1 && galleryImages.length > visibleImages.length ? (
               <span className="absolute inset-0 grid place-items-center bg-ink/62 font-display text-3xl font-black text-paper">
@@ -127,14 +177,14 @@ export function PhotoGallery({
             </button>
           </div>
           <div className="relative min-h-0 flex-1">
-            <Image
+            <GalleryImage
               alt={`${title}, fotografija ${activeIndex + 1}`}
               className="object-contain"
+              fallback={fallback}
               fill
               priority
               sizes="100vw"
               src={galleryImages[activeIndex]}
-              unoptimized
             />
           </div>
           {galleryImages.length > 1 ? (

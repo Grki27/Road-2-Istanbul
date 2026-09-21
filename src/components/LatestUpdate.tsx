@@ -29,7 +29,7 @@ export function LatestUpdate({ recap }: { recap?: DailyRecap }) {
   return (
     <section className="hidden px-5 py-12 md:block">
       <div className="mx-auto grid max-w-6xl overflow-hidden rounded-[2rem] bg-paper shadow-paper md:grid-cols-[0.9fr_1.1fr]">
-        <PhotoGallery images={images} title={recap.title} className="min-h-[320px]" priority />
+        <PhotoGallery images={images} title={recap.title} className="min-h-[320px]" />
         <div className="p-7 md:p-10">
           <p className="text-xs font-black uppercase tracking-[0.26em] text-clay">
             Zadnji update s ceste

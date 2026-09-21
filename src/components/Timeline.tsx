@@ -10,12 +10,12 @@ import { fatigueScale } from "@/config/fatigue";
 import { formatCountry, formatKilometerRange } from "@/lib/trip-format";
 import type { DailyRecap } from "@/types";
 
-const mobileRecapsBatchSize = 3;
 const desktopRecapsBatchSize = 6;
 const swipeThresholdPx = 50;
+type ViewportMode = "unknown" | "mobile" | "desktop";
 
 export function Timeline({ recaps }: { recaps: DailyRecap[] }) {
-  const [isMobile, setIsMobile] = useState(false);
+  const [viewportMode, setViewportMode] = useState<ViewportMode>("unknown");
   const [visibleRecaps, setVisibleRecaps] = useState(desktopRecapsBatchSize);
   const [activeMobileIndex, setActiveMobileIndex] = useState(Math.max(recaps.length - 1, 0));
   const [expandedMobileRecapIds, setExpandedMobileRecapIds] = useState<Set<string>>(new Set());
@@ -24,14 +24,15 @@ export function Timeline({ recaps }: { recaps: DailyRecap[] }) {
     recapId: string;
     expand: boolean;
   } | null>(null);
-  const batchSize = isMobile ? mobileRecapsBatchSize : desktopRecapsBatchSize;
+  const isMobile = viewportMode === "mobile";
+  const batchSize = desktopRecapsBatchSize;
   const shownRecaps = recaps.slice(0, visibleRecaps);
-  const canShowMore = !isMobile && visibleRecaps < recaps.length;
+  const canShowMore = viewportMode === "desktop" && visibleRecaps < recaps.length;
   const activeMobileRecap = recaps[activeMobileIndex];
 
   useEffect(() => {
     const media = window.matchMedia("(max-width: 767px)");
-    const update = () => setIsMobile(media.matches);
+    const update = () => setViewportMode(media.matches ? "mobile" : "desktop");
 
     update();
     media.addEventListener("change", update);
@@ -39,8 +40,10 @@ export function Timeline({ recaps }: { recaps: DailyRecap[] }) {
   }, []);
 
   useEffect(() => {
-    setVisibleRecaps(isMobile ? mobileRecapsBatchSize : desktopRecapsBatchSize);
-  }, [isMobile, recaps.length]);
+    if (viewportMode === "desktop") {
+      setVisibleRecaps(desktopRecapsBatchSize);
+    }
+  }, [viewportMode, recaps.length]);
 
   useEffect(() => {
     setActiveMobileIndex(Math.max(recaps.length - 1, 0));
@@ -153,7 +156,9 @@ export function Timeline({ recaps }: { recaps: DailyRecap[] }) {
           </h2>
         </div>
 
-        {recaps.length && isMobile && activeMobileRecap ? (
+        {recaps.length && viewportMode === "unknown" ? <TimelineLoadingState /> : null}
+
+        {recaps.length && viewportMode === "mobile" && activeMobileRecap ? (
           <MobileTimelineCard
             canGoNewer={activeMobileIndex < recaps.length - 1}
             canGoOlder={activeMobileIndex > 0}
@@ -167,7 +172,7 @@ export function Timeline({ recaps }: { recaps: DailyRecap[] }) {
           />
         ) : null}
 
-        {recaps.length && !isMobile ? (
+        {recaps.length && viewportMode === "desktop" ? (
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {shownRecaps.map((recap) => (
               <DesktopTimelineCard key={recap.id} recap={recap} />
@@ -197,6 +202,20 @@ export function Timeline({ recaps }: { recaps: DailyRecap[] }) {
         ) : null}
       </div>
     </section>
+  );
+}
+
+function TimelineLoadingState() {
+  return (
+    <div aria-hidden="true" className="overflow-hidden rounded-[2rem] bg-paper shadow-paper md:grid md:grid-cols-2 lg:grid-cols-3">
+      <div className="gallery-image-placeholder h-60 md:h-72 lg:col-span-1" />
+      <div className="space-y-4 p-5 md:col-span-1 lg:col-span-2">
+        <div className="h-4 w-24 rounded-full bg-coffee/10" />
+        <div className="h-8 w-3/4 rounded-full bg-coffee/10" />
+        <div className="h-4 w-full rounded-full bg-coffee/10" />
+        <div className="h-4 w-5/6 rounded-full bg-coffee/10" />
+      </div>
+    </div>
   );
 }
 
@@ -322,7 +341,7 @@ function MobileTimelineCard({
             {formatKilometerRange(recap.startLocation, recap.endLocation)}
           </p>
           <h3 className="mt-2 font-display text-2xl font-black">{recap.title}</h3>
-          <p className={`mt-3 leading-7 text-coffee/80 ${expanded ? "" : "line-clamp-3"}`}>
+          <p className={`mt-3 whitespace-pre-line leading-7 text-coffee/80 ${expanded ? "" : "line-clamp-3"}`}>
             {recap.shortText}
           </p>
           <div className="mt-5 flex flex-wrap gap-2 text-sm font-black">

@@ -13,7 +13,8 @@ const supabaseHostname = getSupabaseHostname();
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    formats: ["image/avif", "image/webp"],
+    formats: ["image/webp"],
+    minimumCacheTTL: 31_536_000,
     remotePatterns: supabaseHostname
       ? [
           {

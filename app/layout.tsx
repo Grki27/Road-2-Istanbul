@@ -1,5 +1,6 @@
 ﻿import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { siteConfig } from "@/config/site";
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
@@ -87,6 +88,7 @@ export default function RootLayout({
     <html lang="hr">
       <body className={`${inter.variable} ${fraunces.variable} font-sans antialiased`}>
         {children}
+        <Analytics />
       </body>
     </html>
   );
