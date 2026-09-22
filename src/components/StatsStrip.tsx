@@ -1,6 +1,5 @@
 "use client";
 
-import { Flag } from "lucide-react";
 import { type CSSProperties, useEffect, useRef, useState } from "react";
 
 type Stat = {
@@ -48,17 +47,8 @@ export function StatsStrip({
               className="relative overflow-hidden rounded-[1.5rem] border border-coffee/10 bg-white/58 px-5 py-5"
             >
               {isCompletedDistance && celebrate ? <ConfettiBurst /> : null}
-              {isCompletedDistance ? (
-                <span
-                  aria-label="Cilj ostvaren"
-                  className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full bg-sunset text-ink shadow-pin"
-                  role="img"
-                >
-                  <Flag aria-hidden="true" size={20} strokeWidth={2.5} />
-                </span>
-              ) : null}
               <p className="relative z-10 text-xs font-black uppercase tracking-[0.2em] text-clay">{stat.label}</p>
-              <p className={`relative z-10 mt-2 font-display text-3xl font-black text-ink ${isCompletedDistance ? "pr-10" : ""}`}>
+              <p className="relative z-10 mt-2 font-display text-3xl font-black text-ink">
                 {stat.value}
               </p>
             </div>
