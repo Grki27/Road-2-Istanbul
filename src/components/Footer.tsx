@@ -20,7 +20,7 @@ export function Footer() {
             </span>
             <div>
               <p className="font-display text-2xl font-black">{siteConfig.name}</p>
-              <p className="text-coffee/75">Road to Istanbul — live dnevnik puta</p>
+              <p className="text-coffee/75">Road to Istanbul - live dnevnik puta</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2">
